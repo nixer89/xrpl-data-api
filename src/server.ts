@@ -99,13 +99,13 @@ const start = async () => {
           reply.code(200).send('Please provide an account. Calls without account are not allowed');
       } else {
           try {
-              console.time("kyc");
+              //console.time("kyc");
 
               let returnValue = {
                 account: request.params.account,
                 kyc: accountNames.getKycData(request.params.account)
               }
-              console.timeEnd("kyc");
+              //console.timeEnd("kyc");
 
               return returnValue;
           } catch(err) {
