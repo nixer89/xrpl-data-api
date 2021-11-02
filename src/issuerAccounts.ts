@@ -54,11 +54,9 @@ export class IssuerAccounts {
             verified: false,
             resolvedBy: null,
             kyc : this.accountInfo.getKycData(acc),
-            created: creationDate
           }
         } else {
           issuerData.kyc = this.accountInfo.getKycData(acc);
-          issuerData.created = creationDate
         }
     
         if(data.offers > 0 && data.amount <= 0) {
@@ -67,10 +65,10 @@ export class IssuerAccounts {
         } else if(!transformedIssuers[acc]) {
           transformedIssuers[acc] = {
             data: issuerData,
-            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers}]
+            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate}]
           }
         } else {
-          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers});
+          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate});
         }
     
       });

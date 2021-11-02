@@ -11,7 +11,8 @@ export interface IssuerAccount {
 export interface IssuerData {
     amount: number,
     trustlines: number,
-    offers: number
+    offers: number,
+    created?: string
 }
  
 export interface IssuerVerification {
@@ -19,7 +20,6 @@ export interface IssuerVerification {
     account: string,
     verified: boolean,
     kyc?: boolean,
-    created?: string,
     domain?: string,
     username?: string,
     twitter?: string
