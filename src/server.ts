@@ -57,7 +57,18 @@ const start = async () => {
         global: true,
         redis: redis,
         skipOnError: true,
-        max: 10,
+        max: async (req, key) => {
+          if(key.startsWith("76.201.20") 
+            || key.startsWith("76.201.21")
+            || key.startsWith("76.201.22")
+            || key.startsWith("76.201.23")
+            || key.startsWith("120.29.68"))
+            {
+              return 30;    
+            } else {
+              return 5
+            }
+        },
         timeWindow: '1 minute',
         keyGenerator: function(req) {
           return req.headers['x-real-ip'] // nginx
