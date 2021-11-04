@@ -6,7 +6,7 @@ import { AccountNames } from "./accountNames";
 
 const Redis = require('ioredis')
 const redis = new Redis({
-  connectionName: 'my-connection-name',
+  connectionName: 'xrpl-data-api',
   host: '127.0.0.1',
   port: 6379,
   connectTimeout: 500,
@@ -69,6 +69,8 @@ const start = async () => {
 
       await fastify.setErrorHandler(function (error, req, reply) {
         if (reply.statusCode === 429) {
+
+          console.log(JSON.stringify(req));
   
           let ip = req.headers['x-real-ip'] // nginx
                 || req.headers['x-client-ip'] // apache
