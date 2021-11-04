@@ -4,6 +4,15 @@ import { LedgerData } from './ledgerData';
 import { TokenCreation } from './tokenCreation';
 import { AccountNames } from "./accountNames";
 
+const Redis = require('ioredis')
+const redis = new Redis({
+  connectionName: 'my-connection-name',
+  host: '127.0.0.1',
+  port: 6379,
+  connectTimeout: 500,
+  maxRetriesPerRequest: 1
+})
+
 let issuerAccount:IssuerAccounts;
 let ledgerData:LedgerData;
 let tokenCreation:TokenCreation;
@@ -42,6 +51,35 @@ const start = async () => {
         origin: "*",
         methods: 'GET, OPTIONS',
         allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'Referer']
+      });
+
+      await fastify.register(require('fastify-rate-limit'), {
+        global: true,
+        redis: redis,
+        skipOnError: true,
+        max: 5,
+        timeWindow: '1 minute',
+        keyGenerator: function(req) {
+          return req.headers['x-real-ip'] // nginx
+          || req.headers['x-client-ip'] // apache
+          || req.headers['x-forwarded-for'] // use this only if you trust the header
+          || req.ip // fallback to default
+        }
+      });
+
+      await fastify.setErrorHandler(function (error, req, reply) {
+        if (reply.statusCode === 429) {
+  
+          let ip = req.headers['x-real-ip'] // nginx
+                || req.headers['x-client-ip'] // apache
+                || req.headers['x-forwarded-for'] // use this only if you trust the header
+                || req.ip // fallback to default
+  
+          console.log("RATE LIMIT HIT BY: " + ip);
+          
+          error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later :-)'
+        }
+        reply.send(error)
       });
 
       fastify.get('/api/v1/tokens', async (request, reply) => {
