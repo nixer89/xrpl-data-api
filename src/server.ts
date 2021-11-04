@@ -69,9 +69,6 @@ const start = async () => {
 
       await fastify.setErrorHandler(function (error, req, reply) {
         if (reply.statusCode === 429) {
-
-          console.log(JSON.stringify(req.headers));
-          console.log(JSON.stringify(req.ip));
   
           let ip = req.headers['x-real-ip'] // nginx
                 || req.headers['x-client-ip'] // apache
