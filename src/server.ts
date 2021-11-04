@@ -57,7 +57,7 @@ const start = async () => {
         global: true,
         redis: redis,
         skipOnError: true,
-        max: 2,
+        max: 10,
         timeWindow: '1 minute',
         keyGenerator: function(req) {
           return req.headers['x-real-ip'] // nginx
