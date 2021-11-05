@@ -3,6 +3,7 @@ import { IssuerAccounts } from './issuerAccounts';
 import { LedgerData } from './ledgerData';
 import { TokenCreation } from './tokenCreation';
 import { AccountNames } from "./accountNames";
+import * as fetch from 'node-fetch';
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -96,20 +97,15 @@ const start = async () => {
       fastify.get('/api/v1/tokens', async (request, reply) => {
         try {
           console.time("tokens");
-          //console.log("request params: " + JSON.stringify(request.params));
-          let issuers = issuerAccount.getLedgerTokensV1();
-
-          let returnValue = {
-            ledger_index: issuerAccount.getLedgerIndex(),
-            ledger_hash: issuerAccount.getLedgerHash(),
-            ledger_close: issuerAccount.getLedgerCloseTime(),
-            ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
-            issuers: issuers
-          }
-
+          let tokenResponse = await fetch.default("https://api.xrpldata.com/api/v1/tokens");
           console.timeEnd("tokens");
-
-          return returnValue;
+          
+          if(tokenResponse && tokenResponse.ok) {
+            return tokenResponse.json();
+          } else {
+            console.log("GOT ERROR RESPONSE FROM REDIRECT API TOKENS");
+            reply.code(200).send('Error occured. Please check your request.');
+          }
         } catch(err) {
           console.log("error resolving tokens");
           console.log(err);
@@ -120,22 +116,15 @@ const start = async () => {
       fastify.get('/api/v1/ledgerdata', async (request, reply) => {
         try {
           console.time("ledgerdata");
-          let ledgerDataObjects: any[] = await ledgerData.getLedgerDataV1();
-          //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
-
-          let returnValue = {
-            ledger_index: issuerAccount.getLedgerIndex(),
-            ledger_hash: issuerAccount.getLedgerHash(),
-            ledger_close: issuerAccount.getLedgerCloseTime(),
-            ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
-            ledger_size: ledgerDataObjects[0],
-            sizeType: "B",
-            ledger_data: ledgerDataObjects[1]
-          }
-
+          let ledgerDataResponse = await fetch.default("https://api.xrpldata.com/api/v1/ledgerdata")
           console.timeEnd("ledgerdata");
 
-          return returnValue;
+          if(ledgerDataResponse && ledgerDataResponse.ok) {
+            return ledgerDataResponse.json();
+          } else {
+            console.log("GOT ERROR RESPONSE FROM REDIRECT API LEDGERDATA");
+            reply.code(200).send('Error occured. Please check your request.');
+          }
         } catch(err) {
           console.log("error resolving ledgerdata");
           console.log(err);
@@ -148,15 +137,16 @@ const start = async () => {
           reply.code(200).send('Please provide an account. Calls without account are not allowed');
       } else {
           try {
-              //console.time("kyc");
-
-              let returnValue = {
-                account: request.params.account,
-                kyc: accountNames.getKycData(request.params.account)
+              console.time("kyc");
+              let kycResponse = await fetch.default("https://api.xrpldata.com/api/v1/kyc/"+request.params.account)
+              console.timeEnd("kyc");
+              
+              if(kycResponse && kycResponse.ok) {
+                return kycResponse.json();
+              } else {
+                console.log("GOT ERROR RESPONSE FROM REDIRECT API KYC");
+                reply.code(200).send('Error occured. Please check your request.');
               }
-              //console.timeEnd("kyc");
-
-              return returnValue;
           } catch(err) {
             console.log("error resolving kyc");
             console.log(err);
@@ -169,16 +159,16 @@ const start = async () => {
 
         try {
 
-          console.time("tokencreation");
-          //console.log("query: " + JSON.stringify(request.query));
-          let issuer:string = request.query.issuer;
-          let currency:string = request.query.currency;
-
-          let returnValue = await tokenCreation.getTokenCreationDate(issuer, currency);
-
-          console.timeEnd("tokencreation");
-
-          return returnValue;
+              console.time("tokencreation");
+              let tokenCreationResponse = await fetch.default("https://api.xrpldata.com/api/v1/tokencreation")
+              console.timeEnd("tokencreation");
+              
+              if(tokenCreationResponse && tokenCreationResponse.ok) {
+                return tokenCreationResponse.json();
+              } else {
+                console.log("GOT ERROR RESPONSE FROM REDIRECT API TOKENCREATION");
+                reply.code(200).send('Error occured. Please check your request.');
+              }
         } catch(err) {
           console.log("error resolving token creation");
           console.log(err);
