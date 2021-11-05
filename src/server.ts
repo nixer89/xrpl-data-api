@@ -5,15 +5,6 @@ import { TokenCreation } from './tokenCreation';
 import { AccountNames } from "./accountNames";
 import * as fetch from 'node-fetch';
 
-const Redis = require('ioredis')
-const redis = new Redis({
-  connectionName: 'xrpl-data-api',
-  host: '127.0.0.1',
-  port: 6379,
-  connectTimeout: 500,
-  maxRetriesPerRequest: 1
-})
-
 let issuerAccount:IssuerAccounts;
 let ledgerData:LedgerData;
 let tokenCreation:TokenCreation;
@@ -56,7 +47,7 @@ const start = async () => {
 
       await fastify.register(require('fastify-rate-limit'), {
         global: true,
-        redis: redis,
+        cache: 10000,
         skipOnError: true,
         max: async (req, key) => {
           if(key.startsWith("76.201.20") 
