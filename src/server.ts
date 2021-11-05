@@ -65,7 +65,7 @@ const start = async () => {
             || key.startsWith("120.29.68"))
           {
             return 30;    
-          } else if(key === ' 85.214.226.136') {
+          } else if(key === '85.214.226.136') {
             return 1000;
           } else {
             return 5;
