@@ -18,7 +18,8 @@ let ledgerData:LedgerData;
 let tokenCreation:TokenCreation;
 let accountNames: AccountNames;
 
-let ipRanges:string[] = ["76.201.20.","76.201.21.","76.201.22.","76.201.23.","120.29.68.","212.117.20.","169.0.102.","61.57.124.", "61.57.125.","61.57.12.","61.57.127.","121.54.10.","175.176.49."]
+let ipRanges:string[] = ["76.201.20.","76.201.21.","76.201.22.","76.201.23.","120.29.68.","212.117.20.","169.0.102.","61.57.124.", "61.57.125.","61.57.12.","61.57.127.","121.54.10.","175.176.49.", "211.176.124.", "211.176.125.",
+                         "211.176.126.", "211.176.127."];
 
 consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
@@ -93,7 +94,7 @@ const start = async () => {
                 || req.headers['x-forwarded-for'] // use this only if you trust the header
                 || req.ip // fallback to default
   
-          console.log("RATE LIMIT HIT BY: " + ip);
+          console.log("RATE LIMIT HIT BY: " + ip + " requesting " + req.url);
           
           error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later :-)'
         }
