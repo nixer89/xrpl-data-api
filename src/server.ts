@@ -94,7 +94,7 @@ const start = async () => {
                 || req.headers['x-forwarded-for'] // use this only if you trust the header
                 || req.ip // fallback to default
   
-          console.log("RATE LIMIT HIT BY: " + ip + " requesting " + req.url);
+          console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath);
           
           error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later :-)'
         }
@@ -103,7 +103,7 @@ const start = async () => {
 
       fastify.get('/api/v1/tokens', async (request, reply) => {
         try {
-          console.time("tokens");
+          let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let issuers = issuerAccount.getLedgerTokensV1();
 
@@ -115,7 +115,7 @@ const start = async () => {
             issuers: issuers
           }
 
-          console.timeEnd("tokens");
+          console.log("tokens_"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
