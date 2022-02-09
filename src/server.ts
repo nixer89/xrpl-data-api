@@ -127,6 +127,30 @@ const start = async () => {
         }
       });
 
+      fastify.get('/api/v1/nfts', async (request, reply) => {
+        try {
+          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
+          let issuers = issuerAccount.getLedgerNftsV1();
+
+          let returnValue = {
+            ledger_index: issuerAccount.getLedgerIndex(),
+            ledger_hash: issuerAccount.getLedgerHash(),
+            ledger_close: issuerAccount.getLedgerCloseTime(),
+            ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
+            issuers: issuers
+          }
+
+          console.log("nfts_"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving nfts");
+          console.log(err);
+          reply.code(200).send('Error occured. Please check your request.');
+        }
+      });
+
       fastify.get('/api/v1/ledgerdata', async (request, reply) => {
         try {
           console.time("ledgerdata");

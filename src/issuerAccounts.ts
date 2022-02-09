@@ -38,39 +38,42 @@ export class IssuerAccounts {
         scheduler.scheduleJob("loadIssuerDataFromFS", "*/10 * * * *", () => this.loadIssuerDataFromFS());
     }
     
-    private transformIssuersV1(issuers: Map<string, IssuerData>): any {
+    private transformIssuersV1(issuers: Map<string, IssuerData>, tokens: boolean): any {
       let transformedIssuers:any = {}
     
       issuers.forEach((data: IssuerData, key: string, map) => {
-        let acc:string = key.substring(0, key.indexOf("_"));
-        let currency:string = key.substring(key.indexOf("_")+1, key.length);
-        let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
-        let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
 
-        //set kyc data
-        if(!issuerData) {
-          issuerData = {
-            account: acc,
-            verified: false,
-            resolvedBy: null,
-            kyc : this.accountInfo.getKycData(acc),
+        //ignore xls14d NFTs
+        if((tokens && data.amount > 1000000000000000e-85) || (!tokens && data.amount <= 1000000000000000e-85 && data.amount >= 1000000000000000e-96)) {
+          let acc:string = key.substring(0, key.indexOf("_"));
+          let currency:string = key.substring(key.indexOf("_")+1, key.length);
+          let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
+          let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
+
+          //set kyc data
+          if(!issuerData) {
+            issuerData = {
+              account: acc,
+              verified: false,
+              resolvedBy: null,
+              kyc : this.accountInfo.getKycData(acc),
+            }
+          } else {
+            issuerData.kyc = this.accountInfo.getKycData(acc);
           }
-        } else {
-          issuerData.kyc = this.accountInfo.getKycData(acc);
-        }
-    
-        if(data.offers > 0 && data.amount <= 0) {
-          //remove abandoned currencies with only offers
-          //console.log(acc + ": " + currency + ": " + JSON.stringify(data));
-        } else if(!transformedIssuers[acc]) {
-          transformedIssuers[acc] = {
-            data: issuerData,
-            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate}]
+      
+          if(data.offers > 0 && data.amount <= 0) {
+            //remove abandoned currencies with only offers
+            //console.log(acc + ": " + currency + ": " + JSON.stringify(data));
+          } else if(!transformedIssuers[acc]) {
+            transformedIssuers[acc] = {
+              data: issuerData,
+              tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate}]
+            }
+          } else {
+            transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate});
           }
-        } else {
-          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate});
         }
-    
       });
     
       return transformedIssuers;
@@ -82,7 +85,11 @@ export class IssuerAccounts {
 
 
     public getLedgerTokensV1(): any {
-        return this.transformIssuersV1(new Map(this.issuers));
+        return this.transformIssuersV1(new Map(this.issuers), true);
+    }
+
+    public getLedgerNftsV1(): any {
+      return this.transformIssuersV1(new Map(this.issuers), false);
     }
 
     private setIssuers(issuers: Map<string, IssuerData>): void{
