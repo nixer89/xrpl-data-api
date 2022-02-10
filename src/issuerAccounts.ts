@@ -14,7 +14,8 @@ export class IssuerAccounts {
     private accountInfo:AccountNames;
     private tokenCreation:TokenCreation;
 
-    private issuers: Map<string, IssuerData> = new Map();
+    private tokenIssuers: Map<string, IssuerData> = new Map();
+    private nftIssuers: Map<string, IssuerData> = new Map();
 
     private ledger_index: number;
     private ledger_date: string;
@@ -38,63 +39,67 @@ export class IssuerAccounts {
         scheduler.scheduleJob("loadIssuerDataFromFS", "*/10 * * * *", () => this.loadIssuerDataFromFS());
     }
     
-    private transformIssuersV1(issuers: Map<string, IssuerData>, tokens: boolean): any {
+    private transformIssuersV1(issuers: Map<string, IssuerData>): any {
       let transformedIssuers:any = {}
     
       issuers.forEach((data: IssuerData, key: string, map) => {
 
-        //ignore xls14d NFTs
-        if((tokens && data.amount > 1000000000000000e-85) || (!tokens && data.amount <= 1000000000000000e-85 && data.amount >= 1000000000000000e-96)) {
-          let acc:string = key.substring(0, key.indexOf("_"));
-          let currency:string = key.substring(key.indexOf("_")+1, key.length);
-          let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
-          let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
+        let acc:string = key.substring(0, key.indexOf("_"));
+        let currency:string = key.substring(key.indexOf("_")+1, key.length);
+        let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
+        let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
 
-          //set kyc data
-          if(!issuerData) {
-            issuerData = {
-              account: acc,
-              verified: false,
-              resolvedBy: null,
-              kyc : this.accountInfo.getKycData(acc),
-            }
-          } else {
-            issuerData.kyc = this.accountInfo.getKycData(acc);
+        //set kyc data
+        if(!issuerData) {
+          issuerData = {
+            account: acc,
+            verified: false,
+            resolvedBy: null,
+            kyc : this.accountInfo.getKycData(acc),
           }
-      
-          if(data.offers > 0 && data.amount <= 0) {
-            //remove abandoned currencies with only offers
-            //console.log(acc + ": " + currency + ": " + JSON.stringify(data));
-          } else if(!transformedIssuers[acc]) {
-            transformedIssuers[acc] = {
-              data: issuerData,
-              tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate}]
-            }
-          } else {
-            transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate});
+        } else {
+          issuerData.kyc = this.accountInfo.getKycData(acc);
+        }
+    
+        if(data.offers > 0 && data.amount <= 0) {
+          //remove abandoned currencies with only offers
+          //console.log(acc + ": " + currency + ": " + JSON.stringify(data));
+        } else if(!transformedIssuers[acc]) {
+          transformedIssuers[acc] = {
+            data: issuerData,
+            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate}]
           }
+        } else {
+          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate});
         }
       });
     
       return transformedIssuers;
     }
 
-  public getIssuer_1():Map<string, IssuerData> {
-    return this.issuers;
-  }
+    public getTokenIssuer():Map<string, IssuerData> {
+      return this.tokenIssuers;
+    }
 
+    public getNftIssuer():Map<string, IssuerData> {
+      return this.nftIssuers;
+    }
 
     public getLedgerTokensV1(): any {
-        return this.transformIssuersV1(new Map(this.issuers), true);
+        return this.transformIssuersV1(new Map(this.getTokenIssuer()));
     }
 
     public getLedgerNftsV1(): any {
-      return this.transformIssuersV1(new Map(this.issuers), false);
+      return this.transformIssuersV1(new Map(this.getNftIssuer()));
     }
 
-    private setIssuers(issuers: Map<string, IssuerData>): void{
-        this.issuers = new Map(issuers);
+    private setTokenIssuers(issuers: Map<string, IssuerData>): void{
+        this.tokenIssuers = new Map(issuers);
     }
+
+    private setNftIssuers(issuers: Map<string, IssuerData>): void{
+      this.nftIssuers = new Map(issuers);
+  }
 
     private async loadIssuerDataFromFS(): Promise<void> {
       try {
@@ -119,7 +124,21 @@ export class IssuerAccounts {
                 this.setLedgerCloseTime(issuerData['ledger_date']);
                 this.setLedgerCloseTimeMs(issuerData['ledger_time_ms']);
                 this.setLedgerHash(issuerData['ledger_hash']);
-                this.setIssuers(loadedMap);
+
+                let tokens:Map<string, IssuerData> = new Map();
+                let nfts:Map<string, IssuerData> = new Map();
+
+                loadedMap.forEach((data: IssuerData, key: string, map) => {
+
+                  if(data.amount > 1000000000000000e-85) {
+                    tokens.set(key, data);
+                  } else if(data.amount <= 1000000000000000e-85 && data.amount >= 1000000000000000e-96) {
+                    nfts.set(key, data);
+                  }
+                });
+
+                this.setTokenIssuers(tokens);
+                this.setNftIssuers(nfts);
             }
         } else {
           console.log("issuer data file does not exist yet.")
@@ -127,7 +146,8 @@ export class IssuerAccounts {
       } catch(err) {
         console.log("error reading issuer data from FS");
         console.log(err);
-        this.setIssuers(new Map());
+        this.setTokenIssuers(new Map());
+        this.setNftIssuers(new Map());
       }  
     }
 
