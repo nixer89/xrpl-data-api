@@ -49,6 +49,9 @@ export class IssuerAccounts {
         let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
         let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
 
+        if(acc === 'rhrFfvzZAytd8UHPH87UHMgHQ18nnLbpgN') //remove gatehub issuer for SGB on their request
+          return;
+
         //set kyc data
         if(!issuerData) {
           issuerData = {
