@@ -11,6 +11,7 @@ export interface IssuerAccount {
 export interface IssuerData {
     amount: number,
     trustlines: number,
+    holders: number,
     offers: number,
     created?: string
 }

@@ -70,10 +70,10 @@ export class IssuerAccounts {
         } else if(!transformedIssuers[acc]) {
           transformedIssuers[acc] = {
             data: issuerData,
-            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate}]
+            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate}]
           }
         } else {
-          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, offers: data.offers, created: creationDate});
+          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate});
         }
       });
     
