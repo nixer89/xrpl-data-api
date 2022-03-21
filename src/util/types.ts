@@ -13,7 +13,8 @@ export interface IssuerData {
     trustlines: number,
     holders: number,
     offers: number,
-    created?: string
+    created?: string,
+    self_assessment?: any
 }
  
 export interface IssuerVerification {

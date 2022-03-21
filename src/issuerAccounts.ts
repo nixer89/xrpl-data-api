@@ -4,6 +4,7 @@ import { AccountNames } from './accountNames';
 import { IssuerData, IssuerVerification } from "./util/types"
 import { TokenCreation } from './tokenCreation';
 import * as scheduler from 'node-schedule';
+import { SelfAssessments } from './selfAssessments';
 
 consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
@@ -13,6 +14,7 @@ export class IssuerAccounts {
     
     private accountInfo:AccountNames;
     private tokenCreation:TokenCreation;
+    private selfAssessments:SelfAssessments;
 
     private tokenIssuers: Map<string, IssuerData> = new Map();
     private nftIssuers: Map<string, IssuerData> = new Map();
@@ -33,6 +35,7 @@ export class IssuerAccounts {
     public async init(): Promise<void> {
         this.accountInfo = AccountNames.Instance;
         this.tokenCreation = TokenCreation.Instance;
+        this.selfAssessments = SelfAssessments.Instance;
 
         await this.loadIssuerDataFromFS();
 
@@ -48,6 +51,7 @@ export class IssuerAccounts {
         let currency:string = key.substring(key.indexOf("_")+1, key.length);
         let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
         let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
+        let selfAssessment:any = this.selfAssessments.getSelfAssessment(key);
 
         if(acc === 'rhrFfvzZAytd8UHPH87UHMgHQ18nnLbpgN') //remove gatehub issuer for SGB on their request
           return;
@@ -70,10 +74,10 @@ export class IssuerAccounts {
         } else if(!transformedIssuers[acc]) {
           transformedIssuers[acc] = {
             data: issuerData,
-            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate}]
+            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate, self_assessment: selfAssessment}]
           }
         } else {
-          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate});
+          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate, self_assessment: selfAssessment});
         }
       });
     
