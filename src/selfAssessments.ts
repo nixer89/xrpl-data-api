@@ -22,7 +22,7 @@ export class SelfAssessments {
     public async init(): Promise<void> {
         await this.loadSelfAssessmentsFromFS();
 
-        scheduler.scheduleJob("loadSelfAssessmentsFromFS", "*/10 * * * *", () => this.loadSelfAssessmentsFromApi());
+        scheduler.scheduleJob("loadSelfAssessmentsFromFS", "*/10 * * * *", () => this.loadSelfAssessmentsFromFS());
     }
 
     public getSelfAssessment(issuerCurrency): string {
@@ -31,19 +31,6 @@ export class SelfAssessments {
             return this.selfAssessments.get(issuerCurrency);
         } else {
             return null
-        }
-    }
-
-    private async saveSelfAssessmentsToFS(): Promise<void> {
-        if(this.selfAssessments && this.selfAssessments.size > 0) {
-            let selfAssessmentsObject:any = {};
-            this.selfAssessments.forEach((value, key, map) => {
-                selfAssessmentsObject[key] = value;
-            });
-            fs.writeFileSync("./../selfAssessments_new.js", JSON.stringify(selfAssessmentsObject));
-            fs.renameSync("./../selfAssessments_new.js", "./../selfAssessments.js");
-
-            console.log("saved " + this.selfAssessments.size + " self assessments to file system");
         }
     }
 
@@ -62,36 +49,11 @@ export class SelfAssessments {
 
                     console.log("loaded " + this.selfAssessments.size + " self assessments from file system");
                 }
-            } else {
-                console.log("self assessments file does not exist yet. Loading it...")
-                await this.loadSelfAssessmentsFromApi();
             }
         } catch(err) {
             console.log("error reading self assessments from FS");
             console.log(err);
             this.selfAssessments.clear();
-        }
-    }
-
-    private async loadSelfAssessmentsFromApi(): Promise<any> {
-        try {
-            //try to resolve it from xrplorer.com API
-            let apiResponse:fetch.Response = await fetch.default("https://assessments.api.xrplf.org/api/v1/all");
-            
-            if(apiResponse && apiResponse.ok) {
-                let selfAssessmentsArray:any[] = await apiResponse.json();
-
-                selfAssessmentsArray.forEach(assessment => {
-                    let key = assessment.issuer + "_" + assessment.currency_code;
-                    this.selfAssessments.set(key, assessment);
-                });
-
-                this.saveSelfAssessmentsToFS();
-                
-            }
-        } catch(err) {
-            console.log(JSON.stringify(err));
-            return null;
         }
     }
 }
