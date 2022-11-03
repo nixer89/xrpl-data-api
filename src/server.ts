@@ -53,7 +53,8 @@ const start = async () => {
       await tokenCreation.init();
       await issuerAccount.init();
       await ledgerData.init();
-      await selfAssessments.init();      
+      await selfAssessments.init();   
+      await nftIssuerAccounts.init();   
 
       //init routes
       console.log("adding cors");
