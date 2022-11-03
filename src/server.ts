@@ -30,10 +30,10 @@ consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 const fastify = require('fastify')({ trustProxy: true })
 
 console.log("adding response compression");
-fastify.register(require('fastify-compress'), { encodings: ['gzip', 'deflate', 'br', '*', 'identity'] });
+fastify.register(require('@fastify/compress'), { encodings: ['gzip', 'deflate', 'br', '*', 'identity'] });
 
 console.log("adding some security headers");
-fastify.register(require('fastify-helmet'));
+fastify.register(require('@fastify/helmet'));
 
 let kycCounter:number = 0;
 
@@ -58,13 +58,13 @@ const start = async () => {
       //init routes
       console.log("adding cors");
 
-      fastify.register(require('fastify-cors'), {
+      fastify.register(require('@fastify/cors'), {
         origin: "*",
         methods: 'GET, OPTIONS',
         allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'Referer']
       });
 
-      await fastify.register(require('fastify-rate-limit'), {
+      await fastify.register(require('@fastify/rate-limit'), {
         global: true,
         redis: redis,
         skipOnError: true,
@@ -252,9 +252,9 @@ const start = async () => {
     });
 
     try {
-      await fastify.listen(4002, '0.0.0.0');
+      await fastify.listen({ port: 4002, host: '0.0.0.0' });
 
-      console.log("http://localhost:4002/");
+      console.log("http://0.0.0.0:4002/");
 
       fastify.ready(err => {
         if (err) throw err
