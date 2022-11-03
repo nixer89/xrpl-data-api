@@ -53,7 +53,7 @@ export class IssuerAccounts {
         let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
         let selfAssessment:any = this.selfAssessments.getSelfAssessment(key);
 
-        if(acc === 'rhrFfvzZAytd8UHPH87UHMgHQ18nnLbpgN') //remove gatehub issuer for SGB on their request
+        if(acc === 'rhrFfvzZAytd8UHPH87UHMgHQ18nnLbpgN' || acc == 'rG9Fo4mgx5DEZp7zKUEchs3R3jSMbx3NhR') //remove gatehub issuer for SGB on their request and LCC fake issuer
           return;
 
         //set kyc data
