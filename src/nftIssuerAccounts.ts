@@ -56,6 +56,8 @@ export class NftIssuerAccounts {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
                 this.nftArray = nftData.nfts;
 
+                console.log("nftArray: " + this.nftArray.length);
+
                 let newNftokenIdMap:Map<string, NFT> = new Map();
                 let newNftokenIssuerMap:Map<string, NFT[]> = new Map();
 
@@ -82,6 +84,9 @@ export class NftIssuerAccounts {
                 this.nftokenIssuerMap = newNftokenIssuerMap;
 
                 console.log("finished loading nft data!");
+                console.log("nftokenIdMap: " + this.nftokenIdMap.size);
+                console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
+                console.log("nftokenIssuerAllStructure:" + this.nftokenIssuerAllStructure.nfts.length);
             }
         } else {
           console.log("nft issuer data file does not exist yet.")
