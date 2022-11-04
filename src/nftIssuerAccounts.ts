@@ -76,7 +76,7 @@ export class NftIssuerAccounts {
                 }
 
                 newNftokenIssuerMap.forEach((value, key, map) => {
-                  newAllStructure["nfts"].push(value);
+                  newAllStructure["nfts"][key] = value;
                 });
 
                 this.nftokenIssuerAllStructure = newAllStructure;
