@@ -162,7 +162,7 @@ const start = async () => {
         try {
           let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let nftIssuers = nftIssuerAccounts.getAllNftsByIssuer();
+          let nftIssuers = nftIssuerAccounts.getAllNfts();
 
           let returnValue = {
             ledger_index: issuerAccount.getLedgerIndex(),

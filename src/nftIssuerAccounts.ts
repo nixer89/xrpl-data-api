@@ -12,7 +12,7 @@ export class NftIssuerAccounts {
     private nftokenIssuerMap:Map<string, NFT[]> = new Map();
 
     private nftokenIssuerAllStructure = {
-      "nfts": []
+      "nfts": {}
     }
 
     private constructor() { }
@@ -29,7 +29,7 @@ export class NftIssuerAccounts {
         scheduler.scheduleJob("loadNftIssuerDataFromFS", "*/10 * * * *", () => this.loadNftIssuerDataFromFS());
     }
 
-    public getAllNftsByIssuer(): any {
+    public getAllNfts(): any {
       return this.nftokenIssuerAllStructure;
     }
 
@@ -72,7 +72,8 @@ export class NftIssuerAccounts {
                 }
 
                 let newAllStructure = {
-                  "nfts": []
+                  "nfts": {
+                  }
                 }
 
                 newNftokenIssuerMap.forEach((value, key, map) => {
@@ -86,7 +87,6 @@ export class NftIssuerAccounts {
                 console.log("finished loading nft data!");
                 console.log("nftokenIdMap: " + this.nftokenIdMap.size);
                 console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
-                console.log("nftokenIssuerAllStructure:" + this.nftokenIssuerAllStructure.nfts.length);
             }
         } else {
           console.log("nft issuer data file does not exist yet.")
