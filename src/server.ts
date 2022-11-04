@@ -229,11 +229,11 @@ const start = async () => {
             nft: nft
           }
 
-          console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
+          console.log("xls20_nfts_by_nftokenid"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
-          console.log("error resolving nfts by issuer");
+          console.log("error resolving nfts by nftokenid");
           console.log(err);
           reply.code(200).send('Error occured. Please check your request.');
         }
