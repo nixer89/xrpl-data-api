@@ -27,8 +27,15 @@ export interface IssuerVerification {
     twitter?: string
 }
 
-export interface AdaptedLedgerObject {
-    data: string,
-    index: string,
-    parsed: any
+export interface NFT {
+    NFTokenID: string,
+    TransferFee: number,
+    Issuer: string,
+    Owner: string,
+    Taxon: number,
+    Sequence: number,
+    URI: string,
+    Flags?: number,
+    buy_offers: number,
+    sell_offers: number
 }

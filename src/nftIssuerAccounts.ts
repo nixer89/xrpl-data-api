@@ -1,12 +1,19 @@
 import * as fs from 'fs';
 import * as scheduler from 'node-schedule';
+import { NFT } from './util/types';
 
 
 export class NftIssuerAccounts {
 
     private static _instance: NftIssuerAccounts;
 
-    private nftIssuerData: any;
+    private nftArray:NFT[] = [];
+    private nftokenIdMap:Map<string, NFT> = new Map();
+    private nftokenIssuerMap:Map<string, NFT[]> = new Map();
+
+    private nftokenIssuerAllStructure = {
+      "nfts": []
+    }
 
     private constructor() { }
 
@@ -22,22 +29,59 @@ export class NftIssuerAccounts {
         scheduler.scheduleJob("loadNftIssuerDataFromFS", "*/10 * * * *", () => this.loadNftIssuerDataFromFS());
     }
 
-    public getNftIssuerData() {
-        return this.nftIssuerData;
+    public getAllNftsByIssuer(): any {
+      return this.nftokenIssuerAllStructure;
     }
 
-    public setNftIssuerData(data: any) {
-      this.nftIssuerData = data;
+    public findNftsByIssuer(issuerAddress: string): NFT[] {
+      if(this.nftokenIssuerMap.has(issuerAddress))
+        return this.nftokenIssuerMap.get(issuerAddress);
+      else
+        return [];
+    }
+
+    public findNftokenById(nftokenId:string): NFT {
+      if(this.nftokenIdMap.has(nftokenId))
+        return this.nftokenIdMap.get(nftokenId);
+      else
+        return null;
     }
 
     private async loadNftIssuerDataFromFS(): Promise<void> {
       try {
         console.log("loading nft issuer data from FS");
         if(fs.existsSync("./../nftData.js")) {
-            let nftIssuerData:any = JSON.parse(fs.readFileSync("./../nftData.js").toString());
-            if(nftIssuerData) {
+            let nftData:any = JSON.parse(fs.readFileSync("./../nftData.js").toString());
+            if(nftData) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-                this.setNftIssuerData(nftIssuerData);
+                this.nftArray = nftData.nfts;
+
+                let newNftokenIdMap:Map<string, NFT> = new Map();
+                let newNftokenIssuerMap:Map<string, NFT[]> = new Map();
+
+                for(let i = 0; i < this.nftArray.length; i++) {
+                  newNftokenIdMap.set(this.nftArray[i].NFTokenID, this.nftArray[i]);
+
+                  if(newNftokenIssuerMap.has(this.nftArray[i].Issuer)) {
+                    newNftokenIssuerMap.get(this.nftArray[i].Issuer).push(this.nftArray[i]);
+                  } else {
+                    newNftokenIssuerMap.set(this.nftArray[i].Issuer, [this.nftArray[i]]);
+                  }
+                }
+
+                let newAllStructure = {
+                  "nfts": []
+                }
+
+                this.nftokenIssuerMap.forEach((value, key, map) => {
+                  newAllStructure["nfts"].push(value);
+                });
+
+                this.nftokenIssuerAllStructure = newAllStructure;
+                this.nftokenIdMap = newNftokenIdMap;
+                this.nftokenIssuerMap = newNftokenIssuerMap;
+
+                console.log("finished loading nft data!");
             }
         } else {
           console.log("nft issuer data file does not exist yet.")
@@ -45,7 +89,12 @@ export class NftIssuerAccounts {
       } catch(err) {
         console.log("error reading nft issuer data from FS");
         console.log(err);
-        this.setNftIssuerData({});
+        this.nftArray = [];
+        this.nftokenIdMap = new Map();
+        this.nftokenIssuerMap = new Map();
+        this.nftokenIssuerAllStructure = {
+          "nfts": []
+        };
       }  
     }
 }
