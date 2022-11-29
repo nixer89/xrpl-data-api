@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { NFT } from './util/types';
+import * as scheduler from 'node-schedule';
 
 export class NftStore {
 
@@ -35,6 +36,37 @@ export class NftStore {
 
     public async init(): Promise<void> {
         await this.loadNftDataFromFS();
+
+        scheduler.scheduleJob("loadLedgerDataFromFS", {second: 0}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS1", {second: 2}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS2", {second: 4}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS3", {second: 6}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS4", {second: 8}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS5", {second: 10}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS6", {second: 12}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS7", {second: 14}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS8", {second: 16}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS9", {second: 18}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS10", {second: 20}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS11", {second: 22}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS12", {second: 24}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS13", {second: 26}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS14", {second: 28}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS15", {second: 30}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS16", {second: 32}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS17", {second: 34}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS18", {second: 36}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS19", {second: 38}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS20", {second: 40}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS21", {second: 42}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS22", {second: 44}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS23", {second: 46}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS24", {second: 48}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS25", {second: 50}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS26", {second: 52}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS27", {second: 54}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS28", {second: 56}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS29", {second: 58}, () => this.loadNftDataFromFS());
     }
 
     public getAllNfts(): any {
@@ -74,32 +106,6 @@ export class NftStore {
       this.current_ledger_index = this.current_ledger_index_temp;
       this.current_ledger_time_ms = this.current_ledger_time_ms_temp;
 
-      this.saveNFTDataToFS();
-
-    }
-
-    public addNewNft(nft: NFT) {
-        this.nftokenIdMapTemp.set(nft.NFTokenID, nft);
-        this.nftokenIssuerMapTemp.get(nft.Issuer).push(nft);
-    }
-
-    public removeNft(nft: NFT) {
-        //remove from NFT map
-        this.nftokenIdMapTemp.delete(nft.NFTokenID);
-
-        //remove from issuer map
-        let currentArray = this.nftokenIssuerMapTemp.get(nft.Issuer);
-        let newMap = currentArray.filter(existingNft => existingNft.NFTokenID != nft.NFTokenID);
-        this.nftokenIssuerMapTemp.set(nft.Issuer, newMap);
-    }
-
-    public changeOwner(nft: NFT) {
-        this.nftokenIdMapTemp.set(nft.NFTokenID, nft);
-
-        let currentArray = this.nftokenIssuerMapTemp.get(nft.Issuer);
-        let newMap = currentArray.filter(existingNft => existingNft.NFTokenID != nft.NFTokenID);
-        newMap.push(nft);
-        this.nftokenIssuerMapTemp.set(nft.Issuer, newMap);
     }
 
     private async loadNftDataFromFS(): Promise<void> {
@@ -153,31 +159,6 @@ export class NftStore {
         };
       }  
     }
-
-    public async saveNFTDataToFS(): Promise<void> {
-        let mapToSave:Map<string, NFT> = this.nftokenIdMap;
-        if(mapToSave && mapToSave.size > 0) {
-            let nftData:any = {
-              ledger_index: this.getCurrentLedgerIndex(),
-              ledger_hash: this.getCurrentLedgerHash(),
-              ledger_close: this.getCurrentLedgerCloseTime(),
-              ledger_close_ms: this.getCurrentLedgerCloseTimeMs(),
-              "nfts": []
-            };
-    
-            mapToSave.forEach((value, key, map) => {
-              nftData["nfts"].push(value);
-            });
-    
-            fs.writeFileSync("./../nftData_new.js", JSON.stringify(nftData));
-            fs.renameSync("./../nftData_new.js", "./../nftData.js");
-    
-            //console.log("saved " + mapToSave.size + " nft data to file system");
-    
-        } else {
-          console.log("nft data is empty!");
-        }
-      }
 
     public getCurrentLedgerIndex(): number {
         return this.current_ledger_index;
