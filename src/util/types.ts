@@ -35,7 +35,5 @@ export interface NFT {
     Taxon: number,
     Sequence: number,
     URI: string,
-    Flags?: number,
-    buy_offers: number,
-    sell_offers: number
+    Flags?: number
 }
