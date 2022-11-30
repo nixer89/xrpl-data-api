@@ -25,6 +25,9 @@ export class LedgerSync {
 
     public async start(): Promise<void> {
 
+      this.client = new Client("ws://127.0.0.1:6006")
+      this.finishedIteration = false;
+
       this.nftStore = NftStore.Instance;
 
       await this.nftStore.loadNftDataFromFS();
