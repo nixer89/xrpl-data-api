@@ -91,6 +91,7 @@ export class LedgerSync {
             //console.log("analyzing ledger: " + ledgerResponse.result.ledger_index)
 
             if(!ledgerResponse.result.ledger.closed) { //if we are not closed yet, break and listen for ledger close!
+              this.finishedIteration = true;
               break;
             }
 
@@ -113,7 +114,8 @@ export class LedgerSync {
         console.log(err);
       }
 
-      this.finishedIteration = true;
+      this.nftStore.closeInternalStuff();
+
       console.log("FINISHED SYNCING BACK!")
     }
 
@@ -161,13 +163,14 @@ export class LedgerSync {
 
               this.nftStore.closeInternalStuff();
 
-              this.currentKnownLedger = ledgerResponse.result.ledger_index;
+              this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
             } else {
               console.log("something is wrong, reset!");
               try {
                 this.client.disconnect();
               } catch(err) {
                 //was not connected. start straight away!
+                console.log("not connected, start right away!")
                 this.start();
               }
             }

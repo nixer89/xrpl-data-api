@@ -1,12 +1,10 @@
 import * as fs from 'fs';
-import { Client } from 'xrpl';
 import { NFT } from './util/types';
 
 export class NftStore {
 
     private static _instance: NftStore;
 
-    private nftArray:NFT[] = [];
     private nftokenIdMap:Map<string, NFT> = new Map();
     private nftokenIdMapTemp:Map<string, NFT> = new Map();
 
@@ -36,19 +34,23 @@ export class NftStore {
 
     public async addNFT(newNft:NFT): Promise<void> {
       this.nftokenIdMapTemp.set(newNft.NFTokenID, newNft);
-      this.nftokenIssuerMapTemp.get(newNft.Issuer).push(newNft);
+
+      if(this.nftokenIssuerMapTemp.has(newNft.Issuer))
+        this.nftokenIssuerMapTemp.get(newNft.Issuer).push(newNft);
+      else
+        this.nftokenIssuerMapTemp.set(newNft.Issuer,[newNft]);
     }
 
     public removeNft(burnedNft:NFT) {
       this.nftokenIdMapTemp.delete(burnedNft.NFTokenID);
 
-      let currentArray = this.nftokenIssuerMap.get(burnedNft.Issuer);
+      let currentArray = this.nftokenIssuerMapTemp.get(burnedNft.Issuer);
       let newArray = currentArray.filter(existingNft => existingNft.NFTokenID != burnedNft.NFTokenID);
       this.nftokenIssuerMapTemp.set(burnedNft.Issuer, newArray);
     }
 
     public getNft(nftokenId:string) {
-      return this.nftokenIdMap.get(nftokenId);
+      return this.nftokenIdMapTemp.get(nftokenId);
     }
 
     public getAllNfts(): any {
@@ -87,7 +89,6 @@ export class NftStore {
       this.current_ledger_hash = this.current_ledger_hash_temp;
       this.current_ledger_index = this.current_ledger_index_temp;
       this.current_ledger_time_ms = this.current_ledger_time_ms_temp;
-
     }
 
     public async loadNftDataFromFS(): Promise<void> {
@@ -97,7 +98,7 @@ export class NftStore {
             let nftData:any = JSON.parse(fs.readFileSync("./../nftData.js").toString());
             if(nftData && nftData.nfts) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-                this.nftArray = nftData.nfts;
+                let nftArray = nftData.nfts;
 
                 //console.log("nftArray: " + this.nftArray.length);
 
@@ -109,17 +110,21 @@ export class NftStore {
                 this.setCurrentLedgerCloseTime(nftData.ledger_close);
                 this.setCurrentLedgerCloseTimeMs(nftData.ledger_close_ms);
 
-                for(let i = 0; i < this.nftArray.length; i++) {
-                  this.nftokenIdMapTemp.set(this.nftArray[i].NFTokenID, this.nftArray[i]);
+                for(let i = 0; i < nftArray.length; i++) {
+                  this.nftokenIdMapTemp.set(nftArray[i].NFTokenID, nftArray[i]);
 
-                  if(this.nftokenIssuerMapTemp.has(this.nftArray[i].Issuer)) {
-                    this.nftokenIssuerMapTemp.get(this.nftArray[i].Issuer).push(this.nftArray[i]);
+                  if(this.nftokenIssuerMapTemp.has(nftArray[i].Issuer)) {
+                    this.nftokenIssuerMapTemp.get(nftArray[i].Issuer).push(nftArray[i]);
                   } else {
-                    this.nftokenIssuerMapTemp.set(this.nftArray[i].Issuer, [this.nftArray[i]]);
+                    this.nftokenIssuerMapTemp.set(nftArray[i].Issuer, [nftArray[i]]);
                   }
                 }
 
                 this.closeInternalStuff();
+
+                console.log("NFTs loaded!");
+                console.log("nftokenIdMap: " + this.nftokenIdMap.size);
+                console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
 
                 //console.log("finished loading nft data!");
                 //console.log("nftokenIdMap: " + this.nftokenIdMap.size);
@@ -131,7 +136,6 @@ export class NftStore {
       } catch(err) {
         console.log("error reading nft issuer data from FS");
         console.log(err);
-        this.nftArray = [];
         this.nftokenIdMap = new Map();
         this.nftokenIdMapTemp = new Map();
         this.nftokenIssuerMap = new Map();
@@ -145,7 +149,12 @@ export class NftStore {
     public async saveNFTDataToFS(): Promise<void> {
       let currentWrittenLedger = await this.readCurrentLedgerFromFS();
 
+      console.log("this.getCurrentLedgerIndex() : " + this.getCurrentLedgerIndex());
+      console.log("currentWrittenLedger: " + currentWrittenLedger);
+
       if(this.getCurrentLedgerIndex() > currentWrittenLedger) {
+        console.log("overwriting old nft data!")
+        
         let mapToSave:Map<string, NFT> = this.nftokenIdMap;
         if(mapToSave && mapToSave.size > 0) {
           let nftData:any = {
@@ -170,6 +179,8 @@ export class NftStore {
         } else {
           console.log("nft data is empty!");
         }
+      } else {
+        console.log("did not overwrite more recent data!");
       }
     }
 
