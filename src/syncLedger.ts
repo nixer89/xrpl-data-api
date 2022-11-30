@@ -48,7 +48,7 @@ export class LedgerSync {
 
           this.client.removeAllListeners();
           await this.nftStore.saveNFTDataToFS();
-          
+
           this.start();
       })
 
@@ -125,11 +125,8 @@ export class LedgerSync {
           //we have a closed ledger. Request the transactions and try to analyze them!
           if(this.finishedIteration) {
             console.log("ledger closed! " + ledgerClose.ledger_index);
-            console.log("currentKnownLedger: " + this.currentKnownLedger);
 
             if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
-
-              console.time("analyzed_" + ledgerClose.ledger_index);
 
               let ledgerRequest:LedgerRequest = {
                 command: 'ledger',
@@ -163,8 +160,6 @@ export class LedgerSync {
               this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
               this.nftStore.closeInternalStuff();
-
-              console.timeEnd("analyzed_" + ledgerClose.ledger_index);
 
               this.currentKnownLedger = ledgerResponse.result.ledger_index;
             } else {
@@ -220,7 +215,9 @@ export class LedgerSync {
 
           if(burnedTokenId) {
             console.log("burned token: " + burnedTokenId);
-            this.nftStore.removeNft(burnedTokenId);
+
+            let burnedNft = this.nftStore.getNft(burnedTokenId);
+            this.nftStore.removeNft(burnedNft);
           }
 
         } else { // CHECK FOR OWNER CHANGE!

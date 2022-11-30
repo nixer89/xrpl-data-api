@@ -35,11 +35,16 @@ export class NftStore {
     }
 
     public async addNFT(newNft:NFT): Promise<void> {
-      this.nftokenIdMap.set(newNft.NFTokenID, newNft);
+      this.nftokenIdMapTemp.set(newNft.NFTokenID, newNft);
+      this.nftokenIssuerMapTemp.get(newNft.Issuer).push(newNft);
     }
 
-    public removeNft(burnedNftokenId:string) {
-      this.nftokenIdMap.delete(burnedNftokenId);
+    public removeNft(burnedNft:NFT) {
+      this.nftokenIdMapTemp.delete(burnedNft.NFTokenID);
+
+      let currentArray = this.nftokenIssuerMap.get(burnedNft.Issuer);
+      let newArray = currentArray.filter(existingNft => existingNft.NFTokenID != burnedNft.NFTokenID);
+      this.nftokenIssuerMapTemp.set(burnedNft.Issuer, newArray);
     }
 
     public getNft(nftokenId:string) {
