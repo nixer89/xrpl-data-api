@@ -5,6 +5,7 @@ import { TokenCreation } from './tokenCreation';
 import { AccountNames } from "./accountNames";
 import { SelfAssessments } from "./selfAssessments";
 import { NftStore } from "./nftokenStore";
+import { LedgerSync } from "./syncLedger";
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -21,6 +22,7 @@ let tokenCreation:TokenCreation;
 let accountNames:AccountNames;
 let selfAssessments:SelfAssessments;
 let nftStore: NftStore;
+let ledgerSync: LedgerSync;
 
 let ipRanges:string[] = ["76.201.20.","76.201.21.","76.201.22.","76.201.23.","120.29.68.","212.117.20.","169.0.102.","61.57.124.", "61.57.125.","61.57.12.","61.57.127.","121.54.10.","175.176.49.", "211.176.124.", "211.176.125.",
                          "211.176.126.", "211.176.127.","94.129.197.","182.0.237.","175.176.92.", "110.54.129.", "80.229.222.", "80.229.223."];
@@ -46,6 +48,7 @@ const start = async () => {
   accountNames = AccountNames.Instance;
   selfAssessments = SelfAssessments.Instance;
   nftStore = NftStore.Instance;
+  ledgerSync = LedgerSync.Instance;
 
     console.log("starting server");
     try {
@@ -54,7 +57,9 @@ const start = async () => {
       await issuerAccount.init();
       await ledgerData.init();
       await selfAssessments.init();
-      await nftStore.init();
+
+      //sync back to current ledger
+      await ledgerSync.start();
 
       //init routes
       console.log("adding cors");

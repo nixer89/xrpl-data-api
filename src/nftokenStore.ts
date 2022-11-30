@@ -6,8 +6,6 @@ export class NftStore {
 
     private static _instance: NftStore;
 
-    private client = new Client("ws://127.0.0.1:6006");
-
     private nftArray:NFT[] = [];
     private nftokenIdMap:Map<string, NFT> = new Map();
     private nftokenIdMapTemp:Map<string, NFT> = new Map();
@@ -36,41 +34,16 @@ export class NftStore {
         return this._instance || (this._instance = new this());
     }
 
-    public async init(): Promise<void> {
-        await this.loadNftDataFromFS();
+    public async addNFT(newNft:NFT): Promise<void> {
+      this.nftokenIdMap.set(newNft.NFTokenID, newNft);
+    }
 
-        //reinitialize client
-        this.client.on('disconnected', ()=> {
-          console.log("DISCONNECTED!!! RECONNECTING!")
-          this.client.disconnect();
-          this.client.removeAllListeners();
-          this.init();
-        })
+    public removeNft(burnedNftokenId:string) {
+      this.nftokenIdMap.delete(burnedNftokenId);
+    }
 
-        this.client.on('error', () => {
-            console.log("ERROR HAPPENED! Re-Init!");
-            this.client.disconnect();
-            this.client.removeAllListeners();
-            this.init();
-        })
-
-        this.client.on('connected',() => {
-          console.log("Connected.")
-        });
-
-        await this.client.connect();
-
-        const serverInfo = await this.client.request({ command: "server_info" });
-        console.log({ serverInfo });
-
-        this.client.on('ledgerClosed', async ledgerClose => {
-          setTimeout(() => {
-            this.loadNftDataFromFS();  
-          },1000);
-        });
-
-        console.log("start listening for ledgers ...")
-        await this.client.request({command: 'subscribe', streams: ['ledger']});
+    public getNft(nftokenId:string) {
+      return this.nftokenIdMap.get(nftokenId);
     }
 
     public getAllNfts(): any {
@@ -112,7 +85,7 @@ export class NftStore {
 
     }
 
-    private async loadNftDataFromFS(): Promise<void> {
+    public async loadNftDataFromFS(): Promise<void> {
       try {
         //console.log("loading nft issuer data from FS");
         if(fs.existsSync("./../nftData.js")) {
@@ -161,6 +134,58 @@ export class NftStore {
         this.nftokenIssuerAllStructure = {
           "nfts": []
         };
+      }  
+    }
+
+    public async saveNFTDataToFS(): Promise<void> {
+      let currentWrittenLedger = await this.readCurrentLedgerFromFS();
+
+      if(this.getCurrentLedgerIndex() > currentWrittenLedger) {
+        let mapToSave:Map<string, NFT> = this.nftokenIdMap;
+        if(mapToSave && mapToSave.size > 0) {
+          let nftData:any = {
+            ledger_index: this.getCurrentLedgerIndex(),
+            ledger_hash: this.getCurrentLedgerHash(),
+            ledger_close: this.getCurrentLedgerCloseTime(),
+            ledger_close_ms: this.getCurrentLedgerCloseTimeMs(),
+            "nfts": []
+          };
+
+          mapToSave.forEach((value, key, map) => {
+            nftData["nfts"].push(value);
+          });
+
+          console.time("saveNFTDataToFS");
+
+          fs.writeFileSync("./../nftData_new.js", JSON.stringify(nftData));
+          fs.renameSync("./../nftData_new.js", "./../nftData.js");
+          
+          console.timeEnd("saveNFTDataToFS");
+
+        } else {
+          console.log("nft data is empty!");
+        }
+      }
+    }
+
+    public async readCurrentLedgerFromFS(): Promise<number> {
+      try {
+        //console.log("loading nft issuer data from FS");
+        if(fs.existsSync("./../nftData.js")) {
+            let nftData:any = JSON.parse(fs.readFileSync("./../nftData.js").toString());
+            if(nftData && nftData.ledger_index) {
+                return nftData.ledger_index;
+            } else {
+              return -1;
+            }
+        } else {
+          console.log("nft issuer data file does not exist yet.")
+          return -1;
+        }
+      } catch(err) {
+        console.log("error reading nft issuer data from FS");
+        console.log(err);
+        return -1;
       }  
     }
 
