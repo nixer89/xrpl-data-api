@@ -38,35 +38,25 @@ export class NftStore {
         await this.loadNftDataFromFS();
 
         scheduler.scheduleJob("loadLedgerDataFromFS", {second: 0}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS1", {second: 2}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS2", {second: 4}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS3", {second: 6}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS4", {second: 8}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS5", {second: 10}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS6", {second: 12}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS7", {second: 14}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS8", {second: 16}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS9", {second: 18}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS10", {second: 20}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS11", {second: 22}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS12", {second: 24}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS13", {second: 26}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS14", {second: 28}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS15", {second: 30}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS16", {second: 32}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS17", {second: 34}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS18", {second: 36}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS19", {second: 38}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS20", {second: 40}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS21", {second: 42}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS22", {second: 44}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS23", {second: 46}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS24", {second: 48}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS25", {second: 50}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS26", {second: 52}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS27", {second: 54}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS28", {second: 56}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS29", {second: 58}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS1", {second: 3}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS2", {second: 6}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS3", {second: 9}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS4", {second: 12}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS5", {second: 15}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS6", {second: 18}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS7", {second: 21}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS8", {second: 24}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS9", {second: 27}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS10", {second: 30}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS11", {second: 33}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS12", {second: 36}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS13", {second: 39}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS14", {second: 42}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS15", {second: 45}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS16", {second: 48}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS17", {second: 51}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS18", {second: 54}, () => this.loadNftDataFromFS());
+        scheduler.scheduleJob("loadLedgerDataFromFS19", {second: 57}, () => this.loadNftDataFromFS());
     }
 
     public getAllNfts(): any {
