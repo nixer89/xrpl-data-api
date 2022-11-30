@@ -66,7 +66,7 @@ export class NftStore {
         this.client.on('ledgerClosed', async ledgerClose => {
           setTimeout(() => {
             this.loadNftDataFromFS();  
-          },500);
+          },1000);
         });
 
         console.log("start listening for ledgers ...")
@@ -114,14 +114,14 @@ export class NftStore {
 
     private async loadNftDataFromFS(): Promise<void> {
       try {
-        console.log("loading nft issuer data from FS");
+        //console.log("loading nft issuer data from FS");
         if(fs.existsSync("./../nftData.js")) {
             let nftData:any = JSON.parse(fs.readFileSync("./../nftData.js").toString());
             if(nftData && nftData.nfts) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
                 this.nftArray = nftData.nfts;
 
-                console.log("nftArray: " + this.nftArray.length);
+                //console.log("nftArray: " + this.nftArray.length);
 
                 this.nftokenIdMapTemp = new Map();
                 this.nftokenIssuerMapTemp = new Map();
