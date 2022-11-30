@@ -1,10 +1,12 @@
 import * as fs from 'fs';
+import { Client } from 'xrpl';
 import { NFT } from './util/types';
-import * as scheduler from 'node-schedule';
 
 export class NftStore {
 
     private static _instance: NftStore;
+
+    private client = new Client("ws://127.0.0.1:6006");
 
     private nftArray:NFT[] = [];
     private nftokenIdMap:Map<string, NFT> = new Map();
@@ -37,26 +39,38 @@ export class NftStore {
     public async init(): Promise<void> {
         await this.loadNftDataFromFS();
 
-        scheduler.scheduleJob("loadLedgerDataFromFS", {second: 0}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS1", {second: 3}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS2", {second: 6}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS3", {second: 9}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS4", {second: 12}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS5", {second: 15}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS6", {second: 18}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS7", {second: 21}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS8", {second: 24}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS9", {second: 27}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS10", {second: 30}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS11", {second: 33}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS12", {second: 36}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS13", {second: 39}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS14", {second: 42}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS15", {second: 45}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS16", {second: 48}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS17", {second: 51}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS18", {second: 54}, () => this.loadNftDataFromFS());
-        scheduler.scheduleJob("loadLedgerDataFromFS19", {second: 57}, () => this.loadNftDataFromFS());
+        //reinitialize client
+        this.client.on('disconnected', ()=> {
+          console.log("DISCONNECTED!!! RECONNECTING!")
+          this.client.disconnect();
+          this.client.removeAllListeners();
+          this.init();
+        })
+
+        this.client.on('error', () => {
+            console.log("ERROR HAPPENED! Re-Init!");
+            this.client.disconnect();
+            this.client.removeAllListeners();
+            this.init();
+        })
+
+        this.client.on('connected',() => {
+          console.log("Connected.")
+        });
+
+        await this.client.connect();
+
+        const serverInfo = await this.client.request({ command: "server_info" });
+        console.log({ serverInfo });
+
+        this.client.on('ledgerClosed', async ledgerClose => {
+          setTimeout(() => {
+            this.loadNftDataFromFS();  
+          },500);
+        });
+
+        console.log("start listening for ledgers ...")
+        await this.client.request({command: 'subscribe', streams: ['ledger']});
     }
 
     public getAllNfts(): any {
@@ -129,9 +143,9 @@ export class NftStore {
 
                 this.closeInternalStuff();
 
-                console.log("finished loading nft data!");
-                console.log("nftokenIdMap: " + this.nftokenIdMap.size);
-                console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
+                //console.log("finished loading nft data!");
+                //console.log("nftokenIdMap: " + this.nftokenIdMap.size);
+                //console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
             }
         } else {
           console.log("nft issuer data file does not exist yet.")
