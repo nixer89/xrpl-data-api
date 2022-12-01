@@ -233,8 +233,7 @@ export class LedgerSync {
           let newOwnerAccount = newNftOwner[1];
 
           if(nftokenId && newOwnerAccount) {
-            console.log("changed nftoken: " + nftokenId);
-            console.log("new owner: " + newOwnerAccount);
+            console.log("changed nftoken: " + nftokenId + " new owner: " + newOwnerAccount);
 
             let existingNft = this.nftStore.getNft(nftokenId);
 

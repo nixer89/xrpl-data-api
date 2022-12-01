@@ -64,6 +64,30 @@ export class NftStore {
         return [];
     }
 
+    public findTaxonsByIssuer(issuerAddress: string): number[] {
+      
+      if(this.nftokenIssuerMap.has(issuerAddress)) {
+        let taxons:number[] = [];
+        let nfts:NFT[] = this.nftokenIssuerMap.get(issuerAddress);
+
+        for(let i = 0; i < nfts.length; i++) {
+          if(!taxons.includes(nfts[i].Taxon)) {
+            taxons.push(nfts[i].Taxon);
+          }
+        }
+
+      } else {
+        return [];
+      }
+    }
+
+    public findNftsByIssuerAndTaxon(issuerAddress: string, taxon: number): NFT[] {
+      if(this.nftokenIssuerMap.has(issuerAddress))
+        return this.nftokenIssuerMap.get(issuerAddress).filter(nft => nft.Taxon === taxon);
+      else
+        return [];
+    }
+
     public findNftokenById(nftokenId:string): NFT {
       if(this.nftokenIdMap.has(nftokenId))
         return this.nftokenIdMap.get(nftokenId);

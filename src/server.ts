@@ -135,7 +135,7 @@ const start = async () => {
         } catch(err) {
           console.log("error resolving tokens");
           console.log(err);
-          reply.code(200).send('Error occured. Please check your request.');
+          reply.code(500).send('Error occured. Please check your request.');
         }
       });
 
@@ -159,7 +159,7 @@ const start = async () => {
         } catch(err) {
           console.log("error resolving nfts");
           console.log(err);
-          reply.code(200).send('Error occured. Please check your request.');
+          reply.code(500).send('Error occured. Please check your request.');
         }
       });
 
@@ -183,7 +183,7 @@ const start = async () => {
         } catch(err) {
           console.log("error resolving nfts");
           console.log(err);
-          reply.code(200).send('Error occured. Please check your request.');
+          reply.code(500).send('Error occured. Please check your request.');
         }
       });
 
@@ -212,7 +212,65 @@ const start = async () => {
         } catch(err) {
           console.log("error resolving nfts by issuer");
           console.log(err);
-          reply.code(200).send('Error occured. Please check your request.');
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/issuer/:issuer/taxon/:taxon', async (request, reply) => {
+        try {
+          if(!request.params.issuer || !request.params.taxon) {
+            reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
+          }
+
+          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
+          let nftIssuers = nftStore.findNftsByIssuerAndTaxon(request.params.issuer, request.params.taxon);
+
+          let returnValue = {
+            ledger_index: nftStore.getCurrentLedgerIndex(),
+            ledger_hash: nftStore.getCurrentLedgerHash(),
+            ledger_close: nftStore.getCurrentLedgerCloseTime(),
+            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
+          }
+
+          returnValue[request.params.issuer] = nftIssuers;
+
+          console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving nfts by issuer and taxon");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/taxon/:issuer', async (request, reply) => {
+        try {
+          if(!request.params.issuer) {
+            reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
+          }
+
+          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
+          let nftIssuers = nftStore.findTaxonsByIssuer(request.params.issuer);
+
+          let returnValue = {
+            ledger_index: nftStore.getCurrentLedgerIndex(),
+            ledger_hash: nftStore.getCurrentLedgerHash(),
+            ledger_close: nftStore.getCurrentLedgerCloseTime(),
+            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
+          }
+
+          returnValue[request.params.issuer] = nftIssuers;
+
+          console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving taxons by issuer");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
         }
       });
 
@@ -240,7 +298,7 @@ const start = async () => {
         } catch(err) {
           console.log("error resolving nfts by nftokenid");
           console.log(err);
-          reply.code(200).send('Error occured. Please check your request.');
+          reply.code(500).send('Error occured. Please check your request.');
         }
       });
 
@@ -266,7 +324,7 @@ const start = async () => {
         } catch(err) {
           console.log("error resolving ledgerdata");
           console.log(err);
-          reply.code(200).send('Error occured. Please check your request.');
+          reply.code(500).send('Error occured. Please check your request.');
         }
       });
 
@@ -291,7 +349,7 @@ const start = async () => {
           } catch(err) {
             console.log("error resolving kyc");
             console.log(err);
-            reply.code(200).send('Error occured. Please check your request.');
+            reply.code(500).send('Error occured. Please check your request.');
           }
       }
       });
@@ -313,7 +371,7 @@ const start = async () => {
         } catch(err) {
           console.log("error resolving token creation");
           console.log(err);
-          reply.code(200).send('Error occured. Please check your request.');
+          reply.code(500).send('Error occured. Please check your request.');
         }
       });
       
