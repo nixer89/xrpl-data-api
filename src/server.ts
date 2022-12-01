@@ -89,45 +89,37 @@ const start = async () => {
         skipOnError: true,
         max: async (req, key) => {
           let limit = 10;
-          console.log("key: " + key);
 
           for(let i = 0; i < tier1Limit.length; i++) {
-            console.log("tier1: " + tier1Limit[i])
             if(tier1Limit[i] != null && tier1Limit[i].length > 0 && key.startsWith(tier1Limit[i])) {
               limit = 60;
-              console.log("limit set to 60");
               i = tier1Limit.length;
             }
           }
 
           for(let j = 0; j < tier2Limit.length; j++) {
-            console.log("tier2: " + tier2Limit[j])
             if(tier2Limit[j] != null && tier2Limit[j].length > 0 && key.startsWith(tier2Limit[j])) {
               limit = 300;
-              console.log("limit set to 300");
               j = tier2Limit.length;
             }
           }
 
           for(let k = 0; k < tier3Limit.length; k++) {
-            console.log("tier3: " + tier3Limit[k])
             if(tier3Limit[k] != null && tier3Limit[k].length > 0 && key.startsWith(tier3Limit[k])) {
               limit = 600;
-              console.log("limit set to 600");
               k = tier3Limit.length;
             }
           }
 
           for(let l = 0; l < tier4Limit.length; l++) {
-            console.log("tier4: " + tier4Limit[l])
             if(tier4Limit[l] != null && tier4Limit[l].length > 0 && key.startsWith(tier4Limit[l])) {
               limit = 1200;
-              console.log("limit set to 1200");
               l = tier4Limit.length;
             }
           }
 
-          console.log("limit: " + limit);
+          if(limit > 10)
+            console.log("limit: " + limit + " for key: " + key);
 
           return limit;
         },
@@ -487,7 +479,7 @@ function loadTier(tierName:string): string[] {
   if(fs.existsSync("/home/api-tiers/"+tierName)) {
     let tier:string = fs.readFileSync("/home/api-tiers/"+tierName).toString();
 
-    console.log(tierName + ": " + tier);
+    //console.log(tierName + ": " + tier);
     if(tier && tier.trim().length > 0)
       return tier.split(',');
     else
