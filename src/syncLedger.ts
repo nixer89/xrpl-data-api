@@ -117,7 +117,7 @@ export class LedgerSync {
         try {
           //we have a closed ledger. Request the transactions and try to analyze them!
           if(this.finishedIteration) {
-            console.log("ledger closed! " + ledgerClose.ledger_index);
+            //console.log("ledger closed! " + ledgerClose.ledger_index);
 
             if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
 
