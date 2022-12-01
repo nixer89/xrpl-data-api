@@ -110,7 +110,7 @@ export class IssuerAccounts {
 
     private async loadIssuerDataFromFS(): Promise<void> {
       try {
-        console.log("loading issuer data from FS");
+        //console.log("loading issuer data from FS");
         let loadedMap:Map<string, IssuerData> = new Map();
         if(fs.existsSync("./../issuerData.js")) {
             let issuerData:any = JSON.parse(fs.readFileSync("./../issuerData.js").toString());

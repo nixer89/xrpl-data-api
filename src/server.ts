@@ -6,7 +6,7 @@ import { AccountNames } from "./accountNames";
 import { SelfAssessments } from "./selfAssessments";
 import { NftStore } from "./nftokenStore";
 import { LedgerSync } from "./syncLedger";
-import { TIER_1_LIMIT, TIER_2_LIMIT, TIER_3_LIMIT, TIER_4_LIMIT} from './util/config';
+import * as fs from 'fs';
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -26,10 +26,10 @@ let nftStore: NftStore;
 let ledgerSync: LedgerSync;
 
 
-let tier1Limit:string[] = TIER_1_LIMIT.split(',')
-let tier2Limit:string [] = TIER_2_LIMIT.split(',')
-let tier3Limit:string [] = TIER_3_LIMIT.split(',')
-let tier4Limit:string [] = TIER_4_LIMIT.split(',')
+let tier1Limit:string[] = loadTier("tier1");
+let tier2Limit:string [] = loadTier("tier2");
+let tier3Limit:string [] = loadTier("tier3");
+let tier4Limit:string [] = loadTier("tier4");
 
 consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
@@ -42,6 +42,15 @@ console.log("adding some security headers");
 fastify.register(require('@fastify/helmet'));
 
 let kycCounter:number = 0;
+let allNftsCounter:number = 0;
+let taxonByIssuerCounter:number = 0;
+let nftsByIssuerCounter:number = 0;
+let nftsByIssuerAndTaxonCounter:number = 0;
+let nftDetailsCounter:number = 0;
+let ledgerDataCounter:number = 0;
+let tokenCounter:number = 0;
+let tokenCreationCounter:number = 0;
+let xls14NftCounter:number = 0;
 
 // Run the server!
 const start = async () => {
@@ -109,7 +118,7 @@ const start = async () => {
             }
           }
 
-          console.log("limit: " + limit);
+          //console.log("limit: " + limit);
 
           return limit;
         },
@@ -139,8 +148,13 @@ const start = async () => {
 
       fastify.get('/api/v1/tokens', async (request, reply) => {
         try {
-          let start = Date.now();
+          //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
+          tokenCounter++;
+
+          if(tokenCounter%1000 == 0)
+            console.log("tokenCounter: " + tokenCounter);
+
           let issuers = issuerAccount.getLedgerTokensV1();
 
           let returnValue = {
@@ -151,7 +165,7 @@ const start = async () => {
             issuers: issuers
           }
 
-          console.log("tokens_"+request.hostname + ": " + (Date.now()-start) + " ms")
+          //console.log("tokens_"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
@@ -163,8 +177,13 @@ const start = async () => {
 
       fastify.get('/api/v1/nfts', async (request, reply) => {
         try {
-          let start = Date.now();
+          //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
+          xls14NftCounter++;
+
+          if(xls14NftCounter%1000 == 0)
+            console.log("xls14NftCounter: " + xls14NftCounter);
+
           let issuers = issuerAccount.getLedgerNftsV1();
 
           let returnValue = {
@@ -175,7 +194,7 @@ const start = async () => {
             issuers: issuers
           }
 
-          console.log("nfts_"+request.hostname + ": " + (Date.now()-start) + " ms")
+          //console.log("nfts_"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
@@ -187,8 +206,14 @@ const start = async () => {
 
       fastify.get('/api/v1/xls20-nfts', async (request, reply) => {
         try {
-          let start = Date.now();
+          //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
+
+          allNftsCounter++;
+
+          if(allNftsCounter%1000 == 0)
+            console.log("allNftsCounter: " + allNftsCounter);
+
           let nftIssuers = nftStore.getAllNfts();
 
           let returnValue = {
@@ -199,7 +224,7 @@ const start = async () => {
             nfts: nftIssuers.nfts
           }
 
-          console.log("xls20_nfts_"+request.hostname + ": " + (Date.now()-start) + " ms")
+          //console.log("xls20_nfts_"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
@@ -215,7 +240,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          let start = Date.now();
+          nftsByIssuerCounter++;
+
+          if(nftsByIssuerCounter%1000 == 0)
+            console.log("nftsByIssuerCounter: " + nftsByIssuerCounter);
+
+          //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let nftIssuers = nftStore.findNftsByIssuer(request.params.issuer);
 
@@ -228,7 +258,7 @@ const start = async () => {
 
           returnValue[request.params.issuer] = nftIssuers;
 
-          console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
+          //console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
@@ -244,7 +274,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          let start = Date.now();
+          nftsByIssuerAndTaxonCounter++;
+
+          if(nftsByIssuerAndTaxonCounter%1000 == 0)
+            console.log("nftsByIssuerAndTaxonCounter: " + nftsByIssuerAndTaxonCounter);
+
+          //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let nftIssuers = nftStore.findNftsByIssuerAndTaxon(request.params.issuer, request.params.taxon);
 
@@ -257,7 +292,7 @@ const start = async () => {
 
           returnValue[request.params.issuer] = nftIssuers;
 
-          console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
+          //console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
@@ -273,7 +308,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          let start = Date.now();
+          taxonByIssuerCounter++;
+
+          if(taxonByIssuerCounter%1000 == 0)
+            console.log("taxonByIssuerCounter: " + taxonByIssuerCounter);
+
+          //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let taxons = nftStore.findTaxonsByIssuer(request.params.issuer);
 
@@ -286,7 +326,7 @@ const start = async () => {
 
           returnValue[request.params.issuer] = taxons;
 
-          console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
+          //console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
@@ -302,7 +342,12 @@ const start = async () => {
             reply.code(400).send('Please provide a nftokenid. Calls without nftokenid are not allowed');
           }
 
-          let start = Date.now();
+          nftDetailsCounter++;
+
+          if(nftDetailsCounter%1000 == 0)
+            console.log("nftDetailsCounter: " + nftDetailsCounter);
+
+          //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let nft = nftStore.findNftokenById(request.params.nftokenid);
 
@@ -314,7 +359,7 @@ const start = async () => {
             nft: nft
           }
 
-          console.log("xls20_nfts_by_nftokenid"+request.hostname + ": " + (Date.now()-start) + " ms")
+          //console.log("xls20_nfts_by_nftokenid"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
@@ -326,9 +371,14 @@ const start = async () => {
 
       fastify.get('/api/v1/ledgerdata', async (request, reply) => {
         try {
-          console.time("ledgerdata");
+          //console.time("ledgerdata");
           let ledgerDataObjects: any[] = await ledgerData.getLedgerDataV1();
           //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
+
+          ledgerDataCounter++;
+
+          if(ledgerDataCounter%1000 == 0)
+            console.log("ledgerDataCounter: " + ledgerDataCounter);
 
           let returnValue = {
             ledger_index: issuerAccount.getLedgerIndex(),
@@ -340,7 +390,7 @@ const start = async () => {
             ledger_data: ledgerDataObjects[1]
           }
 
-          console.timeEnd("ledgerdata");
+          //console.timeEnd("ledgerdata");
 
           return returnValue;
         } catch(err) {
@@ -380,14 +430,19 @@ const start = async () => {
 
         try {
 
-          console.time("tokencreation");
+          tokenCreationCounter++;
+
+          if(tokenCreationCounter%1000 == 0)
+            console.log("tokenCreationCounter: " + tokenCreationCounter);
+
+          //console.time("tokencreation");
           //console.log("query: " + JSON.stringify(request.query));
           let issuer:string = request.query.issuer;
           let currency:string = request.query.currency;
 
           let returnValue = await tokenCreation.getTokenCreationDate(issuer, currency);
 
-          console.timeEnd("tokencreation");
+          //console.timeEnd("tokencreation");
 
           return returnValue;
         } catch(err) {
@@ -416,6 +471,19 @@ const start = async () => {
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
+  }
+}
+
+function loadTier(tierName:string): string[] {
+  if(fs.existsSync("/home/api-tiers/"+tierName)) {
+    let tier:string = fs.readFileSync("/home/api-tiers/"+tierName).toString();
+
+    if(tier && tier.trim().length > 0)
+      return tier.split(',');
+    else
+      return [];
+  } else {
+    return [];
   }
 }
 

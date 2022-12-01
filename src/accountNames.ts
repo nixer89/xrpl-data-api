@@ -216,7 +216,7 @@ export class AccountNames {
     }
 
     private async loadBithompUserNamesFromFS(): Promise<void> {
-        console.log("loading bithomp user names from FS");
+        //console.log("loading bithomp user names from FS");
         try {
             if(fs.existsSync("./../bithompUserNames.js")) {
                 let bithompNames:any = JSON.parse(fs.readFileSync("./../bithompUserNames.js").toString());
@@ -241,7 +241,7 @@ export class AccountNames {
     }
 
     private async loadKycDataFromFS(): Promise<void> {
-        console.log("loading kyc data from FS");
+        //console.log("loading kyc data from FS");
         try {
             if(fs.existsSync("./../kycData.js")) {
                 let kycData:any = JSON.parse(fs.readFileSync("./../kycData.js").toString());

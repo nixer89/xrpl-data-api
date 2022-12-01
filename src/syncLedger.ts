@@ -198,7 +198,7 @@ export class LedgerSync {
 
           if(mintedTokenId) {
 
-            console.log("minted token: " + mintedTokenId);
+            //console.log("minted token: " + mintedTokenId);
 
             let parsedNft = parseNFTokenID(mintedTokenId);
 
@@ -221,7 +221,7 @@ export class LedgerSync {
 
 
           if(burnedTokenId) {
-            console.log("burned token: " + burnedTokenId);
+            //console.log("burned token: " + burnedTokenId);
 
             let burnedNft = this.nftStore.getNft(burnedTokenId);
             this.nftStore.removeNft(burnedNft);
@@ -233,7 +233,7 @@ export class LedgerSync {
           let newOwnerAccount = newNftOwner[1];
 
           if(nftokenId && newOwnerAccount) {
-            console.log("changed nftoken: " + nftokenId + " new owner: " + newOwnerAccount);
+            //console.log("changed nftoken: " + nftokenId + " new owner: " + newOwnerAccount);
 
             let existingNft = this.nftStore.getNft(nftokenId);
 

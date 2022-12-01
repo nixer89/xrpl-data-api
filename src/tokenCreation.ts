@@ -28,7 +28,7 @@ export class TokenCreation {
     }
 
     private async loadIssuerCreationFromFS(): Promise<void> {
-        console.log("loading issuer creation from FS");
+        //console.log("loading issuer creation from FS");
         try {
             if(fs.existsSync("./../issuerCreation.txt")) {
                 try {
@@ -46,7 +46,7 @@ export class TokenCreation {
                 
                     await once(rl, 'close');
                 
-                    console.log('File processed.');
+                    //console.log('File processed.');
                     console.log("loaded token creation from file system");
 
                 } catch (err) {
