@@ -84,28 +84,28 @@ const start = async () => {
           for(let i = 0; i < tier1Limit.length; i++) {
             if(key.startsWith(tier1Limit[i])) {
               limit = 60;
-              break;
+              i = tier1Limit.length;
             }
           }
 
           for(let i = 0; i < tier2Limit.length; i++) {
             if(key.startsWith(tier2Limit[i])) {
               limit = 300;
-              break;
+              i = tier2Limit.length;
             }
           }
 
           for(let i = 0; i < tier3Limit.length; i++) {
             if(key.startsWith(tier3Limit[i])) {
               limit = 600;
-              break;
+              i = tier3Limit.length;
             }
           }
 
           for(let i = 0; i < tier4Limit.length; i++) {
             if(key.startsWith(tier4Limit[i])) {
               limit = 1200;
-              break;
+              i = tier4Limit.length;
             }
           }
 
