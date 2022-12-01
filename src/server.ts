@@ -82,30 +82,30 @@ const start = async () => {
           let limit = 10;
 
           for(let i = 0; i < tier1Limit.length; i++) {
-            if(key.startsWith(tier1Limit[i])) {
+            if(tier1Limit[i] != null && tier1Limit[i].length > 0 && key.startsWith(tier1Limit[i])) {
               limit = 60;
               i = tier1Limit.length;
             }
           }
 
-          for(let i = 0; i < tier2Limit.length; i++) {
-            if(key.startsWith(tier2Limit[i])) {
+          for(let j = 0; j < tier2Limit.length; j++) {
+            if(tier2Limit[j] != null && tier2Limit[j].length > 0 && key.startsWith(tier2Limit[j])) {
               limit = 300;
-              i = tier2Limit.length;
+              j = tier2Limit.length;
             }
           }
 
-          for(let i = 0; i < tier3Limit.length; i++) {
-            if(key.startsWith(tier3Limit[i])) {
+          for(let k = 0; k < tier3Limit.length; k++) {
+            if(tier3Limit[k] != null && tier3Limit[k].length > 0 && key.startsWith(tier3Limit[k])) {
               limit = 600;
-              i = tier3Limit.length;
+              k = tier3Limit.length;
             }
           }
 
-          for(let i = 0; i < tier4Limit.length; i++) {
-            if(key.startsWith(tier4Limit[i])) {
+          for(let l = 0; l < tier4Limit.length; l++) {
+            if(tier4Limit[l] != null && tier4Limit[l].length > 0 && key.startsWith(tier4Limit[l])) {
               limit = 1200;
-              i = tier4Limit.length;
+              l = tier4Limit.length;
             }
           }
 
