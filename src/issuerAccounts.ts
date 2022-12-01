@@ -125,7 +125,7 @@ export class IssuerAccounts {
                     }
                 }
 
-                console.log("loaded " + loadedMap.size + " issuer data from file system");
+                //console.log("loaded " + loadedMap.size + " issuer data from file system");
 
                 this.setLedgerIndex(issuerData['ledger_index']);
                 this.setLedgerCloseTime(issuerData['ledger_date']);

@@ -47,7 +47,7 @@ export class SelfAssessments {
                         }
                     }
 
-                    console.log("loaded " + this.selfAssessments.size + " self assessments from file system");
+                    //console.log("loaded " + this.selfAssessments.size + " self assessments from file system");
                 }
             }
         } catch(err) {

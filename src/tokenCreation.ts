@@ -47,7 +47,7 @@ export class TokenCreation {
                     await once(rl, 'close');
                 
                     //console.log('File processed.');
-                    console.log("loaded token creation from file system");
+                    //console.log("loaded token creation from file system");
 
                 } catch (err) {
                     console.error(err);
