@@ -118,7 +118,7 @@ const start = async () => {
             }
           }
 
-          //console.log("limit: " + limit);
+          console.log("limit: " + limit);
 
           return limit;
         },
