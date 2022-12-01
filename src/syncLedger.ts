@@ -35,25 +35,13 @@ export class LedgerSync {
       //reinitialize client
       this.client.on('disconnected', async ()=> {
         console.log("DISCONNECTED!!! RECONNECTING!")
-        if(this.client.isConnected())
-          this.client.disconnect();
-
-        this.client.removeAllListeners();
-
-        await this.nftStore.saveNFTDataToFS();
-        this.start();
-      })
+        this.reset();
+      });
 
       this.client.on('error', async () => {
-          console.log("ERROR HAPPENED! Re-Init!");
-          if(this.client.isConnected())
-            this.client.disconnect();
-
-          this.client.removeAllListeners();
-          await this.nftStore.saveNFTDataToFS();
-
-          this.start();
-      })
+        console.log("ERROR HAPPENED! Re-Init!");
+        this.reset();
+      });
 
       this.client.on('connected',() => {
         console.log("Connected.")
@@ -169,13 +157,7 @@ export class LedgerSync {
               this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
             } else {
               console.log("something is wrong, reset!");
-              try {
-                this.client.disconnect();
-              } catch(err) {
-                //was not connected. start straight away!
-                console.log("not connected, start right away!")
-                this.start();
-              }
+              this.reset();
             }
           } else {
             console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index);
@@ -183,8 +165,28 @@ export class LedgerSync {
         } catch(err) {
           console.log("err 2")
           console.log(err);
+
+          this.reset();
         }
       });     
+    }
+
+    private async reset() {
+      try {
+        if(this.client) {
+          this.client.removeAllListeners();
+
+          if(this.client.isConnected())
+            this.client.disconnect();
+        }
+
+        await this.nftStore.saveNFTDataToFS();
+        this.start();
+        
+      } catch(err) {
+        console.log(err);
+        console.log("ERR WHILE RESETTING");
+      }
     }
 
     private analyzeTransaction(transaction:any) {
