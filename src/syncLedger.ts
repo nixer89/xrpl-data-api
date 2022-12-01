@@ -103,6 +103,7 @@ export class LedgerSync {
       } catch(err) {
         console.log("err 1")
         console.log(err);
+        this.reset();
       }
 
       this.nftStore.closeInternalStuff();
