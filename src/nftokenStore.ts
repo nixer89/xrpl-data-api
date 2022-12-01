@@ -146,44 +146,6 @@ export class NftStore {
       }  
     }
 
-    public async saveNFTDataToFS(): Promise<void> {
-      let currentWrittenLedger = await this.readCurrentLedgerFromFS();
-
-      console.log("this.getCurrentLedgerIndex() : " + this.getCurrentLedgerIndex());
-      console.log("currentWrittenLedger: " + currentWrittenLedger);
-
-      if(this.getCurrentLedgerIndex() > currentWrittenLedger) {
-        console.log("overwriting old nft data!")
-        
-        let mapToSave:Map<string, NFT> = this.nftokenIdMap;
-        if(mapToSave && mapToSave.size > 0) {
-          let nftData:any = {
-            ledger_index: this.getCurrentLedgerIndex(),
-            ledger_hash: this.getCurrentLedgerHash(),
-            ledger_close: this.getCurrentLedgerCloseTime(),
-            ledger_close_ms: this.getCurrentLedgerCloseTimeMs(),
-            "nfts": []
-          };
-
-          mapToSave.forEach((value, key, map) => {
-            nftData["nfts"].push(value);
-          });
-
-          console.time("saveNFTDataToFS");
-
-          fs.writeFileSync("./../nftData_new.js", JSON.stringify(nftData));
-          fs.renameSync("./../nftData_new.js", "./../nftData.js");
-          
-          console.timeEnd("saveNFTDataToFS");
-
-        } else {
-          console.log("nft data is empty!");
-        }
-      } else {
-        console.log("did not overwrite more recent data!");
-      }
-    }
-
     public async readCurrentLedgerFromFS(): Promise<number> {
       try {
         //console.log("loading nft issuer data from FS");

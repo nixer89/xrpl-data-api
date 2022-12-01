@@ -180,9 +180,8 @@ export class LedgerSync {
             this.client.disconnect();
         }
 
-        await this.nftStore.saveNFTDataToFS();
         this.start();
-        
+
       } catch(err) {
         console.log(err);
         console.log("ERR WHILE RESETTING");
