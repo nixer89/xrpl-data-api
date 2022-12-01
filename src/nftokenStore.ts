@@ -76,7 +76,7 @@ export class NftStore {
           }
         }
 
-        return taxons;
+        return taxons.sort((a,b) => a - b);
 
       } else {
         return [];
