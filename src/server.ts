@@ -6,6 +6,7 @@ import { AccountNames } from "./accountNames";
 import { SelfAssessments } from "./selfAssessments";
 import { NftStore } from "./nftokenStore";
 import { LedgerSync } from "./syncLedger";
+import { TIER_1_LIMIT, TIER_2_LIMIT, TIER_3_LIMIT, TIER_4_LIMIT} from './util/config';
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -24,8 +25,11 @@ let selfAssessments:SelfAssessments;
 let nftStore: NftStore;
 let ledgerSync: LedgerSync;
 
-let ipRanges:string[] = ["76.201.20.","76.201.21.","76.201.22.","76.201.23.","120.29.68.","212.117.20.","169.0.102.","61.57.124.", "61.57.125.","61.57.12.","61.57.127.","121.54.10.","175.176.49.", "211.176.124.", "211.176.125.",
-                         "211.176.126.", "211.176.127.","94.129.197.","182.0.237.","175.176.92.", "110.54.129.", "80.229.222.", "80.229.223."];
+
+let tier1Limit:string[] = TIER_1_LIMIT.split(',')
+let tier2Limit:string [] = TIER_2_LIMIT.split(',')
+let tier3Limit:string [] = TIER_3_LIMIT.split(',')
+let tier4Limit:string [] = TIER_4_LIMIT.split(',')
 
 consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
@@ -75,21 +79,37 @@ const start = async () => {
         redis: redis,
         skipOnError: true,
         max: async (req, key) => {
-          let higherLimit = false;
-          for(let i = 0; i < ipRanges.length; i++) {
-            if(key.startsWith(ipRanges[i])) {
-              higherLimit = true;
+          let limit = 10;
+
+          for(let i = 0; i < tier1Limit.length; i++) {
+            if(key.startsWith(tier1Limit[i])) {
+              limit = 60;
               break;
             }
           }
 
-          if(higherLimit) {
-            return 30;    
-          } else if(key === '85.214.226.136') {
-            return 1000;
-          } else {
-            return 10;
+          for(let i = 0; i < tier2Limit.length; i++) {
+            if(key.startsWith(tier2Limit[i])) {
+              limit = 300;
+              break;
+            }
           }
+
+          for(let i = 0; i < tier3Limit.length; i++) {
+            if(key.startsWith(tier3Limit[i])) {
+              limit = 600;
+              break;
+            }
+          }
+
+          for(let i = 0; i < tier4Limit.length; i++) {
+            if(key.startsWith(tier4Limit[i])) {
+              limit = 1200;
+              break;
+            }
+          }
+
+          return limit;
         },
         timeWindow: '1 minute',
         keyGenerator: function(req) {
