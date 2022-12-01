@@ -23,41 +23,54 @@ export class LedgerSync {
         return this._instance || (this._instance = new this());
     }
 
-    public async start(): Promise<void> {
+    public async start(retryCount: number): Promise<void> {
 
-      this.client = new Client("ws://127.0.0.1:6006")
-      this.finishedIteration = false;
+      try {
+        this.client = new Client("ws://127.0.0.1:6006")
+        this.finishedIteration = false;
 
-      this.nftStore = NftStore.Instance;
+        if(retryCount > 5) {
+          console.log("could not connect to node. switching!")
+          this.client = new Client("wss://xrplcluster.com")
+        }
 
-      await this.nftStore.loadNftDataFromFS();
+        this.nftStore = NftStore.Instance;
 
-      //reinitialize client
-      this.client.on('disconnected', async ()=> {
-        console.log("DISCONNECTED!!! RECONNECTING!")
-        this.reset();
-      });
+        await this.nftStore.loadNftDataFromFS();
 
-      this.client.on('error', async () => {
-        console.log("ERROR HAPPENED! Re-Init!");
-        this.reset();
-      });
+        //reinitialize client
+        this.client.on('disconnected', async ()=> {
+          console.log("DISCONNECTED!!! RECONNECTING!")
+          this.reset(0);
+        });
 
-      this.client.on('connected',() => {
-        console.log("Connected.")
-      });
+        this.client.on('error', async () => {
+          console.log("ERROR HAPPENED! Re-Init!");
+          this.reset(0);
+        });
 
-      await this.client.connect();
+        this.client.on('connected',() => {
+          console.log("Connected.")
+        });
 
-      const serverInfo = await this.client.request({ command: "server_info" });
-      console.log({ serverInfo });
+        try {
+          await this.client.connect();
+        } catch(err) {
+          this.reset(retryCount);
+        }
 
-      console.log("start listening for ledgers ...")
-      await this.client.request({command: 'subscribe', streams: ['ledger']});
+        const serverInfo = await this.client.request({ command: "server_info" });
+        console.log({ serverInfo });
 
-      //get current known ledger and try to catch up
-      await this.startListeningOnLedgerClose();
-      await this.iterateThroughMissingLedgers();
+        console.log("start listening for ledgers ...")
+        await this.client.request({command: 'subscribe', streams: ['ledger']});
+
+        //get current known ledger and try to catch up
+        await this.startListeningOnLedgerClose();
+        await this.iterateThroughMissingLedgers();
+      } catch(err) {
+        this.reset(retryCount);
+      }
     }
 
     private async iterateThroughMissingLedgers() {
@@ -103,7 +116,7 @@ export class LedgerSync {
       } catch(err) {
         console.log("err 1")
         console.log(err);
-        this.reset();
+        this.reset(0);
       }
 
       this.nftStore.closeInternalStuff();
@@ -158,7 +171,7 @@ export class LedgerSync {
               this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
             } else {
               console.log("something is wrong, reset!");
-              this.reset();
+              this.reset(0);
             }
           } else {
             console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index);
@@ -167,12 +180,12 @@ export class LedgerSync {
           console.log("err 2")
           console.log(err);
 
-          this.reset();
+          this.reset(0);
         }
       });     
     }
 
-    private async reset() {
+    private async reset(retryCount:number) {
       try {
         if(this.client) {
           this.client.removeAllListeners();
@@ -181,7 +194,7 @@ export class LedgerSync {
             this.client.disconnect();
         }
 
-        this.start();
+        this.start(++retryCount);
 
       } catch(err) {
         console.log(err);
