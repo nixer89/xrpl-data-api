@@ -194,7 +194,7 @@ export class LedgerSync {
 
         //console.log("analyzing NFT Transaction!")
 
-        if(transaction.TransactionType == "NFTokenMint") { // NEW NFT
+        if(transaction.TransactionType === "NFTokenMint") { // NEW NFT
           let mintedTokenId = this.getMintedTokenId(transaction.metaData);
 
           if(mintedTokenId) {
@@ -217,12 +217,11 @@ export class LedgerSync {
             this.nftStore.addNFT(newNftEntry);
           }
 
-        } else if(transaction.TransactionType == "NFTokenBurn") { // BURNED NFT
+        } else if(transaction.TransactionType === "NFTokenBurn") { // BURNED NFT
           let burnedTokenId = this.getBurnedTokenId(transaction.metaData);
 
-
           if(burnedTokenId) {
-            //console.log("burned token: " + burnedTokenId);
+            console.log("burned token: " + burnedTokenId);
 
             let burnedNft = this.nftStore.getNft(burnedTokenId);
             this.nftStore.removeNft(burnedNft);

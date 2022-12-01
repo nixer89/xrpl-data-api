@@ -38,15 +38,20 @@ export class NftStore {
       if(this.nftokenIssuerMapTemp.has(newNft.Issuer))
         this.nftokenIssuerMapTemp.get(newNft.Issuer).push(newNft);
       else
-        this.nftokenIssuerMapTemp.set(newNft.Issuer,[newNft]);
+        this.nftokenIssuerMapTemp.set(newNft.Issuer, [newNft]);
     }
 
     public removeNft(burnedNft:NFT) {
+      console.log("burning NFT: " + burnedNft);
+
       this.nftokenIdMapTemp.delete(burnedNft.NFTokenID);
 
       let currentArray = this.nftokenIssuerMapTemp.get(burnedNft.Issuer);
+      console.log("currentArray length: " + currentArray.length);
       let newArray = currentArray.filter(existingNft => existingNft.NFTokenID != burnedNft.NFTokenID);
+      console.log("newArray length: " + newArray.length);
       this.nftokenIssuerMapTemp.set(burnedNft.Issuer, newArray);
+      console.log("set issuer NFT length: " + this.nftokenIssuerMapTemp.get(burnedNft.Issuer).length);
     }
 
     public getNft(nftokenId:string) {
