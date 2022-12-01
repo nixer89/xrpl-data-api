@@ -109,6 +109,8 @@ const start = async () => {
             }
           }
 
+          console.log("limit: " + limit);
+
           return limit;
         },
         timeWindow: '1 minute',
