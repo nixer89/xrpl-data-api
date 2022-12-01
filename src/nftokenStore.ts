@@ -76,6 +76,8 @@ export class NftStore {
           }
         }
 
+        return taxons;
+
       } else {
         return [];
       }

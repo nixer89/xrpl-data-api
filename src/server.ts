@@ -253,7 +253,7 @@ const start = async () => {
 
           let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let nftIssuers = nftStore.findTaxonsByIssuer(request.params.issuer);
+          let taxons = nftStore.findTaxonsByIssuer(request.params.issuer);
 
           let returnValue = {
             ledger_index: nftStore.getCurrentLedgerIndex(),
@@ -262,7 +262,7 @@ const start = async () => {
             ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
           }
 
-          returnValue[request.params.issuer] = nftIssuers;
+          returnValue[request.params.issuer] = taxons;
 
           console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
 
