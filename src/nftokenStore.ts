@@ -85,7 +85,7 @@ export class NftStore {
 
     public findNftsByIssuerAndTaxon(issuerAddress: string, taxon: number): NFT[] {
       if(this.nftokenIssuerMap.has(issuerAddress))
-        return this.nftokenIssuerMap.get(issuerAddress).filter(nft => nft.Taxon === taxon);
+        return this.nftokenIssuerMap.get(issuerAddress).filter(nft => nft.Taxon == taxon);
       else
         return [];
     }
