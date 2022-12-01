@@ -30,7 +30,7 @@ export class LedgerSync {
         this.finishedIteration = false;
 
         if(retryCount > 5) {
-          console.log("could not connect to node. switching!")
+          console.log("COULD NOT CONNECT TO NODE! SWITCHING!")
           this.client = new Client("wss://xrplcluster.com")
         }
 
@@ -69,6 +69,7 @@ export class LedgerSync {
         await this.startListeningOnLedgerClose();
         await this.iterateThroughMissingLedgers();
       } catch(err) {
+        console.log("UNEXPECTED ERROR HAPPENED! RESET!")
         this.reset(retryCount);
       }
     }
@@ -194,7 +195,8 @@ export class LedgerSync {
             this.client.disconnect();
         }
 
-        this.start(++retryCount);
+        retryCount++;
+        this.start(retryCount);
 
       } catch(err) {
         console.log(err);
