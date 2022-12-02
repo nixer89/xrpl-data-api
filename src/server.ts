@@ -7,6 +7,7 @@ import { SelfAssessments } from "./selfAssessments";
 import { NftStore } from "./nftokenStore";
 import { LedgerSync } from "./syncLedger";
 import * as fs from 'fs';
+import { NftApiReturnObject } from "./util/types";
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -42,7 +43,7 @@ console.log("adding some security headers");
 fastify.register(require('@fastify/helmet'));
 
 let kycCounter:number = 0;
-let allNftsCounter:number = 0;
+let allIssuersCounter:number = 0;
 let taxonByIssuerCounter:number = 0;
 let nftsByIssuerCounter:number = 0;
 let nftsByIssuerAndTaxonCounter:number = 0;
@@ -205,24 +206,28 @@ const start = async () => {
         }
       });
 
-      fastify.get('/api/v1/xls20-nfts', async (request, reply) => {
+      fastify.get('/api/v1/xls20-nfts/all/issuers', async (request, reply) => {
         try {
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
 
-          allNftsCounter++;
+          allIssuersCounter++;
 
-          if(allNftsCounter%1000 == 0)
-            console.log("allNftsCounter: " + allNftsCounter);
+          if(allIssuersCounter%1000 == 0)
+            console.log("allNftsCounter: " + allIssuersCounter);
 
-          let nftIssuers = nftStore.getAllNfts();
+          let allIssuers = nftStore.getAllIssuers();
 
-          let returnValue = {
-            ledger_index: nftStore.getCurrentLedgerIndex(),
-            ledger_hash: nftStore.getCurrentLedgerHash(),
-            ledger_close: nftStore.getCurrentLedgerCloseTime(),
-            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
-            nfts: nftIssuers.nfts
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuers: allIssuers
+            }
           }
 
           //console.log("xls20_nfts_"+request.hostname + ": " + (Date.now()-start) + " ms")
@@ -250,14 +255,18 @@ const start = async () => {
           //console.log("request params: " + JSON.stringify(request.params));
           let nftIssuers = nftStore.findNftsByIssuer(request.params.issuer);
 
-          let returnValue = {
-            ledger_index: nftStore.getCurrentLedgerIndex(),
-            ledger_hash: nftStore.getCurrentLedgerHash(),
-            ledger_close: nftStore.getCurrentLedgerCloseTime(),
-            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuer: request.params.issuer,
+              nfts: nftIssuers
+            }
           }
-
-          returnValue[request.params.issuer] = nftIssuers;
 
           //console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
 
@@ -284,14 +293,19 @@ const start = async () => {
           //console.log("request params: " + JSON.stringify(request.params));
           let nftIssuers = nftStore.findNftsByIssuerAndTaxon(request.params.issuer, request.params.taxon);
 
-          let returnValue = {
-            ledger_index: nftStore.getCurrentLedgerIndex(),
-            ledger_hash: nftStore.getCurrentLedgerHash(),
-            ledger_close: nftStore.getCurrentLedgerCloseTime(),
-            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuer: request.params.issuer,
+              taxon: request.params.taxon,
+              nfts: nftIssuers
+            }
           }
-
-          returnValue[request.params.issuer] = nftIssuers;
 
           //console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
 
@@ -318,11 +332,17 @@ const start = async () => {
           //console.log("request params: " + JSON.stringify(request.params));
           let taxons = nftStore.findTaxonsByIssuer(request.params.issuer);
 
-          let returnValue = {
-            ledger_index: nftStore.getCurrentLedgerIndex(),
-            ledger_hash: nftStore.getCurrentLedgerHash(),
-            ledger_close: nftStore.getCurrentLedgerCloseTime(),
-            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuer: request.params.issuer,
+              taxons: taxons
+            }
           }
 
           returnValue[request.params.issuer] = taxons;
@@ -352,12 +372,17 @@ const start = async () => {
           //console.log("request params: " + JSON.stringify(request.params));
           let nft = nftStore.findNftokenById(request.params.nftokenid);
 
-          let returnValue = {
-            ledger_index: nftStore.getCurrentLedgerIndex(),
-            ledger_hash: nftStore.getCurrentLedgerHash(),
-            ledger_close: nftStore.getCurrentLedgerCloseTime(),
-            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs(),
-            nft: nft
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              nftokenid: request.params.nftokenid,
+              nft: nft
+            }
           }
 
           //console.log("xls20_nfts_by_nftokenid"+request.hostname + ": " + (Date.now()-start) + " ms")
@@ -458,10 +483,20 @@ const start = async () => {
       reply.code(200).send('I am alive!'); 
     });
 
-    try {
-      await fastify.listen({ port: 4002, host: '0.0.0.0' });
+    fastify.register(require('@fastify/swagger'), {
+      mode: 'static',
+      specification: {
+        path: './src/doc/swagger-doc.yaml'
+      },
+      exposeRoute: true,
+      routePrefix: '/docs',
+      staticCSP: true
+    });
 
-      console.log("http://0.0.0.0:4002/");
+    try {
+      await fastify.listen({ port: 4002, host: '127.0.0.1' });
+
+      console.log("http://127.0.0.1:4002/");
 
       fastify.ready(err => {
         if (err) throw err

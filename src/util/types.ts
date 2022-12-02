@@ -37,3 +37,15 @@ export interface NFT {
     URI: string,
     Flags?: number
 }
+
+export interface NftApiReturnObject {
+    info: {
+        ledger_index: number,
+        ledger_hash: string,
+        ledger_close: string,
+        ledger_close_ms: number
+    },
+    data: {
+        [key: string]: any
+    }
+}

@@ -42,16 +42,16 @@ export class NftStore {
     }
 
     public removeNft(burnedNft:NFT) {
-      console.log("burning NFT: " + burnedNft);
+      //console.log("burning NFT: " + burnedNft);
 
-      console.log("nftokenIdMapTemp size BEFORE: " + this.nftokenIdMapTemp.size);
-      console.log("nftokenIssuerMapTemp size BEFORE: " + this.nftokenIssuerMapTemp.get(burnedNft.Issuer).size);
+      //console.log("nftokenIdMapTemp size BEFORE: " + this.nftokenIdMapTemp.size);
+      //console.log("nftokenIssuerMapTemp size BEFORE: " + this.nftokenIssuerMapTemp.get(burnedNft.Issuer).size);
 
       this.nftokenIdMapTemp.delete(burnedNft.NFTokenID);
       this.nftokenIssuerMapTemp.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
 
-      console.log("nftokenIdMapTemp size AFTER: " + this.nftokenIdMapTemp.size);
-      console.log("nftokenIssuerMapTemp size AFTER: " + this.nftokenIssuerMapTemp.get(burnedNft.Issuer).size);
+      //console.log("nftokenIdMapTemp size AFTER: " + this.nftokenIdMapTemp.size);
+      //console.log("nftokenIssuerMapTemp size AFTER: " + this.nftokenIssuerMapTemp.get(burnedNft.Issuer).size);
     }
 
     public getNft(nftokenId:string) {
@@ -60,6 +60,10 @@ export class NftStore {
 
     public getAllNfts(): any {
       return this.nftokenIssuerAllStructure;
+    }
+
+    public getAllIssuers(): string[] {
+      return Array.from(this.nftokenIssuerMap.keys());
     }
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
