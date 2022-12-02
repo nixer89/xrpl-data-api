@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as scheduler from 'node-schedule';
 
-
 export class LedgerData {
 
     private static _instance: LedgerData;

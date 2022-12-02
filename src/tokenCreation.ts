@@ -1,4 +1,3 @@
-import * as fetch from 'node-fetch';
 import consoleStamp = require("console-stamp");
 import * as fs from 'fs';
 import { createInterface } from 'readline';

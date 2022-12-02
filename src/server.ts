@@ -8,6 +8,8 @@ import { NftStore } from "./nftokenStore";
 import { LedgerSync } from "./syncLedger";
 import * as fs from 'fs';
 import { NftApiReturnObject } from "./util/types";
+import fastifySwagger from "@fastify/swagger";
+import Helmet from '@fastify/helmet';
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -39,8 +41,7 @@ const fastify = require('fastify')({ trustProxy: true })
 console.log("adding response compression");
 fastify.register(require('@fastify/compress'), { encodings: ['gzip', 'deflate', 'br', '*', 'identity'] });
 
-console.log("adding some security headers");
-fastify.register(require('@fastify/helmet'));
+
 
 let kycCounter:number = 0;
 let allIssuersCounter:number = 0;
@@ -55,6 +56,8 @@ let xls14NftCounter:number = 0;
 
 // Run the server!
 const start = async () => {
+
+  const data:any = fs.readFileSync('./open-api-spec/xrpl-data-api.json', 'utf8').toString();
 
   issuerAccount = IssuerAccounts.Instance;
   ledgerData = LedgerData.Instance;
@@ -83,6 +86,34 @@ const start = async () => {
         methods: 'GET, OPTIONS',
         allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'Referer']
       });
+
+      console.log("register swagger docs...")
+      await fastify.register(fastifySwagger, {
+        mode: 'static',
+        specification: {
+          document: JSON.parse(data)
+        },
+        routePrefix: '/docs',
+        exposeRoute: true,
+        staticCSP: true,
+        uiConfig: {
+          defaultModelsExpandDepth: -1
+        }
+      });
+
+      fastify.register(Helmet, instance => {
+        return {
+          contentSecurityPolicy: {
+            directives: {
+              ...Helmet.contentSecurityPolicy.getDefaultDirectives(),
+              "form-action": ["'self'"],
+              "img-src": ["'self'", "data:", "validator.swagger.io"],
+              "script-src": ["'self'"].concat(instance.swaggerCSP.script),
+              "style-src": ["'self'", "https:"].concat(instance.swaggerCSP.style)
+            }
+          }
+        }
+      })
 
       await fastify.register(require('@fastify/rate-limit'), {
         global: true,
@@ -345,8 +376,6 @@ const start = async () => {
             }
           }
 
-          returnValue[request.params.issuer] = taxons;
-
           //console.log("xls20_nfts_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
@@ -483,20 +512,10 @@ const start = async () => {
       reply.code(200).send('I am alive!'); 
     });
 
-    fastify.register(require('@fastify/swagger'), {
-      mode: 'static',
-      specification: {
-        path: './src/doc/swagger-doc.yaml'
-      },
-      exposeRoute: true,
-      routePrefix: '/docs',
-      staticCSP: true
-    });
-
     try {
-      await fastify.listen({ port: 4002, host: '0.0.0.0' });
+      await fastify.listen({ port: 4002, host: '127.0.0.1' });
 
-      console.log("http://0.0.0.0:4002/");
+      console.log("http://127.0.0.1:4002/");
 
       fastify.ready(err => {
         if (err) throw err

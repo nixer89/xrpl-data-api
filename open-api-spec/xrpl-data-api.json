@@ -1,0 +1,550 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.",
+        "version": "0.1b",
+        "title": "XRP Ledger Services NFT Api",
+        "contact": {
+            "name": "@XrplServices",
+            "email": "info@xrpl.services",
+            "url": "https://twitter.com/XrplServices"
+        }
+    },
+    "servers": [
+        {
+            "url": "/api/v1"
+        }
+    ],
+    "tags": [
+        {
+            "name": "API methods"
+        }
+    ],
+    "x-tagGroups": [
+        {
+            "name": "General",
+            "tags": [
+                "API methods"
+            ]
+        }
+    ],
+    "paths": {
+        "/xls20-nfts/all/issuers": {
+            "get": {
+                "summary": "Get all current Issuers of NFTs",
+                "description": "Returns an array of XRPL accounts which have currently issued NFTs on the XRP Ledger.",
+                "tags": [
+                    "API methods"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AllIssuerResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/issuer/{issuer}": {
+            "get": {
+                "summary": "Get all NFTs from a specific Issuer",
+                "description": "Returns an array of NFTs issued by the given Account",
+                "tags": [
+                    "API methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "issuer",
+                        "required": true,
+                        "description": "The issuer account you want to get the NFTs for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IssuerTaxonNftResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/taxon/{issuer}": {
+            "get": {
+                "summary": "Get all taxons used by a specific Issuer",
+                "description": "Returns an array of taxons used by the given XRPL account.",
+                "tags": [
+                    "API methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "issuer",
+                        "required": true,
+                        "description": "The issuer account you want to get the Taxons from.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaxonResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/issuer/{issuer}/taxon/{taxon}": {
+            "get": {
+                "summary": "Get all NFTs from a specific Issuer and Taxon.",
+                "description": "Returns an array of NFTs issued by the given Issuer with a specific Taxon. This is helpful to receive NFTs of a specific Collection.",
+                "tags": [
+                    "API methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "issuer",
+                        "required": true,
+                        "description": "The issuer account you want to get the NFTs for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "taxon",
+                        "required": true,
+                        "description": "The Taxon that the issuer set when minting the NFTs",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IssuerTaxonNftResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/nft/{nftokenid}": {
+            "get": {
+                "summary": "Get details for a single NFT.",
+                "description": "Returns a single NFT and its details.",
+                "tags": [
+                    "API methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "nftokenid",
+                        "required": true,
+                        "description": "The NFTokenID of the NFT you want to get the details for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NFTDetailResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {},
+        "schemas": {
+            "NFT": {
+                "type": "object",
+                "required": [
+                    "NFTokenID",
+                    "Issuer",
+					"Owner",
+					"Taxon",
+					"Sequence"
+                ],
+                "properties": {
+                    "NFTokenID": {
+                        "type": "string"
+                    },
+                    "Issuer": {
+                        "type": "string"
+                    },
+                    "Owner": {
+                        "type": "string"
+                    },
+                    "Taxon": {
+                        "type": "number"
+                    },
+                    "Sequence": {
+                        "type": "number"
+                    },
+                    "TransferFee": {
+                        "type": "number"
+                    },
+                    "Flags": {
+                        "type": "number"
+                    },
+                    "URI": {
+                        "type": "number"
+                    }
+                },
+                "title": "NFT"
+            },
+            "Info": {
+                "type": "object",
+                "required": [
+                    "ledger_index",
+                    "ledger_hash",
+                    "ledger_close",
+					"ledger_close_ms"
+                ],
+                "properties": {
+                    "ledger_index": {
+                        "type": "string"
+                    },
+                    "ledger_hash": {
+                        "type": "string"
+                    },
+                    "ledger_close": {
+                        "type": "string"
+                    },
+                    "ledger_close_ms": {
+                        "type": "number"
+                    }
+                },
+                "title": "Info"
+            },
+            "AllIssuerResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/AllIssuerData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "AllIssuerData": {
+                "type": "object",
+                "required":["issuers"],
+                "properties": {
+                    "issuers": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "TaxonResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/TaxonData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "TaxonData": {
+                "type": "object",
+                "required":["issuer","taxons"],
+                "properties": {
+                    "issuer": {
+                        "type": "string"
+                    },
+                    "taxons": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "IssuerNftResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/IssuerNftData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "IssuerNftData": {
+                "type": "object",
+                "required":["issuer","nfts"],
+                "properties": {
+                    "issuer": {
+                        "type": "string"
+                    },
+                    "nfts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFT"
+                        }
+                    }
+                }
+            },
+            "IssuerTaxonNftResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/IssuerTaxonNftData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "IssuerTaxonNftData": {
+                "type": "object",
+                "required":["issuer","taxon","nfts"],
+                "properties": {
+                    "issuer": {
+                        "type": "string"
+                    },
+                    "taxon": {
+                        "type": "string"
+                    },
+                    "nfts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFT"
+                        }
+                    }
+                }
+            },
+            "NFTDetailResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/NFTDetailData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "NFTDetailData": {
+                "type": "object",
+                "required":["nft"],
+                "properties": {
+                    "nft": {
+                        "items": {
+                            "$ref": "#/components/schemas/NFT"
+                        }
+                    }
+                }
+            }
+        },
+        "responses": {
+            "400-Query-input-malformed": {
+                "description": "Query input malformed",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                },
+                "headers": {
+                    "Retry-After": {
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "description": "The remaining window before the rate limit resets in UTC epoch seconds."
+                    },
+                    "X-RateLimit-Limit": {
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Maximum number of points can be consumed over duration (one second)."
+                    },
+                    "X-RateLimit-Remaining": {
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Number of remaining points in current duration (one second)."
+                    },
+                    "X-RateLimit-Reset": {
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "description": "The UTC date/time at which the current rate limit window resets."
+                    }
+                }
+            }
+        },
+        "requestBodies": {},
+        "examples": {}
+    }
+}

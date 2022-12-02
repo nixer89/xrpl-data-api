@@ -3,7 +3,6 @@ import { Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetad
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
 
-
 export class LedgerSync {
 
     private static _instance: LedgerSync;
