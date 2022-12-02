@@ -64,7 +64,7 @@ export class NftStore {
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
       if(this.nftokenIssuerMap.has(issuerAddress))
-        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
+        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values()).sort((a,b) => a.Taxon - b.Taxon || a.Sequence - b.Sequence);
       else
         return [];
     }
@@ -90,7 +90,7 @@ export class NftStore {
 
     public findNftsByIssuerAndTaxon(issuerAddress: string, taxon: number): NFT[] {
       if(this.nftokenIssuerMap.has(issuerAddress))
-        return [...this.nftokenIssuerMap.get(issuerAddress).values()].filter(nft => nft.Taxon == taxon);
+        return [...this.nftokenIssuerMap.get(issuerAddress).values()].filter(nft => nft.Taxon == taxon).sort((a,b) => a.Sequence - b.Sequence);
       else
         return [];
     }

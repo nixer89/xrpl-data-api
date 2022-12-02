@@ -50,7 +50,7 @@ export class LedgerData {
 
     private async loadLedgerDataFromFS(): Promise<void> {
       try {
-        console.log("loading ledger data from FS");
+        //console.log("loading ledger data from FS");
         if(fs.existsSync("./../ledgerData.js")) {
             let ledgerData:any = JSON.parse(fs.readFileSync("./../ledgerData.js").toString());
             if(ledgerData) {
