@@ -1,12 +1,13 @@
 {
   "name": "xrpl-data-api",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "description": "tracks periodically the latest issued token on the xrp ledger (every 10 minutes)",
   "main": "src/server.ts",
   "scripts": {
     "start": "node dist/server.js",
     "develop": "tsc && concurrently \"tsc -w\" \"nodemon dist/server.js\"",
     "build": "tsc",
+    "postinstall": "sh ./src/doc/updateSwaggerVersion.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,6 +30,7 @@
     "@fastify/cors": "^8.1.1",
     "@fastify/helmet": "^10.0.2",
     "@fastify/rate-limit": "^7.5.0",
+    "@fastify/swagger": "^8.2.0",
     "console-stamp": "^0.2.10",
     "fastify": "^4.9.2",
     "http-proxy-agent": "^4.0.1",

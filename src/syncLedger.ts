@@ -35,10 +35,10 @@ export class LedgerSync {
       try {
         this.finishedIteration = false;
 
-        if(retryCount > 10) {
+        if(retryCount > 5) {
           console.log("COULD NOT CONNECT TO NODE! SWITCHING!")
           this.client = new Client("ws://127.0.0.1:6006")
-        } else if(retryCount > 20) {
+        } else if(retryCount > 10) {
           //force restart by pm2
           process.exit(1);
         } else {
@@ -52,12 +52,12 @@ export class LedgerSync {
         //reinitialize client
         this.client.on('disconnected', async ()=> {
           console.log("DISCONNECTED!!! RECONNECTING!")
-          this.reset(0);
+          this.reset();
         });
 
         this.client.on('error', async () => {
           console.log("ERROR HAPPENED! Re-Init!");
-          this.reset(0);
+          this.reset();
         });
 
         this.client.on('connected',() => {
@@ -81,7 +81,7 @@ export class LedgerSync {
         await this.iterateThroughMissingLedgers("ws://127.0.0.1:6006");
       } catch(err) {
         console.log("UNEXPECTED ERROR HAPPENED! RESET!")
-        this.reset(retryCount);
+        this.reset();
       }
     }
 
@@ -137,7 +137,7 @@ export class LedgerSync {
           //restart by iterating with xrplcluster.com!
           await this.iterateThroughMissingLedgers("wss://xrplcluster.com");
         } else {
-          this.reset(0);
+          this.reset();
         }
       }
 
@@ -157,7 +157,7 @@ export class LedgerSync {
 
             if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
 
-              console.time("analyzeLedger_"+ledgerClose.ledger_index);
+              let start = Date.now();
               let ledgerRequest:LedgerRequest = {
                 command: 'ledger',
                 ledger_index: ledgerClose.ledger_index,
@@ -193,10 +193,15 @@ export class LedgerSync {
 
               this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
 
-              console.timeEnd("analyzeLedger_"+ledgerClose.ledger_index);
+              let elapsed = Date.now() - start;
+
+              if(elapsed > 1500){
+                console.log("long runnter: " + elapsed + " ms.")
+              }
+
             } else {
               console.log("something is wrong, reset!");
-              this.reset(0);
+              this.reset();
             }
           } else {
             console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index);
@@ -205,19 +210,28 @@ export class LedgerSync {
           console.log("err 2")
           console.log(err);
 
-          this.reset(0);
+          this.reset();
         }
       });     
     }
 
-    private async reset(retryCount:number) {
+    private async reset(retryCount?:number) {
       try {
-        retryCount++;
-        this.start(retryCount);
+
+        if(retryCount == undefined) {
+          console.log("EXECUTING HARD RESET!");
+          //hard reset
+          process.exit(1);
+        } else {
+          console.log("RESET WITH RETRY COUNTER")
+          retryCount++;
+          this.start(retryCount);
+        }
 
       } catch(err) {
         console.log(err);
-        console.log("ERR WHILE RESETTING");
+        console.log("ERR WHILE RESETTING. EXIT TOOL!");
+        process.exit(1);
       }
     }
 
@@ -231,7 +245,7 @@ export class LedgerSync {
 
           if(mintedTokenId) {
 
-            console.log("minted token: " + mintedTokenId);
+            //console.log("minted token: " + mintedTokenId);
 
             let parsedNft = parseNFTokenID(mintedTokenId);
 
@@ -253,7 +267,7 @@ export class LedgerSync {
           let burnedTokenId = this.getBurnedTokenId(transaction.metaData);
 
           if(burnedTokenId) {
-            console.log("burned token: " + burnedTokenId);
+            //console.log("burned token: " + burnedTokenId);
 
             let burnedNft = this.nftStore.getNft(burnedTokenId);
             this.nftStore.removeNft(burnedNft);
@@ -265,7 +279,7 @@ export class LedgerSync {
           let newOwnerAccount = newNftOwner[1];
 
           if(nftokenId && newOwnerAccount) {
-            console.log("changed nftoken: " + nftokenId + " new owner: " + newOwnerAccount);
+            //console.log("changed nftoken: " + nftokenId + " new owner: " + newOwnerAccount);
 
             let existingNft = this.nftStore.getNft(nftokenId);
 
