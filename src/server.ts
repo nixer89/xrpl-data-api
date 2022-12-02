@@ -103,6 +103,7 @@ const start = async () => {
 
       fastify.register(Helmet, instance => {
         return {
+          crossOriginEmbedderPolicy: false,
           contentSecurityPolicy: {
             directives: {
               ...Helmet.contentSecurityPolicy.getDefaultDirectives(),
