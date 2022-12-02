@@ -513,9 +513,9 @@ const start = async () => {
     });
 
     try {
-      await fastify.listen({ port: 4002, host: '127.0.0.1' });
+      await fastify.listen({ port: 4002, host: '0.0.0.0' });
 
-      console.log("http://127.0.0.1:4002/");
+      console.log("http://0.0.0.0:4002/");
 
       fastify.ready(err => {
         if (err) throw err
