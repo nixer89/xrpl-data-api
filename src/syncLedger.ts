@@ -8,7 +8,7 @@ export class LedgerSync {
 
     private static _instance: LedgerSync;
 
-    private client = new Client("ws://127.0.0.1:6006");
+    private client = new Client("wss://xrplcluster.com");
 
     private finishedIteration:boolean = false;
 
@@ -26,7 +26,7 @@ export class LedgerSync {
     public async start(retryCount: number): Promise<void> {
 
       try {
-        this.client = new Client("ws://127.0.0.1:6006")
+        this.client = new Client("wss://xrplcluster.com")
         this.finishedIteration = false;
 
         if(retryCount > 5) {
