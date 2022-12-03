@@ -1,7 +1,7 @@
 # dependencies
 /node_modules
 /dist
-/src/doc/swagger-doc.yaml.bak
+/open-api-spec/xrpl-data-api.json.bak
 local_config.txt
 
 # IDE - VSCode

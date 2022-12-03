@@ -7,7 +7,7 @@
     "start": "node dist/server.js",
     "develop": "tsc && cp -r ./open-api-spec ./dist && concurrently \"tsc -w\" \"nodemon dist/server.js\"",
     "build": "tsc && cp -r ./open-api-spec ./dist",
-    "postinstall": "sh ./src/doc/updateSwaggerVersion.sh",
+    "postinstall": "sh ./open-api-spec/updateOpenAPIVersion.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

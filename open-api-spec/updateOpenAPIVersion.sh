@@ -7,11 +7,12 @@ PACKAGE_VERSION=$(cat package.json \
   | tr -d '[[:space:]]')
 echo "Extracted version: ${PACKAGE_VERSION}"
 
-# Find the swagger file
-SWAGGER_FILE='./src/doc/swagger-doc.yaml'
-echo "Swagger file found: ${SWAGGER_FILE}"
+# Find the openapi file
+OPENAPI_FILE='./open-api-spec/xrpl-data-api.json'
+echo "OpenAPI file found: ${OPENAPI_FILE}"
 
 # Now do the replacement in-place (MacOS/Unix compatible)
-REPLACE='^  version: .*$'
-WITH="  version: '${PACKAGE_VERSION}'"
-sed -i.bak "s#${REPLACE}#${WITH}#g" ${SWAGGER_FILE}
+
+REPLACE='version.*$'
+WITH='version": "'${PACKAGE_VERSION}'",'
+sed -i.bak "s#${REPLACE}#${WITH}#g" ${OPENAPI_FILE}
