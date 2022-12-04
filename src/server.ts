@@ -29,10 +29,15 @@ let nftStore: NftStore;
 let ledgerSync: LedgerSync;
 
 
-let tier1Limit:string[] = loadTier("tier1");
-let tier2Limit:string [] = loadTier("tier2");
-let tier3Limit:string [] = loadTier("tier3");
-let tier4Limit:string [] = loadTier("tier4");
+let tier1LimitIps:string[] = loadIps("tier1");
+let tier2LimitIps:string [] = loadIps("tier2");
+let tier3LimitIps:string [] = loadIps("tier3");
+let tier4LimitIps:string [] = loadIps("tier4");
+
+let tier1LimitKeys:string[] = loadKeys("tier1");
+let tier2LimitKeys:string [] = loadKeys("tier2");
+let tier3LimitKeys:string [] = loadKeys("tier3");
+let tier4LimitKeys:string [] = loadKeys("tier4");
 
 consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
@@ -123,32 +128,48 @@ const start = async () => {
         max: async (req, key) => {
           let limit = 10;
 
-          for(let i = 0; i < tier1Limit.length; i++) {
-            if(tier1Limit[i] != null && tier1Limit[i].length > 0 && key.startsWith(tier1Limit[i])) {
+          for(let i = 0; i < tier1LimitIps.length; i++) {
+            if(tier1LimitIps[i] != null && tier1LimitIps[i].length > 0 && key.startsWith(tier1LimitIps[i])) {
               limit = 60;
-              i = tier1Limit.length;
+              i = tier1LimitIps.length;
             }
           }
 
-          for(let j = 0; j < tier2Limit.length; j++) {
-            if(tier2Limit[j] != null && tier2Limit[j].length > 0 && key.startsWith(tier2Limit[j])) {
+          if(tier1LimitKeys != null && tier1LimitKeys.includes(key)) {
+            limit = 60;
+          }
+
+          for(let j = 0; j < tier2LimitIps.length; j++) {
+            if(tier2LimitIps[j] != null && tier2LimitIps[j].length > 0 && key.startsWith(tier2LimitIps[j])) {
               limit = 300;
-              j = tier2Limit.length;
+              j = tier2LimitIps.length;
             }
           }
 
-          for(let k = 0; k < tier3Limit.length; k++) {
-            if(tier3Limit[k] != null && tier3Limit[k].length > 0 && key.startsWith(tier3Limit[k])) {
+          if(tier2LimitKeys != null && tier2LimitKeys.includes(key)) {
+            limit = 300;
+          }
+
+          for(let k = 0; k < tier3LimitIps.length; k++) {
+            if(tier3LimitIps[k] != null && tier3LimitIps[k].length > 0 && key.startsWith(tier3LimitIps[k])) {
               limit = 600;
-              k = tier3Limit.length;
+              k = tier3LimitIps.length;
             }
           }
 
-          for(let l = 0; l < tier4Limit.length; l++) {
-            if(tier4Limit[l] != null && tier4Limit[l].length > 0 && key.startsWith(tier4Limit[l])) {
+          if(tier3LimitKeys != null && tier3LimitKeys.includes(key)) {
+            limit = 600;
+          }
+
+          for(let l = 0; l < tier4LimitIps.length; l++) {
+            if(tier4LimitIps[l] != null && tier4LimitIps[l].length > 0 && key.startsWith(tier4LimitIps[l])) {
               limit = 1200;
-              l = tier4Limit.length;
+              l = tier4LimitIps.length;
             }
+          }
+
+          if(tier4LimitKeys != null && tier4LimitKeys.includes(key)) {
+            limit = 1200;
           }
 
           if(limit > 10)
@@ -158,7 +179,8 @@ const start = async () => {
         },
         timeWindow: '1 minute',
         keyGenerator: function(req) {
-          return req.headers['x-real-ip'] // nginx
+          return req.headers['x-api-key']
+          || req.headers['x-real-ip'] // nginx
           || req.headers['x-client-ip'] // apache
           || req.headers['x-forwarded-for'] // use this only if you trust the header
           || req.ip // fallback to default
@@ -175,7 +197,7 @@ const start = async () => {
   
           console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath);
           
-          error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later :-)'
+          error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later or contact us to request elevated limits: @XrplServices (on twitter)'
         }
         reply.send(error)
       });
@@ -530,7 +552,21 @@ const start = async () => {
   }
 }
 
-function loadTier(tierName:string): string[] {
+function loadIps(tierName:string): string[] {
+  if(fs.existsSync("/home/api-ips/"+tierName)) {
+    let tier:string = fs.readFileSync("/home/api-ips/"+tierName).toString();
+
+    //console.log(tierName + ": " + tier);
+    if(tier && tier.trim().length > 0)
+      return tier.split(',');
+    else
+      return [];
+  } else {
+    return [];
+  }
+}
+
+function loadKeys(tierName:string): string[] {
   if(fs.existsSync("/home/api-tiers/"+tierName)) {
     let tier:string = fs.readFileSync("/home/api-tiers/"+tierName).toString();
 
