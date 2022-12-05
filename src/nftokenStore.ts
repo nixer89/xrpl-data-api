@@ -93,14 +93,17 @@ export class NftStore {
     }
 
     public findNFtsByOwner(ownerAccount: string): NFT[] {
-      return Array.from(this.nftokenOwnerMap.get(ownerAccount).values());
+      if(this.nftokenOwnerMap.has(ownerAccount))
+        return Array.from(this.nftokenOwnerMap.get(ownerAccount).values());
+      else
+        return [];
     }
 
     public findTaxonsByIssuer(issuerAddress: string): number[] {
       
       if(this.nftokenIssuerMap.has(issuerAddress)) {
         let taxons:number[] = [];
-        let nfts:NFT[] = [...this.nftokenIssuerMap.get(issuerAddress).values()];
+        let nfts:NFT[] = Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
 
         for(let i = 0; i < nfts.length; i++) {
           if(!taxons.includes(nfts[i].Taxon)) {
@@ -117,7 +120,7 @@ export class NftStore {
 
     public findNftsByIssuerAndTaxon(issuerAddress: string, taxon: number): NFT[] {
       if(this.nftokenIssuerMap.has(issuerAddress))
-        return [...this.nftokenIssuerMap.get(issuerAddress).values()].filter(nft => nft.Taxon == taxon).sort((a,b) => a.Sequence - b.Sequence);
+        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values()).filter(nft => nft.Taxon == taxon).sort((a,b) => a.Sequence - b.Sequence);
       else
         return [];
     }
