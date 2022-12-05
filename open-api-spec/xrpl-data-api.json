@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification.\n\nIf you need elevated rate limits, please contact me through the listed channels below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 300 Requests / Minute -> 50 XRP / Month\n- Tier 3 -> Limit: 600 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 1200 Requests / Minute -> 250 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!",
-        "version": "4.1.5",
+        "version": "4.2.0",
         "title": "XRP Ledger Services NFT Api",
         "contact": {
             "name": "@XrplServices",
@@ -114,7 +114,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/IssuerTaxonNftResponse"
+                                    "$ref": "#/components/schemas/IssuerNftResponse"
                                 }
                             }
                         }
@@ -228,6 +228,57 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/IssuerTaxonNftResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },"/xls20-nfts/owner/{owner}": {
+            "get": {
+                "summary": "Get all NFTs owned by a specific account",
+                "description": "Returns an array of NFTs owned by the given Account",
+                "tags": [
+                    "API methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "owner",
+                        "required": true,
+                        "description": "The owner account you want to get the NFTs for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OwnerNftResponse"
                                 }
                             }
                         }
@@ -466,6 +517,37 @@
                         "type": "string"
                     },
                     "taxon": {
+                        "type": "string"
+                    },
+                    "nfts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFT"
+                        }
+                    }
+                }
+            },
+            "OwnerNftResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/OwnerNftData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "OwnerNftData": {
+                "type": "object",
+                "required":["owner","nfts"],
+                "properties": {
+                    "owner": {
                         "type": "string"
                     },
                     "nfts": {

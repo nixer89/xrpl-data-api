@@ -471,7 +471,7 @@ const start = async () => {
               ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
             },
             data: {
-              issuer: request.params.issuer,
+              owner: request.params.owner,
               nfts: nftsOwner
             }
           }
