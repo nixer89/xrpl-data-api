@@ -283,16 +283,18 @@ export class LedgerSync {
             let existingNft = this.nftStore.getNft(nftokenId);
 
             if(existingNft) {
-              existingNft.Owner = newOwnerAccount;
-              this.nftStore.addNFT(existingNft);
+              this.nftStore.changeOwner(existingNft,newOwnerAccount);
             } else {
               console.log("THIS SHOULD NEVER HAVE HAPPENED?!?!? NEW NFT NOT POSSIBLE!")
+              
               let parsedNft = parseNFTokenID(nftokenId);
+
+              console.log(JSON.stringify(parsedNft));
 
               let newNftEntry:NFT = {
                 NFTokenID: parsedNft.NFTokenID,
-                Issuer: transaction.Account,
-                Owner: transaction.Account,
+                Issuer: parsedNft.Issuer,
+                Owner: newOwnerAccount,
                 Taxon: parsedNft.Taxon,
                 TransferFee: parsedNft.TransferFee,
                 Flags: parsedNft.Flags,

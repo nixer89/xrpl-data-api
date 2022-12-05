@@ -11,6 +11,9 @@ export class NftStore {
     private nftokenIssuerMap:Map<string, Map<string, NFT>> = new Map();
     private nftokenIssuerMapTemp:Map<string, Map<string, NFT>> = new Map();
 
+    private nftokenOwnerMap:Map<string, Map<string, NFT>> = new Map();
+    private nftokenOwnerMapTemp:Map<string, Map<string, NFT>> = new Map();
+
     private current_ledger_index: number;
     private current_ledger_index_temp: number;
     private current_ledger_date: string;
@@ -19,10 +22,6 @@ export class NftStore {
     private current_ledger_time_ms_temp: number;
     private current_ledger_hash: string;
     private current_ledger_hash_temp: string;
-
-    private nftokenIssuerAllStructure = {
-      "nfts": {}
-    }
 
     private constructor() { }
 
@@ -39,6 +38,11 @@ export class NftStore {
         this.nftokenIssuerMapTemp.set(newNft.Issuer, new Map());
 
       this.nftokenIssuerMapTemp.get(newNft.Issuer).set(newNft.NFTokenID, newNft);
+
+      if(!this.nftokenOwnerMapTemp.has(newNft.Owner))
+        this.nftokenOwnerMapTemp.set(newNft.Owner, new Map());
+
+      this.nftokenOwnerMapTemp.get(newNft.Owner).set(newNft.NFTokenID, newNft);
     }
 
     public removeNft(burnedNft:NFT) {
@@ -49,17 +53,32 @@ export class NftStore {
 
       this.nftokenIdMapTemp.delete(burnedNft.NFTokenID);
       this.nftokenIssuerMapTemp.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
+      this.nftokenOwnerMapTemp.get(burnedNft.Owner).delete(burnedNft.NFTokenID);
 
       //console.log("nftokenIdMapTemp size AFTER: " + this.nftokenIdMapTemp.size);
       //console.log("nftokenIssuerMapTemp size AFTER: " + this.nftokenIssuerMapTemp.get(burnedNft.Issuer).size);
     }
 
-    public getNft(nftokenId:string) {
-      return this.nftokenIdMapTemp.get(nftokenId);
+    public changeOwner(existingNft:NFT, newOwner: string) {
+      if(this.nftokenOwnerMapTemp.has(existingNft.Owner)) {
+        this.nftokenOwnerMapTemp.get(existingNft.Owner).delete(existingNft.NFTokenID)
+      }
+
+      existingNft.Owner = newOwner;
+
+      if(!this.nftokenOwnerMapTemp.has(existingNft.Owner))
+        this.nftokenOwnerMapTemp.set(existingNft.Owner, new Map());
+
+      this.nftokenOwnerMapTemp.get(existingNft.Owner).set(existingNft.NFTokenID, existingNft);
+
+      this.nftokenIdMapTemp.set(existingNft.NFTokenID, existingNft);
+
+      this.nftokenIssuerMapTemp.get(existingNft.Issuer).set(existingNft.NFTokenID, existingNft);
+
     }
 
-    public getAllNfts(): any {
-      return this.nftokenIssuerAllStructure;
+    public getNft(nftokenId:string) {
+      return this.nftokenIdMapTemp.get(nftokenId);
     }
 
     public getAllIssuers(): string[] {
@@ -74,7 +93,7 @@ export class NftStore {
     }
 
     public findNFtsByOwner(ownerAccount: string): NFT[] {
-      return Array.from(this.nftokenIdMapTemp.values()).filter(nft => ownerAccount === nft.Owner);
+      return Array.from(this.nftokenOwnerMap.get(ownerAccount).values());
     }
 
     public findTaxonsByIssuer(issuerAddress: string): number[] {
@@ -111,18 +130,10 @@ export class NftStore {
     }
 
     public closeInternalStuff() {
-      let newAllStructure = {
-        "nfts": {
-        }
-      }
-
-      this.nftokenIssuerMapTemp.forEach((value, key, map) => {
-        newAllStructure.nfts[key] = value;
-      });
 
       this.nftokenIdMap = new Map(this.nftokenIdMapTemp)
       this.nftokenIssuerMap = new Map(this.nftokenIssuerMapTemp);
-      this.nftokenIssuerAllStructure = newAllStructure;
+      this.nftokenOwnerMap = new Map(this.nftokenOwnerMapTemp);
 
       this.current_ledger_date = this.current_ledger_date_temp;
       this.current_ledger_hash = this.current_ledger_hash_temp;
@@ -143,6 +154,7 @@ export class NftStore {
 
                 this.nftokenIdMapTemp = new Map();
                 this.nftokenIssuerMapTemp = new Map();
+                this.nftokenOwnerMapTemp = new Map();
 
                 this.setCurrentLedgerIndex(nftData.ledger_index);
                 this.setCurrentLedgerHash(nftData.ledger_hash);
@@ -157,6 +169,12 @@ export class NftStore {
                   }
 
                   this.nftokenIssuerMapTemp.get(nftArray[i].Issuer).set(nftArray[i].NFTokenID, nftArray[i]);
+
+                  if(!this.nftokenOwnerMapTemp.has(nftArray[i].Owner)) {
+                    this.nftokenOwnerMapTemp.set(nftArray[i].Owner, new Map());
+                  }
+
+                  this.nftokenOwnerMapTemp.get(nftArray[i].Owner).set(nftArray[i].NFTokenID, nftArray[i]);
                 }
 
                 this.closeInternalStuff();
@@ -164,6 +182,7 @@ export class NftStore {
                 console.log("NFTs loaded!");
                 console.log("nftokenIdMap: " + this.nftokenIdMap.size);
                 console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
+                console.log("nftokenOwnerMap: " + this.nftokenOwnerMap.size);
 
                 //console.log("finished loading nft data!");
                 //console.log("nftokenIdMap: " + this.nftokenIdMap.size);
@@ -179,9 +198,7 @@ export class NftStore {
         this.nftokenIdMapTemp = new Map();
         this.nftokenIssuerMap = new Map();
         this.nftokenIssuerMapTemp = new Map();
-        this.nftokenIssuerAllStructure = {
-          "nfts": []
-        };
+        this.nftokenOwnerMapTemp = new Map();
       }  
     }
 
