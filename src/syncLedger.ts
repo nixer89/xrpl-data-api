@@ -90,9 +90,11 @@ export class LedgerSync {
 
       console.log("STARTING ITERATION AT LEDGER: " + this.currentKnownLedger + " WITH CLIENT: " + clientToUse);
 
+      let iterationClient:Client;
+
       try {
         //try sync from local node!
-        let iterationClient = new Client(clientToUse)
+        iterationClient = new Client(clientToUse)
 
         await iterationClient.connect();
 
@@ -129,23 +131,27 @@ export class LedgerSync {
           }
         }
 
+        this.nftStore.closeInternalStuff();
+
+        console.log("FINISHED SYNCING BACK!")
+
       } catch(err) {
         console.log("err 1")
         console.log(err);
         if(err.data.error === 'lgrNotFound') {
           //restart by iterating with xrplcluster.com!
           await this.iterateThroughMissingLedgers("wss://xrplcluster.com");
-          this.nftStore.closeInternalStuff();
-          console.log("FINISHED SYNCING BACK!")
-          return;
         } else {
           this.reset();
         }
+      } finally {
+        try {
+          if(iterationClient && iterationClient.isConnected())
+            iterationClient.disconnect();
+        } catch(err) {
+          console.log("err diconnecting iteration client");
+        }
       }
-
-      this.nftStore.closeInternalStuff();
-
-      console.log("FINISHED SYNCING BACK!")
     }
 
     private async startListeningOnLedgerClose() {
