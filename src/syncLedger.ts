@@ -135,6 +135,9 @@ export class LedgerSync {
         if(err.data.error === 'lgrNotFound') {
           //restart by iterating with xrplcluster.com!
           await this.iterateThroughMissingLedgers("wss://xrplcluster.com");
+          this.nftStore.closeInternalStuff();
+          console.log("FINISHED SYNCING BACK!")
+          return;
         } else {
           this.reset();
         }
