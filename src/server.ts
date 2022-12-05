@@ -54,6 +54,7 @@ let taxonByIssuerCounter:number = 0;
 let nftsByIssuerCounter:number = 0;
 let nftsByIssuerAndTaxonCounter:number = 0;
 let nftDetailsCounter:number = 0;
+let nftsByOwnerCounter:number = 0;
 let ledgerDataCounter:number = 0;
 let tokenCounter:number = 0;
 let tokenCreationCounter:number = 0;
@@ -442,6 +443,44 @@ const start = async () => {
           return returnValue;
         } catch(err) {
           console.log("error resolving nfts by nftokenid");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/owner/:owner', async (request, reply) => {
+        try {
+          if(!request.params.owner) {
+            reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
+          }
+
+          nftsByOwnerCounter++;
+
+          if(nftsByOwnerCounter%1000 == 0)
+            console.log("nftsByOwnerCounter: " + nftsByOwnerCounter);
+
+          let start = Date.now();
+          //onsole.log("request params: " + JSON.stringify(request.params));
+          let nftsOwner = nftStore.findNFtsByOwner(request.params.owner);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuer: request.params.issuer,
+              nfts: nftsOwner
+            }
+          }
+
+          console.log("xls20_nfts_by_owner_"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving nfts by owner");
           console.log(err);
           reply.code(500).send('Error occured. Please check your request.');
         }

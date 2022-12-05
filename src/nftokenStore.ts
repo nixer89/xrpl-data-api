@@ -73,6 +73,10 @@ export class NftStore {
         return [];
     }
 
+    public findNFtsByOwner(ownerAccount: string): NFT[] {
+      return Array.from(this.nftokenIdMapTemp.values()).filter(nft => ownerAccount === nft.Owner);
+    }
+
     public findTaxonsByIssuer(issuerAddress: string): number[] {
       
       if(this.nftokenIssuerMap.has(issuerAddress)) {
