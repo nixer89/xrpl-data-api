@@ -249,7 +249,7 @@ export class NftStore {
           let nftOffers:any = JSON.parse(fs.readFileSync("./../nftOffers.js").toString());
           if(nftOffers && nftOffers.offers) {
               //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-              let offerArray:NFTokenOffer[] = nftOffers.nfts;
+              let offerArray:NFTokenOffer[] = nftOffers.offers;
 
               //console.log("nftArray: " + this.nftArray.length);
 
