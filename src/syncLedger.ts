@@ -346,13 +346,13 @@ export class LedgerSync {
           let node = affectedNode.CreatedNode;
 
           createdOffers.push({
-            Amount: node.NewFields.Amount,
+            Amount: node.NewFields.Amount ? node.NewFields.Amount : "0",
             Flags: node.NewFields.Flags ? node.NewFields.Flags : 0,
             NFTokenID: node.NewFields.NFTokenID,
             OfferID: node.LedgerIndex,
             Owner: node.NewFields.Owner,
-            Destination: node.NewFields.Destination,
-            Expiration: node.NewFields.Expiration,
+            Destination: node.NewFields.Destination ? node.NewFields.Destination : null,
+            Expiration: node.NewFields.Expiration ? node.NewFields.Expiration : null,
           });
         }
       }
