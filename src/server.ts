@@ -59,6 +59,7 @@ let ledgerDataCounter:number = 0;
 let tokenCounter:number = 0;
 let tokenCreationCounter:number = 0;
 let xls14NftCounter:number = 0;
+let offerIdCounter:number = 0;
 let offerNftCounter:number = 0;
 let offerIssuerCounter:number = 0;
 let offersByIssuerAndTaxonCounter:number = 0;
@@ -86,7 +87,7 @@ const start = async () => {
       await selfAssessments.init();
 
       //sync back to current ledger
-      await ledgerSync.start(0);
+      //await ledgerSync.start(0);
 
       //init routes
       console.log("adding cors");
@@ -519,6 +520,44 @@ const start = async () => {
           }
 
           console.log("xls20_offers_by_nftokenid"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving offers by nftokenid");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/offer/id/:offerid', async (request, reply) => {
+        try {
+          if(!request.params.offerid) {
+            reply.code(400).send('Please provide a offerid. Calls without offerid are not allowed');
+          }
+
+          offerIdCounter++;
+
+          if(offerIdCounter%1000 == 0)
+            console.log("offerIdCounter: " + offerIdCounter);
+
+          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
+          let offer = nftStore.findOfferById(request.params.offerid);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              offerid: request.params.offerid,
+              offer: offer
+            }
+          }
+
+          console.log("xls20_offer_by_offerid"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {

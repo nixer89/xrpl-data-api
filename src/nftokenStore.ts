@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { off } from 'process';
 import { NFT, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
 
 export class NftStore {
@@ -14,8 +15,11 @@ export class NftStore {
     private nftokenOwnerMap:Map<string, Map<string, NFT>> = new Map();
     private nftokenOwnerMapTemp:Map<string, Map<string, NFT>> = new Map();
 
-    private nftOfferMap: Map<string, NFTokenOfferMapEntry> = new Map();
-    private nftOfferMapTemp: Map<string, NFTokenOfferMapEntry> = new Map();
+    private offerIdMap: Map<string, NFTokenOffer> = new Map();
+    private offerIdMapTemp: Map<string, NFTokenOffer> = new Map();
+
+    private offerNftIdMap: Map<string, NFTokenOfferMapEntry> = new Map();
+    private offerNftIdMapTemp: Map<string, NFTokenOfferMapEntry> = new Map();
 
     private current_ledger_index: number;
     private current_ledger_index_temp: number;
@@ -89,12 +93,19 @@ export class NftStore {
         return null;
     }
 
+    public findOfferById(offerId: string): NFTokenOffer {
+      if(this.offerIdMap.has(offerId))
+        return this.offerIdMap.get(offerId)
+      else
+        return null;
+    }
+
     public findOffersByNft(nftokenId: string): NFTokenOfferReturnObject {
-      if(this.nftOfferMap.has(nftokenId)) {
+      if(this.offerNftIdMap.has(nftokenId)) {
         return {
           NFTokenID: nftokenId,
-          buy: Array.from(this.nftOfferMap.get(nftokenId).buy.values()),
-          sell: Array.from(this.nftOfferMap.get(nftokenId).sell.values())
+          buy: Array.from(this.offerNftIdMap.get(nftokenId).buy.values()),
+          sell: Array.from(this.offerNftIdMap.get(nftokenId).sell.values())
         }
       } else
         return null;
@@ -185,22 +196,27 @@ export class NftStore {
 
     public async addNFTOffer(newOffer:NFTokenOffer): Promise<void> {
 
-      if(!this.nftOfferMapTemp.has(newOffer.NFTokenID))
-        this.nftOfferMapTemp.set(newOffer.NFTokenID, {buy: new Map(), sell: new Map()});
+      this.offerIdMapTemp.set(newOffer.OfferID, newOffer);
+
+      if(!this.offerNftIdMapTemp.has(newOffer.NFTokenID))
+        this.offerNftIdMapTemp.set(newOffer.NFTokenID, {buy: new Map(), sell: new Map()});
 
       //this is a sell offer!
       if(newOffer.Flags && newOffer.Flags == 1) {
-        this.nftOfferMapTemp.get(newOffer.NFTokenID).sell.set(newOffer.OfferID, newOffer);
+        this.offerNftIdMapTemp.get(newOffer.NFTokenID).sell.set(newOffer.OfferID, newOffer);
       } else { //this is a buy offer!
-        this.nftOfferMapTemp.get(newOffer.NFTokenID).buy.set(newOffer.OfferID, newOffer);
+        this.offerNftIdMapTemp.get(newOffer.NFTokenID).buy.set(newOffer.OfferID, newOffer);
       }
     }
 
     public removeNftOffer(deletedOffer:any) {
+
+      this.offerIdMap.delete(deletedOffer.OfferID);
+
       if(deletedOffer.Flags && deletedOffer.Flags == 1) {
-        this.nftOfferMapTemp.get(deletedOffer.NFTokenID).sell.delete(deletedOffer.OfferID);
+        this.offerNftIdMapTemp.get(deletedOffer.NFTokenID).sell.delete(deletedOffer.OfferID);
       } else {
-        this.nftOfferMapTemp.get(deletedOffer.NFTokenID).buy.delete(deletedOffer.OfferID);
+        this.offerNftIdMapTemp.get(deletedOffer.NFTokenID).buy.delete(deletedOffer.OfferID);
       }
     }
 
@@ -209,7 +225,8 @@ export class NftStore {
       this.nftokenIdMap = new Map(this.nftokenIdMapTemp)
       this.nftokenIssuerMap = new Map(this.nftokenIssuerMapTemp);
       this.nftokenOwnerMap = new Map(this.nftokenOwnerMapTemp);
-      this.nftOfferMap = new Map(this.nftOfferMapTemp);
+      this.offerIdMap = new Map(this.offerIdMapTemp);
+      this.offerNftIdMap = new Map(this.offerNftIdMapTemp);
 
       this.current_ledger_date = this.current_ledger_date_temp;
       this.current_ledger_hash = this.current_ledger_hash_temp;
@@ -253,7 +270,8 @@ export class NftStore {
 
               //console.log("nftArray: " + this.nftArray.length);
 
-              this.nftOfferMapTemp = new Map();
+              this.offerIdMapTemp = new Map();
+              this.offerNftIdMapTemp = new Map();
 
               for(let i = 0; i < offerArray.length; i++) {
                 this.addNFTOffer(offerArray[i]);
@@ -267,7 +285,8 @@ export class NftStore {
           console.log("nftokenIdMap: " + this.nftokenIdMap.size);
           console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
           console.log("nftokenOwnerMap: " + this.nftokenOwnerMap.size);
-          console.log("nftOfferMap: " + this.nftOfferMap.size);
+          console.log("offerIdMap: " + this.offerIdMap.size);
+          console.log("offerNftIdMap: " + this.offerNftIdMap.size);
 
       } else {
         console.log("nft issuer data file does not exist yet.")
@@ -280,7 +299,8 @@ export class NftStore {
         this.nftokenIssuerMap = new Map();
         this.nftokenIssuerMapTemp = new Map();
         this.nftokenOwnerMapTemp = new Map();
-        this.nftOfferMapTemp = new Map();
+        this.offerIdMapTemp = new Map();
+        this.offerNftIdMapTemp = new Map();
       }  
     }
 
