@@ -1,4 +1,4 @@
-import { NFT } from './util/types';
+import { NFT, NFTokenOffer } from './util/types';
 import { Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
@@ -315,7 +315,63 @@ export class LedgerSync {
             }
           }
         }
+
+        if(transaction.TransactionType === "NFTokenCreateOffer") { // NEW NFT
+          let createdOffers = this.getCreatedNFTOffers(transaction.metaData);
+
+          if(createdOffers && createdOffers.length > 0) {
+            for(let i = 0; i < createdOffers.length; i++) {
+              this.nftStore.addNFTOffer(createdOffers[i]);
+            }
+          }
+
+        } else if(transaction.TransactionType === "NFTokenAcceptOffer" || transaction.TransactionType === "NFTokenCancelOffer") {
+          let deletedOffers = this.getDeletedNFTOffers(transaction.metaData);
+
+          if(deletedOffers && deletedOffers.length > 0) {
+            for(let i = 0; i < deletedOffers.length; i++) {
+              this.nftStore.removeNftOffer(deletedOffers[i]);
+            }
+          }
+        }
       }
+    }
+
+    private getCreatedNFTOffers(metaData: TransactionMetadata): NFTokenOffer[] {
+      let createdOffers:NFTokenOffer[] = [];
+
+      for (let affectedNodeIndex = 0, k_len = metaData.AffectedNodes.length; affectedNodeIndex < k_len; ++affectedNodeIndex) {
+        let affectedNode:any = metaData.AffectedNodes[affectedNodeIndex];
+        if(affectedNode?.CreatedNode?.LedgerEntryType === "NFTokenOffer") {
+          let node = affectedNode.CreatedNode;
+
+          createdOffers.push({
+            Amount: node.NewFields.Amount,
+            Flags: node.NewFields.Flags ? node.NewFields.Flags : 0,
+            NFTokenID: node.NewFields.NFTokenID,
+            OfferID: node.LedgerIndex,
+            Owner: node.NewFields.Owner,
+            Destination: node.NewFields.Destination,
+            Expiration: node.NewFields.Expiration,
+          });
+        }
+      }
+
+      return createdOffers;
+    }
+
+    private getDeletedNFTOffers(metaData: TransactionMetadata): any[] {
+      let deletedOffers:any[] = [];
+
+      for (let affectedNodeIndex = 0, k_len = metaData.AffectedNodes.length; affectedNodeIndex < k_len; ++affectedNodeIndex) {
+        let affectedNode:any = metaData.AffectedNodes[affectedNodeIndex];
+        if(affectedNode?.DeletedNode?.LedgerEntryType === "NFTokenOffer") {
+          let node = affectedNode.DeletedNode;
+          deletedOffers.push({OfferID: node.LedgerIndex, Flags: node.FinalFields.Flags, NFTokenID: node.FinalFields.NFTokenID});
+        }
+      }
+
+      return deletedOffers;
     }
 
     //analyze meta data to determine new NFToken Owner

@@ -59,6 +59,10 @@ let ledgerDataCounter:number = 0;
 let tokenCounter:number = 0;
 let tokenCreationCounter:number = 0;
 let xls14NftCounter:number = 0;
+let offerNftCounter:number = 0;
+let offerIssuerCounter:number = 0;
+let offersByIssuerAndTaxonCounter:number = 0;
+let offersByOwnerCounter:number = 0;
 
 // Run the server!
 const start = async () => {
@@ -477,6 +481,159 @@ const start = async () => {
           }
 
           console.log("xls20_nfts_by_owner_"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving nfts by owner");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/offers/nft/:nftokenid', async (request, reply) => {
+        try {
+          if(!request.params.nftokenid) {
+            reply.code(400).send('Please provide a nftokenid. Calls without nftokenid are not allowed');
+          }
+
+          offerNftCounter++;
+
+          if(offerNftCounter%1000 == 0)
+            console.log("offerNftCounter: " + offerNftCounter);
+
+          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
+          let offers = nftStore.findOffersByNft(request.params.nftokenid);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              nftokenid: request.params.nftokenid,
+              offers: offers
+            }
+          }
+
+          console.log("xls20_offers_by_nftokenid"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving offers by nftokenid");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/offers/issuer/:issuer', async (request, reply) => {
+        try {
+          if(!request.params.issuer) {
+            reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
+          }
+
+          offerIssuerCounter++;
+
+          if(offerIssuerCounter%1000 == 0)
+            console.log("offerIssuerCounter: " + offerIssuerCounter);
+
+          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
+          let offers = nftStore.findOffersByIssuer(request.params.issuer);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuer: request.params.issuer,
+              offers: offers
+            }
+          }
+
+          console.log("xls20_offers_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving offers by issuer");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/offers/issuer/:issuer/taxon/:taxon', async (request, reply) => {
+        try {
+          if(!request.params.issuer || !request.params.taxon) {
+            reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
+          }
+
+          offersByIssuerAndTaxonCounter++;
+
+          if(offersByIssuerAndTaxonCounter%1000 == 0)
+            console.log("offersByIssuerAndTaxonCounter: " + offersByIssuerAndTaxonCounter);
+
+          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
+          let offers = nftStore.findOffersByIssuerAndTaxon(request.params.issuer, request.params.taxon);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuer: request.params.issuer,
+              taxon: request.params.taxon,
+              offers: offers
+            }
+          }
+
+          console.log("xls20_offers_by_issuer_and_taxon"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving nfts by issuer and taxon");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/offers/owner/:owner', async (request, reply) => {
+        try {
+          if(!request.params.owner) {
+            reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
+          }
+
+          offersByOwnerCounter++;
+
+          if(offersByOwnerCounter%1000 == 0)
+            console.log("offersByOwnerCounter: " + offersByOwnerCounter);
+
+          let start = Date.now();
+          //onsole.log("request params: " + JSON.stringify(request.params));
+          let offers = nftStore.findOffersByOwner(request.params.owner);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              owner: request.params.owner,
+              offers: offers
+            }
+          }
+
+          console.log("xls20_offers_by_owner_"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {

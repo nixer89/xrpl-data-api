@@ -38,6 +38,27 @@ export interface NFT {
     Flags?: number
 }
 
+export interface NFTokenOffer {
+    Amount: any,
+    Flags: number,
+    NFTokenID: string,
+    Owner: string,
+    OfferID: string,
+    Destination: string,
+    Expiration: number
+}
+
+export interface NFTokenOfferMapEntry {
+    buy: Map<string,NFTokenOffer>,
+    sell: Map<string,NFTokenOffer>
+}
+
+export interface NFTokenOfferReturnObject {
+    NFTokenID: string,
+    buy: NFTokenOffer[],
+    sell: NFTokenOffer[]
+}
+
 export interface NftApiReturnObject {
     info: {
         ledger_index: number,
