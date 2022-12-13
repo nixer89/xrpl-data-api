@@ -87,7 +87,7 @@ const start = async () => {
       await selfAssessments.init();
 
       //sync back to current ledger
-      //await ledgerSync.start(0);
+      await ledgerSync.start(0);
 
       //init routes
       console.log("adding cors");
