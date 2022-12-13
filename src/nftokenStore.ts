@@ -108,7 +108,11 @@ export class NftStore {
           sell: Array.from(this.offerNftIdMap.get(nftokenId).sell.values())
         }
       } else
-        return null;
+        return {
+          NFTokenID: nftokenId,
+          buy: [],
+          sell: []
+        };
     }
 
     public findOffersByIssuer(issuerAddress: string): NFTokenOfferReturnObject[] {
