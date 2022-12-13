@@ -211,7 +211,7 @@ export class NftStore {
 
     public removeNftOffer(deletedOffer:any) {
 
-      this.offerIdMap.delete(deletedOffer.OfferID);
+      this.offerIdMapTemp.delete(deletedOffer.OfferID);
 
       if(deletedOffer.Flags && deletedOffer.Flags == 1) {
         this.offerNftIdMapTemp.get(deletedOffer.NFTokenID).sell.delete(deletedOffer.OfferID);
