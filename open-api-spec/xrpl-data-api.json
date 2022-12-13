@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification.\n\nIf you need elevated rate limits, please contact me through the listed channels below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 300 Requests / Minute -> 50 XRP / Month\n- Tier 3 -> Limit: 600 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 1200 Requests / Minute -> 250 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!",
-        "version": "4.4.1",
+        "version": "4.4.2",
         "title": "XRP Ledger Services NFT Api",
         "contact": {
             "name": "@XrplServices",
@@ -447,7 +447,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/IssuerTaxonNftResponse"
+                                    "$ref": "#/components/schemas/IssuerTaxonOfferResponse"
                                 }
                             }
                         }
@@ -703,6 +703,32 @@
                 },
                 "title": "NFTOffer"
             },
+            "NFTOfferData": {
+                "type": "object",
+                "required": [
+                    "NFTokenID",
+                    "buy",
+					"sell"
+                ],
+                "properties": {
+                    "NFTokenID": {
+                        "type": "string"
+                    },
+                    "buy": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFTOffer"
+                        }
+                    },
+                    "sell": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFTOffer"
+                        }
+                    }
+                },
+                "title": "NFTOfferData"
+            },
             "Info": {
                 "type": "object",
                 "required": [
@@ -935,7 +961,7 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/NFTOfferData"
                         }
                     }
                 }
@@ -969,7 +995,7 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/NFTOfferData"
                         }
                     }
                 }
@@ -1000,7 +1026,7 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/NFTOfferData"
                         }
                     }
                 }
@@ -1031,7 +1057,7 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/NFTOfferData"
                         }
                     }
                 }
@@ -1054,15 +1080,13 @@
             },
             "NFTOfferIDData": {
                 "type": "object",
-                "required":["owner","offer"],
+                "required":["offerid","offer"],
                 "properties": {
-                    "owner": {
+                    "offerid": {
                         "type": "string"
                     },
                     "offer": {
-                        "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
-                        }
+                        "$ref": "#/components/schemas/NFTOffer"
                     }
                 }
             }
