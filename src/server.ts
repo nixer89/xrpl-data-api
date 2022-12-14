@@ -47,6 +47,7 @@ console.log("adding response compression");
 fastify.register(require('@fastify/compress'), { encodings: ['gzip', 'deflate', 'br', '*', 'identity'] });
 
 
+let totalRequests:number = 0;
 
 let kycCounter:number = 0;
 let allIssuersCounter:number = 0;
@@ -212,9 +213,12 @@ const start = async () => {
         try {
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          tokenCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(tokenCounter%1000 == 0)
+          tokenCounter++;
+          if(tokenCounter%100 == 0)
             console.log("tokenCounter: " + tokenCounter);
 
           let issuers = issuerAccount.getLedgerTokensV1();
@@ -241,9 +245,12 @@ const start = async () => {
         try {
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          xls14NftCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(xls14NftCounter%1000 == 0)
+          xls14NftCounter++;
+          if(xls14NftCounter%100 == 0)
             console.log("xls14NftCounter: " + xls14NftCounter);
 
           let issuers = issuerAccount.getLedgerNftsV1();
@@ -271,10 +278,13 @@ const start = async () => {
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
 
-          allIssuersCounter++;
-
-          if(allIssuersCounter%1000 == 0)
-            console.log("allNftsCounter: " + allIssuersCounter);
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
+          
+            allIssuersCounter++;
+          if(allIssuersCounter%100 == 0)
+            console.log("allIssuersCounter: " + allIssuersCounter);
 
           let allIssuers = nftStore.getAllIssuers();
 
@@ -306,9 +316,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          nftsByIssuerCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(nftsByIssuerCounter%1000 == 0)
+          nftsByIssuerCounter++;
+          if(nftsByIssuerCounter%100 == 0)
             console.log("nftsByIssuerCounter: " + nftsByIssuerCounter);
 
           //let start = Date.now();
@@ -344,9 +357,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          nftsByIssuerAndTaxonCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(nftsByIssuerAndTaxonCounter%1000 == 0)
+          nftsByIssuerAndTaxonCounter++;
+          if(nftsByIssuerAndTaxonCounter%100 == 0)
             console.log("nftsByIssuerAndTaxonCounter: " + nftsByIssuerAndTaxonCounter);
 
           //let start = Date.now();
@@ -383,9 +399,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          taxonByIssuerCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(taxonByIssuerCounter%1000 == 0)
+          taxonByIssuerCounter++;
+          if(taxonByIssuerCounter%100 == 0)
             console.log("taxonByIssuerCounter: " + taxonByIssuerCounter);
 
           //let start = Date.now();
@@ -421,9 +440,12 @@ const start = async () => {
             reply.code(400).send('Please provide a nftokenid. Calls without nftokenid are not allowed');
           }
 
-          nftDetailsCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(nftDetailsCounter%1000 == 0)
+          nftDetailsCounter++;
+          if(nftDetailsCounter%100 == 0)
             console.log("nftDetailsCounter: " + nftDetailsCounter);
 
           //let start = Date.now();
@@ -459,9 +481,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          nftsByOwnerCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(nftsByOwnerCounter%1000 == 0)
+          nftsByOwnerCounter++;
+          if(nftsByOwnerCounter%100 == 0)
             console.log("nftsByOwnerCounter: " + nftsByOwnerCounter);
 
           let start = Date.now();
@@ -497,9 +522,12 @@ const start = async () => {
             reply.code(400).send('Please provide a nftokenid. Calls without nftokenid are not allowed');
           }
 
-          offerNftCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(offerNftCounter%1000 == 0)
+          offerNftCounter++;
+          if(offerNftCounter%100 == 0)
             console.log("offerNftCounter: " + offerNftCounter);
 
           let start = Date.now();
@@ -535,9 +563,12 @@ const start = async () => {
             reply.code(400).send('Please provide a offerid. Calls without offerid are not allowed');
           }
 
-          offerIdCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(offerIdCounter%1000 == 0)
+          offerIdCounter++;
+          if(offerIdCounter%100 == 0)
             console.log("offerIdCounter: " + offerIdCounter);
 
           let start = Date.now();
@@ -573,9 +604,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          offerIssuerCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(offerIssuerCounter%1000 == 0)
+          offerIssuerCounter++;
+          if(offerIssuerCounter%100 == 0)
             console.log("offerIssuerCounter: " + offerIssuerCounter);
 
           let start = Date.now();
@@ -611,9 +645,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          offersByIssuerAndTaxonCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(offersByIssuerAndTaxonCounter%1000 == 0)
+          offersByIssuerAndTaxonCounter++;
+          if(offersByIssuerAndTaxonCounter%100 == 0)
             console.log("offersByIssuerAndTaxonCounter: " + offersByIssuerAndTaxonCounter);
 
           let start = Date.now();
@@ -650,9 +687,12 @@ const start = async () => {
             reply.code(400).send('Please provide a issuer. Calls without issuer are not allowed');
           }
 
-          offersByOwnerCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(offersByOwnerCounter%1000 == 0)
+          offersByOwnerCounter++;
+          if(offersByOwnerCounter%100 == 0)
             console.log("offersByOwnerCounter: " + offersByOwnerCounter);
 
           let start = Date.now();
@@ -688,9 +728,12 @@ const start = async () => {
           let ledgerDataObjects: any[] = await ledgerData.getLedgerDataV1();
           //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
 
-          ledgerDataCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(ledgerDataCounter%1000 == 0)
+          ledgerDataCounter++;
+          if(ledgerDataCounter%100 == 0)
             console.log("ledgerDataCounter: " + ledgerDataCounter);
 
           let returnValue = {
@@ -719,9 +762,12 @@ const start = async () => {
       } else {
           try {
               //console.time("kyc");
-              kycCounter++;
+              totalRequests++
+              if(totalRequests%1000 == 0)
+                console.log("totalRequests: " + totalRequests);
 
-              if(kycCounter%1000 == 0)
+              kycCounter++;
+              if(kycCounter%100 == 0)
                 console.log("KYC: " + kycCounter);
 
               let returnValue = {
@@ -743,9 +789,12 @@ const start = async () => {
 
         try {
 
-          tokenCreationCounter++;
+          totalRequests++
+          if(totalRequests%1000 == 0)
+            console.log("totalRequests: " + totalRequests);
 
-          if(tokenCreationCounter%1000 == 0)
+          tokenCreationCounter++;
+          if(tokenCreationCounter%100 == 0)
             console.log("tokenCreationCounter: " + tokenCreationCounter);
 
           //console.time("tokencreation");
