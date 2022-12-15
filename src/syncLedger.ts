@@ -14,6 +14,12 @@ export class LedgerSync {
     private nftStore:NftStore;
     private currentKnownLedger: number = 0;
 
+    private totalMintedInThisLedger:number = 0;
+    private totalBurnedInThisLedger:number = 0;
+    private totalOwnerChangedInThisLedger:number = 0;
+    private totalOfferCreatedInThisLedger:number = 0;
+    private totalOfferDeletedInThisLedger:number = 0;
+
     private constructor() { }
 
     public static get Instance(): LedgerSync
@@ -165,6 +171,11 @@ export class LedgerSync {
 
             if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
 
+              console.log("previous ledger: " + this.currentKnownLedger + " | minted: " + this.totalMintedInThisLedger + " | burned: " + this.totalBurnedInThisLedger + " | ownerChanged: " + this.totalOwnerChangedInThisLedger + " | created: " + this.totalOfferCreatedInThisLedger + " | deleted: " + this.totalOfferDeletedInThisLedger);
+
+              //reset counters
+              this.totalMintedInThisLedger = this.totalBurnedInThisLedger = this.totalOwnerChangedInThisLedger = this.totalOfferCreatedInThisLedger = this.totalOfferDeletedInThisLedger =  0;
+
               let start = Date.now();
               let ledgerRequest:LedgerRequest = {
                 command: 'ledger',
@@ -269,6 +280,7 @@ export class LedgerSync {
             }
 
             this.nftStore.addNFT(newNftEntry);
+            this.totalMintedInThisLedger++;
           }
 
         } else if(transaction.TransactionType === "NFTokenBurn") { // BURNED NFT
@@ -279,6 +291,7 @@ export class LedgerSync {
 
             let burnedNft = this.nftStore.getNft(burnedTokenId);
             this.nftStore.removeNft(burnedNft);
+            this.totalBurnedInThisLedger++;
           }
 
         } else { // CHECK FOR OWNER CHANGE!
@@ -293,6 +306,7 @@ export class LedgerSync {
 
             if(existingNft) {
               this.nftStore.changeOwner(existingNft,newOwnerAccount);
+              this.totalOwnerChangedInThisLedger++;
             } else {
               console.log("THIS SHOULD NEVER HAVE HAPPENED?!?!? NEW NFT NOT POSSIBLE!")
               
@@ -322,6 +336,7 @@ export class LedgerSync {
           if(createdOffers && createdOffers.length > 0) {
             for(let i = 0; i < createdOffers.length; i++) {
               this.nftStore.addNFTOffer(createdOffers[i]);
+              this.totalOfferCreatedInThisLedger++;
             }
           }
 
@@ -331,6 +346,7 @@ export class LedgerSync {
           if(deletedOffers && deletedOffers.length > 0) {
             for(let i = 0; i < deletedOffers.length; i++) {
               this.nftStore.removeNftOffer(deletedOffers[i]);
+              this.totalOfferDeletedInThisLedger++;
             }
           }
         }
