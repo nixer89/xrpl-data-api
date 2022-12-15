@@ -118,11 +118,12 @@ export class AccountNames {
             
             if(bithompResponse && bithompResponse.ok) {
                 let knownServices:any = await bithompResponse.json();
-                if(knownServices && knownServices.addresses) {
 
-                    console.log("total bithomp services known: " + knownServices.total);
+                if(knownServices && knownServices["addresses"]) {
 
-                    let addresses = knownServices.addresses;
+                    console.log("total bithomp services known: " + knownServices["total"]);
+
+                    let addresses = knownServices["addresses"];
 
                     for (var account in addresses) {
                         if (addresses.hasOwnProperty(account)) {
