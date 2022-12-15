@@ -171,7 +171,7 @@ export class LedgerSync {
 
             if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
 
-              console.log("previous ledger: " + this.currentKnownLedger + " | minted: " + this.totalMintedInThisLedger + " | burned: " + this.totalBurnedInThisLedger + " | ownerChanged: " + this.totalOwnerChangedInThisLedger + " | created: " + this.totalOfferCreatedInThisLedger + " | deleted: " + this.totalOfferDeletedInThisLedger);
+              //console.log("previous ledger: " + this.currentKnownLedger + " | minted: " + this.totalMintedInThisLedger + " | burned: " + this.totalBurnedInThisLedger + " | ownerChanged: " + this.totalOwnerChangedInThisLedger + " | created: " + this.totalOfferCreatedInThisLedger + " | deleted: " + this.totalOfferDeletedInThisLedger);
 
               //reset counters
               this.totalMintedInThisLedger = this.totalBurnedInThisLedger = this.totalOwnerChangedInThisLedger = this.totalOfferCreatedInThisLedger = this.totalOfferDeletedInThisLedger =  0;
