@@ -120,14 +120,18 @@ export class AccountNames {
                 let knownServices:any = await bithompResponse.json();
                 if(knownServices && knownServices.addresses) {
 
-                    for (var address in knownServices.addresses) {
-                        if (knownServices.addresses.hasOwnProperty(address)) {
-                            let mainName:string = knownServices.addresses[address].name;
-                            let domain:string = knownServices.addresses[address].domain;
-                            let twitter:string = knownServices.addresses[address].socialAccounts ? knownServices.addresses[address].socialAccounts.twitter : null;
+                    console.log("total bithomp services known: " + knownServices.total);
+
+                    let addresses = knownServices.addresses;
+
+                    for (var account in addresses) {
+                        if (addresses.hasOwnProperty(account)) {
+                            let mainName:string = addresses[account].name;
+                            let domain:string = addresses[account].domain;
+                            let twitter:string = addresses[account].socialAccounts ? addresses[account].socialAccounts.twitter : null;
 
                             if(mainName) {
-                                this.bithompServiceNames.set(address, {resolvedBy: "Bithomp", account: address, username: mainName, domain: domain, twitter: twitter, verified: true});
+                                this.bithompServiceNames.set(account, {resolvedBy: "Bithomp", account: account, username: mainName, domain: domain, twitter: twitter, verified: true});
                             }
                         }
                     }
