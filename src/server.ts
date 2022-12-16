@@ -42,6 +42,7 @@ let tier4LimitKeys:string[] = loadKeys("tier4");
 let blocked:string[] = loadBlocked();
 
 let keyMap:Map<string,number> = new Map();
+let blockedMap:Map<string,number> = new Map();
 
 let showHeaders = 0;
 
@@ -143,7 +144,7 @@ const start = async () => {
 
           let calls = 1;
           if(keyMap.has(key)) {
-            let calls = keyMap.get(key);
+            calls = keyMap.get(key);
             calls++;
           }
 
@@ -228,24 +229,38 @@ const start = async () => {
       await fastify.setErrorHandler(function (error, req, reply) {
         if (reply.statusCode === 429) {
   
-          let ip = req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
+          let key = req.headers['x-api-key']
+                || req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
                 || req.headers['x-real-ip'] // nginx
                 || req.headers['x-client-ip'] // apache
                 || req.headers['x-forwarded-for'] // use this only if you trust the header
                 || req.ip // fallback to default
 
+
+          let blocks = 1;
+          if(blockedMap.has(key)) {
+            blocks = keyMap.get(key);
+            blocks++;
+          }
+
+          blockedMap.set(key,blocks);
+
+          if(blocks%100 == 0) {
+            console.log(key + " already blocked: " + blocks + " times.");
+          }
+
           let isBlocked = false;
 
           for(let m = 0; m < blocked.length; m++) {
-            if(blocked[m] != null && blocked[m].length > 0 && ip.startsWith(blocked[m])) {
+            if(blocked[m] != null && blocked[m].length > 0 && key.startsWith(blocked[m])) {
               isBlocked = true;
               m = blocked.length;
             }
           }
   
           if(!isBlocked) {
-            console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath + " with: " + JSON.stringify(req.params));
-            error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later or contact us to request elevated limits: @XrplServices (on twitter)'
+            //console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath + " with: " + JSON.stringify(req.params));
+            error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later. Check https://api.xrpldata.com/docs for API limits and contact us to request elevated limits: @XrplServices (on twitter)'
           } else {
             showHeaders++;
 
