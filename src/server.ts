@@ -206,7 +206,7 @@ const start = async () => {
             console.log("limit: " + limit + " for key: " + key);
           }
 
-          if(limit = 0) {
+          if(limit == 0) {
             console.log("blocked: " + key);
           }
 
