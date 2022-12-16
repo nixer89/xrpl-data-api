@@ -217,6 +217,7 @@ const start = async () => {
         timeWindow: '1 minute',
         keyGenerator: function(req) {
           return req.headers['x-api-key']
+          || req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
           || req.headers['x-real-ip'] // nginx
           || req.headers['x-client-ip'] // apache
           || req.headers['x-forwarded-for'] // use this only if you trust the header
@@ -227,7 +228,8 @@ const start = async () => {
       await fastify.setErrorHandler(function (error, req, reply) {
         if (reply.statusCode === 429) {
   
-          let ip = req.headers['x-real-ip'] // nginx
+          let ip = req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
+                || req.headers['x-real-ip'] // nginx
                 || req.headers['x-client-ip'] // apache
                 || req.headers['x-forwarded-for'] // use this only if you trust the header
                 || req.ip // fallback to default
@@ -250,7 +252,7 @@ const start = async () => {
             if(showHeaders < 10) {
               console.log(JSON.stringify(req.headers));
             }
-            
+
             error.message = 'Please contact us to request elevated limits: @XrplServices (on twitter)'
           }
         }
