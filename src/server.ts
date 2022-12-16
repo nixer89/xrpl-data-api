@@ -30,14 +30,18 @@ let ledgerSync: LedgerSync;
 
 
 let tier1LimitIps:string[] = loadIps("tier1");
-let tier2LimitIps:string [] = loadIps("tier2");
-let tier3LimitIps:string [] = loadIps("tier3");
-let tier4LimitIps:string [] = loadIps("tier4");
+let tier2LimitIps:string[] = loadIps("tier2");
+let tier3LimitIps:string[] = loadIps("tier3");
+let tier4LimitIps:string[] = loadIps("tier4");
 
 let tier1LimitKeys:string[] = loadKeys("tier1");
-let tier2LimitKeys:string [] = loadKeys("tier2");
-let tier3LimitKeys:string [] = loadKeys("tier3");
-let tier4LimitKeys:string [] = loadKeys("tier4");
+let tier2LimitKeys:string[] = loadKeys("tier2");
+let tier3LimitKeys:string[] = loadKeys("tier3");
+let tier4LimitKeys:string[] = loadKeys("tier4");
+
+let blocked:string[] = loadBlocked();
+
+let keyMap:Map<string,number> = new Map();
 
 consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
@@ -135,6 +139,18 @@ const start = async () => {
         max: async (req, key) => {
           let limit = 10;
 
+          let calls = 1;
+          if(keyMap.has(key)) {
+            let calls = keyMap.get(key);
+            calls++;
+          }
+
+          keyMap.set(key,calls);
+
+          if(calls%100 == 0) {
+            console.log(key + " already called: " + calls + " times.");
+          }
+
           for(let i = 0; i < tier1LimitIps.length; i++) {
             if(tier1LimitIps[i] != null && tier1LimitIps[i].length > 0 && key.startsWith(tier1LimitIps[i])) {
               limit = 60;
@@ -179,8 +195,20 @@ const start = async () => {
             limit = 1200;
           }
 
-          if(limit > 10)
+          for(let m = 0; m < blocked.length; m++) {
+            if(blocked[m] != null && blocked[m].length > 0 && key.startsWith(blocked[m])) {
+              limit = 0;
+              m = blocked.length;
+            }
+          }
+
+          if(limit > 10) {
             console.log("limit: " + limit + " for key: " + key);
+          }
+
+          if(limit = 0) {
+            console.log("blocked: " + key);
+          }
 
           return limit;
         },
@@ -851,12 +879,26 @@ function loadIps(tierName:string): string[] {
 }
 
 function loadKeys(tierName:string): string[] {
-  if(fs.existsSync("/home/api-tiers/"+tierName)) {
-    let tier:string = fs.readFileSync("/home/api-tiers/"+tierName).toString();
+  if(fs.existsSync("/home/api-keys/"+tierName)) {
+    let tier:string = fs.readFileSync("/home/api-key/"+tierName).toString();
 
     //console.log(tierName + ": " + tier);
     if(tier && tier.trim().length > 0)
       return tier.split(',');
+    else
+      return [];
+  } else {
+    return [];
+  }
+}
+
+function loadBlocked(): string[] {
+  if(fs.existsSync("/home/api-blocked/blocked")) {
+    let blocked:string = fs.readFileSync("/home/api-blocked/blocked").toString();
+
+    //console.log(tierName + ": " + tier);
+    if(blocked && blocked.trim().length > 0)
+      return blocked.split(',');
     else
       return [];
   } else {
