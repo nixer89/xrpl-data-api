@@ -239,7 +239,7 @@ const start = async () => {
 
           let blocks = 1;
           if(blockedMap.has(key)) {
-            blocks = keyMap.get(key);
+            blocks = blockedMap.get(key);
             blocks++;
           }
 
