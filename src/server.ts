@@ -229,10 +229,22 @@ const start = async () => {
                 || req.headers['x-client-ip'] // apache
                 || req.headers['x-forwarded-for'] // use this only if you trust the header
                 || req.ip // fallback to default
+
+          let isBlocked = false;
+
+          for(let m = 0; m < blocked.length; m++) {
+            if(blocked[m] != null && blocked[m].length > 0 && ip.startsWith(blocked[m])) {
+              isBlocked = true;
+              m = blocked.length;
+            }
+          }
   
-          console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath);
-          
-          error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later or contact us to request elevated limits: @XrplServices (on twitter)'
+          if(!isBlocked) {
+            console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath);
+            error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later or contact us to request elevated limits: @XrplServices (on twitter)'
+          } else {
+            error.message = 'Please contact us to request elevated limits: @XrplServices (on twitter)'
+          }
         }
         reply.send(error)
       });

@@ -1,6 +1,6 @@
 {
   "name": "xrpl-data-api",
-  "version": "4.5.4",
+  "version": "4.5.5",
   "description": "tracks periodically the latest issued token on the xrp ledger (every 10 minutes)",
   "main": "src/server.ts",
   "scripts": {
@@ -36,6 +36,7 @@
     "ioredis": "^5.2.4",
     "node-fetch": "^2.6.7",
     "node-schedule": "^2.1.0",
+    "ripple-address-codec": "^4.2.4",
     "xrpl": "^2.6.0"
   },
   "devDependencies": {
