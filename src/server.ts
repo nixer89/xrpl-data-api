@@ -880,7 +880,7 @@ function loadIps(tierName:string): string[] {
 
 function loadKeys(tierName:string): string[] {
   if(fs.existsSync("/home/api-keys/"+tierName)) {
-    let tier:string = fs.readFileSync("/home/api-key/"+tierName).toString();
+    let tier:string = fs.readFileSync("/home/api-keys/"+tierName).toString();
 
     //console.log(tierName + ": " + tier);
     if(tier && tier.trim().length > 0)
