@@ -43,6 +43,8 @@ let blocked:string[] = loadBlocked();
 
 let keyMap:Map<string,number> = new Map();
 
+let showHeaders = 0;
+
 consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
 const fastify = require('fastify')({ trustProxy: true })
@@ -243,6 +245,12 @@ const start = async () => {
             console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath);
             error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later or contact us to request elevated limits: @XrplServices (on twitter)'
           } else {
+            showHeaders++;
+
+            if(showHeaders < 10) {
+              console.log(JSON.stringify(req.headers));
+            }
+            
             error.message = 'Please contact us to request elevated limits: @XrplServices (on twitter)'
           }
         }
