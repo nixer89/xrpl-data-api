@@ -205,10 +205,6 @@ const start = async () => {
             }
           }
 
-          if(limit > 10) {
-            console.log("limit: " + limit + " for key: " + key);
-          }
-
           if(limit == 0) {
             console.log("blocked: " + key);
           }
@@ -238,6 +234,7 @@ const start = async () => {
 
 
           let blocks = 1;
+
           if(blockedMap.has(key)) {
             blocks = blockedMap.get(key);
             blocks++;
