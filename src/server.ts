@@ -875,6 +875,18 @@ const start = async () => {
           reply.code(500).send('Error occured. Please check your request.');
         }
       });
+
+
+    await fastify.addHook('onRequest', (request, reply, done) => {
+      request['start'] = Date.now();
+    });
+
+    await fastify.addHook('onSend', async (request, reply, payload) => {
+      if(request['start']) {
+        let responseTime = Date.now() - request['start'];
+        console.log("responseTime: " + responseTime + " ms.")
+      }
+    });
       
     console.log("declaring 200er reponse")
     fastify.get('/api', async (request, reply) => {
