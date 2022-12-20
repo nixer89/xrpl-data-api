@@ -879,6 +879,7 @@ const start = async () => {
 
     await fastify.addHook('onRequest', (request, reply, done) => {
       request['start'] = Date.now();
+      done()
     });
 
     await fastify.addHook('onSend', async (request, reply, payload) => {
@@ -886,6 +887,8 @@ const start = async () => {
         let responseTime = Date.now() - request['start'];
         console.log("responseTime: " + responseTime + " ms.")
       }
+
+      return payload;
     });
       
     console.log("declaring 200er reponse")
