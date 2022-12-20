@@ -877,6 +877,7 @@ const start = async () => {
       });
 
 
+    /**
     await fastify.addHook('onRequest', (request, reply, done) => {
       request['start'] = Date.now();
       done()
@@ -890,6 +891,7 @@ const start = async () => {
 
       return payload;
     });
+     */
       
     console.log("declaring 200er reponse")
     fastify.get('/api', async (request, reply) => {
