@@ -25,7 +25,10 @@ export class LedgerSync {
     private totalOfferCreatedInThisLedger:number = 0;
     private totalOfferDeletedInThisLedger:number = 0;
 
-    private constructor() { }
+    private constructor() {
+      console.log("PM2_INSTANCE_ID: " + process.env.PM2_INSTANCE_ID);
+      console.log("XRPL_CLUSTER_CONNECTIONS: " + process.env.XRPL_CLUSTER_CONNECTIONS);
+    }
 
     public static get Instance(): LedgerSync
     {
