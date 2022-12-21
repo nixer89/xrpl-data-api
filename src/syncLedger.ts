@@ -5,9 +5,14 @@ import { NftStore } from './nftokenStore';
 
 export class LedgerSync {
 
+    pm2Instance:number = process.env.PM2_INSTANCE_ID ? parseInt(process.env.PM2_INSTANCE_ID) : 0;
+    xrplClusterConnections:number = process.env.XRPL_CLUSTER_CONNECTIONS ? parseInt(process.env.XRPL_CLUSTER_CONNECTIONS) : -1;
+
+    clientUrl:string = this.xrplClusterConnections > 0 ? (this.pm2Instance < this.xrplClusterConnections ? "wss://xrplcluster.com" : "ws://127.0.0.1:6006") : "wss://xrplcluster.com"; 
+
     private static _instance: LedgerSync;
 
-    private client = new Client("wss://xrplcluster.com");
+    private client = new Client(this.clientUrl);
 
     private finishedIteration:boolean = false;
 
@@ -42,12 +47,17 @@ export class LedgerSync {
 
         if(retryCount > 5) {
           console.log("COULD NOT CONNECT TO NODE! SWITCHING!")
-          this.client = new Client("ws://127.0.0.1:6006")
+          if(this.xrplClusterConnections > 0 && this.pm2Instance >= this.xrplClusterConnections) {
+            this.client = new Client("wss://xrplcluster.com")
+          } else {
+            this.client = new Client("ws://127.0.0.1:6006")
+          }
+          
         } else if(retryCount > 10) {
           //force restart by pm2
           process.exit(1);
         } else {
-          this.client = new Client("wss://xrplcluster.com")
+          this.client = new Client(this.clientUrl)
         }
 
         this.nftStore = NftStore.Instance;
@@ -66,7 +76,7 @@ export class LedgerSync {
         });
 
         this.client.on('connected',() => {
-          console.log("Connected.")
+          console.log("Connected to: " + this.client.url);
         });
 
         try {
