@@ -283,7 +283,7 @@ export class LedgerSync {
 
             let newNftEntry:NFT = {
               NFTokenID: parsedNft.NFTokenID,
-              Issuer: transaction.Issuer || transaction.Account,
+              Issuer: parsedNft.Issuer,
               Owner: transaction.Account,
               Taxon: parsedNft.Taxon,
               TransferFee: parsedNft.TransferFee,
@@ -323,22 +323,8 @@ export class LedgerSync {
             } else {
               console.log("THIS SHOULD NEVER HAVE HAPPENED?!?!? NEW NFT NOT POSSIBLE!")
               
-              let parsedNft = parseNFTokenID(nftokenId);
-
-              console.log(JSON.stringify(parsedNft));
-
-              let newNftEntry:NFT = {
-                NFTokenID: parsedNft.NFTokenID,
-                Issuer: parsedNft.Issuer,
-                Owner: newOwnerAccount,
-                Taxon: parsedNft.Taxon,
-                TransferFee: parsedNft.TransferFee,
-                Flags: parsedNft.Flags,
-                Sequence: parsedNft.Sequence,
-                URI: transaction.URI
-              }
-
-              this.nftStore.addNFT(newNftEntry);
+              //restart tool
+              process.exit(1);
             }
           }
         }
