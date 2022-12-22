@@ -283,7 +283,7 @@ export class LedgerSync {
 
             let newNftEntry:NFT = {
               NFTokenID: parsedNft.NFTokenID,
-              Issuer: transaction.Account,
+              Issuer: transaction.Issuer || transaction.Account,
               Owner: transaction.Account,
               Taxon: parsedNft.Taxon,
               TransferFee: parsedNft.TransferFee,
