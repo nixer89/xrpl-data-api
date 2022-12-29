@@ -173,15 +173,15 @@ export async function registerRoutes(fastify, opts, done) {
         }
       });
 
-      fastify.get('/api/v1/xls20-nfts/offers/nftowner/:owner', async (request, reply) => {
+      fastify.get('/api/v1/xls20-nfts/offers/nftowner/:nftowner', async (request, reply) => {
         try {
-          if(!request.params.owner) {
+          if(!request.params.nftowner) {
             reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
           }
 
          // let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
-          let offers = nftStore.findOffersByNftOwner(request.params.owner);
+          let offers = nftStore.findOffersByNftOwner(request.params.nftowner);
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -191,7 +191,7 @@ export async function registerRoutes(fastify, opts, done) {
               ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
             },
             data: {
-              nftowner: request.params.owner,
+              nftowner: request.params.nftowner,
               offers: offers
             }
           }
@@ -206,15 +206,15 @@ export async function registerRoutes(fastify, opts, done) {
         }
       });
 
-      fastify.get('/api/v1/xls20-nfts/offers/offerowner/:owner', async (request, reply) => {
+      fastify.get('/api/v1/xls20-nfts/offers/offerowner/:offerowner', async (request, reply) => {
         try {
-          if(!request.params.owner) {
+          if(!request.params.offerowner) {
             reply.code(400).send('Please provide an offer owner account. Calls without offer owner account are not allowed');
           }
 
           //let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
-          let offers = nftStore.findOffersByOfferOwner(request.params.owner);
+          let offers = nftStore.findOffersByOfferOwner(request.params.offerowner);
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -224,7 +224,7 @@ export async function registerRoutes(fastify, opts, done) {
               ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
             },
             data: {
-              offerowner: request.params.owner,
+              offerowner: request.params.offerowner,
               offers: offers
             }
           }
@@ -247,7 +247,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
-          let offers = nftStore.findOffersByOfferDestination(request.params.owner);
+          let offers = nftStore.findOffersByOfferDestination(request.params.offerdestination);
 
           let returnValue:NftApiReturnObject = {
             info: {
