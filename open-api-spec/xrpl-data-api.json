@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification.\n\nIf you need elevated rate limits, please contact me through the listed channels below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 300 Requests / Minute -> 50 XRP / Month\n- Tier 3 -> Limit: 600 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 1200 Requests / Minute -> 250 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!",
-        "version": "4.6.2",
+        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification.\n\nIf you need elevated rate limits, please contact me through the listed channels below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 300 Requests / Minute -> 50 XRP / Month\n- Tier 3 -> Limit: 600 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 1200 Requests / Minute -> 250 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`",
+        "version": "5.0.0",
         "title": "XRP Ledger Services NFT Api",
         "contact": {
             "name": "@XrplServices",
@@ -50,7 +50,7 @@
                                 },
                                 "description": "Maximum number of requests per minute."
                             },
-                            "x-ratelimit-lemaining": {
+                            "x-ratelimit-remaining": {
                                 "schema": {
                                     "type": "integer"
                                 },
@@ -454,7 +454,7 @@
                     }
                 }
             }
-        },"/xls20-nfts/offers/owner/{owner}": {
+        },"/xls20-nfts/offers/nftowner/{nftowner}": {
             "get": {
                 "summary": "Get all Offers for NFTs owned by a specific account",
                 "description": "Returns an array of Offers for NFTs owned by the given Account",
@@ -464,9 +464,9 @@
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "owner",
+                        "name": "nftowner",
                         "required": true,
-                        "description": "The owner account you want to get the Offers for.",
+                        "description": "The nft owner account you want to get the Offers for.",
                         "schema": {
                             "type": "string"
                         }
@@ -498,7 +498,111 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OwnerOfferResponse"
+                                    "$ref": "#/components/schemas/NftOwnerOfferResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/offers/offerowner/{offerowner}": {
+            "get": {
+                "summary": "Get all NFT Offers owned by a specific account..",
+                "description": "Returns ALL NFT Offers owned by a specific account.",
+                "tags": [
+                    "Offer methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "offerowner",
+                        "required": true,
+                        "description": "The Offer Owner Account which you want to get the Offers for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferOwnerResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/offers/offerdestination/{offerdestination}": {
+            "get": {
+                "summary": "Get all NFT Offers of a specific account which is set as `Destination`",
+                "description": "Returns ALL NFT Offers for a single account which is set as `Destination`.",
+                "tags": [
+                    "Offer methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "offerdestination",
+                        "required": true,
+                        "description": "The Offer Destination Account which you want to get the Offers for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferDestinationResponse"
                                 }
                             }
                         }
@@ -621,7 +725,8 @@
                     "Issuer",
 					"Owner",
 					"Taxon",
-					"Sequence"
+					"Sequence",
+                    "TransferFee"
                 ],
                 "properties": {
                     "NFTokenID": {
@@ -646,7 +751,7 @@
                         "type": "number"
                     },
                     "URI": {
-                        "type": "number"
+                        "type": "string"
                     }
                 },
                 "title": "NFT"
@@ -929,9 +1034,7 @@
                 "required":["nft"],
                 "properties": {
                     "nft": {
-                        "items": {
-                            "$ref": "#/components/schemas/NFT"
-                        }
+                        "$ref": "#/components/schemas/NFT"
                     }
                 }
             },
@@ -1000,7 +1103,7 @@
                     }
                 }
             },
-            "OwnerOfferResponse": {
+            "NftOwnerOfferResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1011,16 +1114,16 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/OwnerOfferData"
+                        "$ref": "#/components/schemas/NftOwnerOfferData"
                     }
                 },
                 "title": "ValidationError"
             },
-            "OwnerOfferData": {
+            "NftOwnerOfferData": {
                 "type": "object",
-                "required":["owner","offers"],
+                "required":["nftowner","offers"],
                 "properties": {
-                    "owner": {
+                    "nftowner": {
                         "type": "string"
                     },
                     "offers": {
@@ -1084,6 +1187,68 @@
                     },
                     "offer": {
                         "$ref": "#/components/schemas/NFTOffer"
+                    }
+                }
+            },
+            "OfferOwnerResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/OfferOwnerData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "OfferOwnerData": {
+                "type": "object",
+                "required":["offerowner","offers"],
+                "properties": {
+                    "offerowner": {
+                        "type": "string"
+                    },
+                    "offers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFTOffer"
+                        }
+                    }
+                }
+            },
+            "OfferDestinationResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/OfferDestinationData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "OfferDestinationData": {
+                "type": "object",
+                "required":["offerdestination","offers"],
+                "properties": {
+                    "offerdestination": {
+                        "type": "string"
+                    },
+                    "offers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFTOffer"
+                        }
                     }
                 }
             }

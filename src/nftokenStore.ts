@@ -129,9 +129,9 @@ export class NftStore {
       return this.findAllOffersFromNfts(nftsFromIssuer);
     }
 
-    public findOffersByOwner(ownerAddress: string): NFTokenOfferReturnObject[] {
+    public findOffersByNftOwner(nftOwnerAddress: string): NFTokenOfferReturnObject[] {
       //first get all NFT from an issuer
-      let nftsFromIssuer = this.findNFtsByOwner(ownerAddress);
+      let nftsFromIssuer = this.findNFtsByOwner(nftOwnerAddress);
 
       return this.findAllOffersFromNfts(nftsFromIssuer);
     }
@@ -141,7 +141,7 @@ export class NftStore {
         let returnArray:NFTokenOfferReturnObject[] = [];
         for(let i = 0; i < nfts.length; i++) {
           let offerObject:NFTokenOfferReturnObject = this.findOffersByNft(nfts[i].NFTokenID);
-          if(offerObject) {
+          if(offerObject && (offerObject.buy.length > 0 || offerObject.sell.length > 0)) {
             returnArray.push(offerObject);
           }
         }
@@ -150,6 +150,26 @@ export class NftStore {
       } else {
         return [];
       }
+    }
+
+    public findOffersByOfferOwner(ownerAddress: string): NFTokenOffer[] {
+      //first get all NFT from an issuer
+      let offersFromOwner = Array.from(this.offerIdMap.values()).filter(offer => offer.Owner === ownerAddress);
+
+      if(offersFromOwner && offersFromOwner.length > 0)
+        return offersFromOwner;
+      else
+        return [];
+    }
+
+    public findOffersByOfferDestination(destinationAddress: string): NFTokenOffer[] {
+      //first get all NFT from an issuer
+      let offersWithDestination = Array.from(this.offerIdMap.values()).filter(offer => offer.Destination && offer.Destination === destinationAddress);
+
+      if(offersWithDestination && offersWithDestination.length > 0)
+        return offersWithDestination;
+      else
+        return [];
     }
 
     public async addNFT(newNft:NFT): Promise<void> {
