@@ -4,13 +4,13 @@ import { LedgerData } from './ledgerData';
 import { TokenCreation } from './tokenCreation';
 import { AccountNames } from "./accountNames";
 import { SelfAssessments } from "./selfAssessments";
-import { NftStore } from "./nftokenStore";
 import { LedgerSync } from "./syncLedger";
 import * as fs from 'fs';
 import fastifySwagger from "@fastify/swagger";
 import Helmet from '@fastify/helmet';
 import * as nftApiRoute from './api/nftApi';
 import * as offerApiRoute from './api/nftOfferApi';
+import * as collectionApiRoute from './api/nftCollectionApi';
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -418,6 +418,7 @@ const start = async () => {
     console.log("declaring routes");
     await fastify.register(nftApiRoute.registerRoutes);
     await fastify.register(offerApiRoute.registerRoutes);
+    await fastify.register(collectionApiRoute.registerRoutes);
     console.log("finished declaring routes");
 
     /**

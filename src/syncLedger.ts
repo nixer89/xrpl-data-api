@@ -6,7 +6,7 @@ import { NftStore } from './nftokenStore';
 export class LedgerSync {
 
     pm2Instance:number = process.env.PM2_INSTANCE_ID ? parseInt(process.env.PM2_INSTANCE_ID) : 0;
-    xrplClusterConnections:number = process.env.XRPL_CLUSTER_CONNECTIONS ? parseInt(process.env.XRPL_CLUSTER_CONNECTIONS) : -1;
+    xrplClusterConnections:number = process.env.XRPL_CLUSTER_CONNECTIONS ? parseInt(process.env.XRPL_CLUSTER_CONNECTIONS) : 1;
 
     clientUrl:string = this.xrplClusterConnections > 0 ? (this.pm2Instance < this.xrplClusterConnections ? "wss://xrplcluster.com" : "ws://127.0.0.1:6006") : "wss://xrplcluster.com"; 
 

@@ -70,3 +70,21 @@ export interface NftApiReturnObject {
         [key: string]: any
     }
 }
+
+export interface NftCollectionInfo {
+    issuer:string,
+    taxon?: number,
+    nfts: number,
+    unique_owners: number,
+    buy_offers:number,
+    sell_offers: number,
+    nfts_for_sale: number,
+    floor: {
+        [key: string]: number
+    },
+    floor_per_mp: {
+        [key: string]: {
+            [key: string]: number
+        }
+    }
+}
