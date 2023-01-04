@@ -272,7 +272,7 @@ export class NftStore {
             amount = Number(singleSellOffer.Amount.value);
           }
 
-          if(amount > 0 && !this.isNftOfferExpired(singleSellOffer.Expiration)) {
+          if(amount > 0 && !this.isNftOfferExpired(singleSellOffer.Expiration) && singleSellOffer.Owner === this.findNftokenById(collectionOffers[i].NFTokenID).Owner) {
 
             if(!nftForSale.includes(collectionOffers[i].NFTokenID)) {
               nftForSale.push(collectionOffers[i].NFTokenID)
