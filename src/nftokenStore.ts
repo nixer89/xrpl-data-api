@@ -1,5 +1,6 @@
 import * as fs from 'fs';
-import { NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
+import { stringify } from 'querystring';
+import { FloorPriceProperty, MarketPlaceStats, NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
 
 export class NftStore {
 
@@ -204,16 +205,50 @@ export class NftStore {
       let sellOffers:string[] = [];
       let buyOffers:string[] = [];
       let nftForSale:string[] = [];
-      let floorPrices:Map<string, number> = new Map();
-      let floorPricePerMp:Map<string, Map<string, number>> = new Map();
+      let floorPrices:Map<string, FloorPriceProperty> = new Map();
+
+      let sellOffersPerMp:Map<string, string[]> = new Map();
+      let buyOffersPerMp:Map<string, string[]> = new Map();
+      let nftForSalePerMp:Map<string, string[]> = new Map();
+      let floorPricePerMp:Map<string, Map<string, FloorPriceProperty>> = new Map();
 
       for(let i = 0; i < collectionOffers.length; i++) {
         let sells = collectionOffers[i].sell;
         let buys = collectionOffers[i].buy;
 
         for(let j = 0; j < buys.length; j++) {
-          if(!buyOffers.includes(buys[j].OfferID)) {
-            buyOffers.push(buys[j].OfferID)
+          let singleBuyOffer = buys[j];
+
+          //determine issuer, currency and sell price
+          let issuer:string = null;
+          let currency:string = null;
+          let amount:number = null;
+
+          if(typeof(singleBuyOffer.Amount) === 'string') {
+            issuer = "XRP"
+            currency = "in_drops";
+            amount = Number(singleBuyOffer.Amount);
+          } else {
+            issuer = singleBuyOffer.Amount.issuer
+            currency = singleBuyOffer.Amount.currency;
+            amount = Number(singleBuyOffer.Amount.value);
+          }
+
+          if(amount > 0) {
+
+            if(!buyOffers.includes(singleBuyOffer.OfferID)) {
+              buyOffers.push(singleBuyOffer.OfferID)
+            }
+
+            if(this.brokerAccounts.includes(singleBuyOffer.Destination)) {
+              if(!buyOffersPerMp.has(singleBuyOffer.Destination)) {
+                buyOffersPerMp.set(singleBuyOffer.Destination, []);
+              }
+
+              if(!buyOffersPerMp.get(singleBuyOffer.Destination).includes(singleBuyOffer.OfferID)) {
+                buyOffersPerMp.get(singleBuyOffer.Destination).push(singleBuyOffer.OfferID)
+              }
+            }
           }
         }
 
@@ -221,37 +256,61 @@ export class NftStore {
 
           let singleSellOffer = sells[k];
 
-          if(!nftForSale.includes(collectionOffers[i].NFTokenID))
-            nftForSale.push(collectionOffers[i].NFTokenID)
+          //determine issuer, currency and sell price
+          let issuer:string = null;
+          let currency:string = null;
+          let amount:number = null;
 
-          if(!sellOffers.includes(singleSellOffer.OfferID)) {
-            sellOffers.push(singleSellOffer.OfferID)
+          if(typeof(singleSellOffer.Amount) === 'string') {
+            issuer = "XRP"
+            currency = "in_drops";
+            amount = Number(singleSellOffer.Amount);
+          } else {
+            issuer = singleSellOffer.Amount.issuer
+            currency = singleSellOffer.Amount.currency;
+            amount = Number(singleSellOffer.Amount.value);
           }
 
-          if(!singleSellOffer.Destination || this.brokerAccounts.includes(singleSellOffer.Destination)) {
-            //determine floor price
-            let currency:string = null;
-            let amount:number = null;
-            if(typeof(singleSellOffer.Amount) === 'string') {
-              currency = "XRP";
-              amount = Number(singleSellOffer.Amount);
-            } else {
-              currency = singleSellOffer.Amount.issuer + "_" + singleSellOffer.Amount.currency;
-              amount = Number(singleSellOffer.Amount.value);
+          if(amount > 0) {
+
+            if(!nftForSale.includes(collectionOffers[i].NFTokenID)) {
+              nftForSale.push(collectionOffers[i].NFTokenID)
             }
 
-            if(amount && currency && amount > 0) {
-              if(!floorPrices.has(currency) || amount < floorPrices.get(currency)) {
-                floorPrices.set(currency, amount);
+            if(!sellOffers.includes(singleSellOffer.OfferID)) {
+              sellOffers.push(singleSellOffer.OfferID)
+            }
+
+            if(!singleSellOffer.Destination || this.brokerAccounts.includes(singleSellOffer.Destination)) {
+              let mpAccount = singleSellOffer.Destination ? singleSellOffer.Destination : 'XRPL_DEX';
+
+              if(!nftForSalePerMp.has(mpAccount)) {
+                nftForSalePerMp.set(mpAccount, []);
               }
 
-              if(singleSellOffer.Destination && this.brokerAccounts.includes(singleSellOffer.Destination)) {
-                if(!floorPricePerMp.has(singleSellOffer.Destination)) {
-                  floorPricePerMp.set(singleSellOffer.Destination, new Map());
+              if(!nftForSalePerMp.get(mpAccount).includes(collectionOffers[i].NFTokenID)) {
+                nftForSalePerMp.get(mpAccount).push(collectionOffers[i].NFTokenID)
+              }
+
+              if(!sellOffersPerMp.has(mpAccount)) {
+                sellOffersPerMp.set(mpAccount, []);
+              }
+
+              if(!sellOffersPerMp.get(mpAccount).includes(singleSellOffer.OfferID)) {
+                sellOffersPerMp.get(mpAccount).push(singleSellOffer.OfferID)
+              }
+
+              if(amount && currency && amount > 0) {
+                if(!floorPrices.has(issuer+"_"+currency) || amount < floorPrices.get(issuer+"_"+currency).amount) {
+                  floorPrices.set(issuer+"_"+currency, {issuer: issuer, currency: currency, amount: amount});
+                }
+
+                if(!floorPricePerMp.has(mpAccount)) {
+                  floorPricePerMp.set(mpAccount, new Map());
                 }
                 
-                if(!floorPricePerMp.get(singleSellOffer.Destination).has(currency) || amount < floorPricePerMp.get(singleSellOffer.Destination).get(currency)) {
-                  floorPricePerMp.get(singleSellOffer.Destination).set(currency, amount);
+                if(!floorPricePerMp.get(mpAccount).has(issuer+"_"+currency) || amount < floorPricePerMp.get(mpAccount).get(issuer+"_"+currency).amount) {
+                  floorPricePerMp.get(mpAccount).set(issuer+"_"+currency, {issuer: issuer, currency: currency, amount: amount});
                 }
               }
             }
@@ -261,33 +320,73 @@ export class NftStore {
 
       let returnInfo:NftCollectionInfo = {
         issuer: issuer,
+        taxon: taxon,
         nfts: collectionNfts.length,
         unique_owners: holders.length,
         nfts_for_sale: nftForSale.length,
         buy_offers: buyOffers.length,
         sell_offers: sellOffers.length,
-        floor: {},
-        floor_per_mp: {}
+        floor: [],
+        open_market: {
+          nfts_for_sale: 0,
+          sell_offers: 0,
+          buy_offers: 0,
+          floor: []
+        },
+        market_places: []
       }
 
-      if(taxon)
-        returnInfo.taxon = taxon;
+      let floorValues = Array.from(floorPrices.values());
 
-      let floorKeys = Array.from(floorPrices.keys());
-
-      for(let i = 0; i < floorKeys.length; i++) {
-        returnInfo.floor[floorKeys[i]] = floorPrices.get(floorKeys[i]);
+      for(let i = 0; i < floorValues.length; i++) {
+        returnInfo.floor.push(floorValues[i]);
       }
 
-      let floorMpKeys = Array.from(floorPricePerMp.keys());
-      for(let i = 0; i < floorMpKeys.length; i++) {
-        let singleMpKeys = Array.from(floorPricePerMp.get(floorMpKeys[i]).keys());
-        for(let j = 0; j < singleMpKeys.length; j++) {
-          if(!returnInfo.floor_per_mp[floorMpKeys[i]]) {
-            returnInfo.floor_per_mp[floorMpKeys[i]] = {};
-          }
-          returnInfo.floor_per_mp[floorMpKeys[i]][singleMpKeys[j]] = floorPricePerMp.get(floorMpKeys[i]).get(singleMpKeys[j]);
+      let xrpldex_info = {
+        nfts_for_sale: 0,
+        buy_offers: 0,
+        sell_offers: 0,
+        floor: []
+      }
+
+      xrpldex_info.nfts_for_sale = nftForSalePerMp.has("XRPL_DEX") ? nftForSalePerMp.get("XRPL_DEX").length : 0;
+      xrpldex_info.sell_offers = sellOffersPerMp.has("XRPL_DEX") ? sellOffersPerMp.get("XRPL_DEX").length : 0;
+      xrpldex_info.buy_offers = buyOffersPerMp.has("XRPL_DEX") ? buyOffersPerMp.get("XRPL_DEX").length : 0;
+
+      if(floorPricePerMp.has("XRPL_DEX")) {
+        let singleMpValues = Array.from(floorPricePerMp.get("XRPL_DEX").values());
+        for(let j = 0; j < singleMpValues.length; j++) {
+          xrpldex_info.floor.push(singleMpValues[j]);
         }
+      }
+
+      returnInfo.open_market = xrpldex_info;
+
+      for(let i = 0; i < this.brokerAccounts.length; i++) {
+        let brokerAccount = this.brokerAccounts[i];
+
+        let mpDataInfo:MarketPlaceStats = {
+          mp_account: brokerAccount,
+          nfts_for_sale: 0,
+          buy_offers: 0,
+          sell_offers: 0,
+          floor: []
+        }
+
+        mpDataInfo.nfts_for_sale = nftForSalePerMp.has(brokerAccount) ? nftForSalePerMp.get(brokerAccount).length : 0;
+        mpDataInfo.sell_offers = sellOffersPerMp.has(brokerAccount) ? sellOffersPerMp.get(brokerAccount).length : 0;
+        mpDataInfo.buy_offers = buyOffersPerMp.has(brokerAccount) ? buyOffersPerMp.get(brokerAccount).length : 0;
+        
+
+        if(floorPricePerMp.has(brokerAccount)) {
+          let singleMpValues = Array.from(floorPricePerMp.get(brokerAccount).values());
+          for(let j = 0; j < singleMpValues.length; j++) {
+            mpDataInfo.floor.push(singleMpValues[j]);
+          }
+        }
+
+        returnInfo.market_places.push(mpDataInfo);
+
       }
 
       return returnInfo;

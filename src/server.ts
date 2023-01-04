@@ -10,7 +10,7 @@ import fastifySwagger from "@fastify/swagger";
 import Helmet from '@fastify/helmet';
 import * as nftApiRoute from './api/nftApi';
 import * as offerApiRoute from './api/nftOfferApi';
-import * as collectionApiRoute from './api/nftCollectionApi';
+import * as collectionApiRoute from './api/statisticsApi';
 
 const Redis = require('ioredis')
 const redis = new Redis({

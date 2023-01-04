@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification.\n\nIf you need elevated rate limits, please contact me through the listed channels below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 300 Requests / Minute -> 50 XRP / Month\n- Tier 3 -> Limit: 600 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 1200 Requests / Minute -> 250 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`",
-        "version": "5.0.2",
+        "version": "5.1.0",
         "title": "XRP Ledger Services NFT Api",
         "contact": {
             "name": "@XrplServices",
@@ -28,7 +28,8 @@
             "name": "General",
             "tags": [
                 "NFT methods",
-                "Offer methods"
+                "Offer methods",
+                "Statistic methods"
             ]
         }
     ],
@@ -713,6 +714,119 @@
                     }
                 }
             }
+        },
+        "/xls20-nfts/stats/issuer/{issuer}": {
+            "get": {
+                "summary": "Get stats about all NFTs from a specific issuer",
+                "description": "*ONLY SELL AND BUY OFFERS WITH AMOUNT > 0 ARE INCLUDED IN THIS ENDPOINT!*\n\n\n\nReturns an object containing live statistics about the issuer's NFTs\n\n`floor` holds infos about the lowest sell offer with an amount > 0 and without `Destination` or with one of the MarketPlaces as `Destination`\n\n`open_market` holds stats about all offers WITHOUT a `Destination` set\n\n`market_places` holds stats for NFTs which have one of the MarketPlaces set as `Destination`",
+                "tags": [
+                    "Statistic methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "issuer",
+                        "required": true,
+                        "description": "The Issuer you want to receive NFT stats for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-remaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollectionInfoIssuerResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/stats/issuer/{issuer}/taxon/{taxon}": {
+            "get": {
+                "summary": "Get stats about specific NFTs from a specific issuer with the given Taxon",
+                "description": "*ONLY SELL AND BUY OFFERS WITH AMOUNT > 0 ARE INCLUDED IN THIS ENDPOINT!*\n\n\n\nReturns an object containing live statistics about the issuer's NFTs\n\n`floor` holds infos about the lowest sell offer with an amount > 0 and without `Destination` or with one of the MarketPlaces as `Destination`\n\n`open_market` holds stats about all offers WITHOUT a `Destination` set\n\n`market_places` holds stats for NFTs which have one of the MarketPlaces set as `Destination`",
+                "tags": [
+                    "Statistic methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "issuer",
+                        "required": true,
+                        "description": "The Issuer you want to receive NFT stats for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "taxon",
+                        "required": true,
+                        "description": "The Taxon of the issuer you want to receive NFT stats for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-remaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollectionInfoIssuerResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -857,6 +971,132 @@
                     }
                 },
                 "title": "Info"
+            },
+            "FloorPriceProperty": {
+                "type": "object",
+                "required": [
+                    "issuer",
+                    "currency",
+                    "amount"
+                ],
+                "properties": {
+                    "issuer": {
+                        "type": "string"
+                    },
+                    "currency": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number"
+                    }
+                },
+                "title": "FloorPriceProperty"
+            },
+            "CollectionInfoData": {
+                "type": "object",
+                "required": [
+                    "issuer",
+                    "taxon",
+                    "nfts",
+                    "unique_owners",
+					"nfts_for_sale",
+                    "sell_offers",
+                    "buy_offers",
+                    "floor"
+                ],
+                "properties": {
+                    "issuer": {
+                        "type": "string"
+                    },
+                    "taxon": {
+                        "type": "string"
+                    },
+                    "nfts": {
+                        "type": "number"
+                    },
+                    "unique_owners": {
+                        "type": "number"
+                    },
+                    "nfts_for_sale": {
+                        "type": "number"
+                    },
+                    "sell_offers": {
+                        "type": "number"
+                    },
+                    "buy_offers": {
+                        "type": "number"
+                    },
+                    "floor": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FloorPriceProperty"
+                        }
+                    },
+                    "open_market": {
+                        "type": "object",
+                        "required": [
+                            "nfts_for_sale",
+                            "sell_offers",
+                            "buy_offers",
+                            "floor"
+                        ],
+                        "properties": {
+                            "nfts_for_sale": {
+                                "type": "number"
+                            },
+                            "sell_offers": {
+                                "type": "number"
+                            },
+                            "buy_offers": {
+                                "type": "number"
+                            },
+                            "floor": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/FloorPriceProperty"
+                                }
+                            }
+                        }
+                    },
+                    "market_places": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MpData"
+                        }
+                    }
+                },
+                "title": "CollectionInfoData"
+            },
+            "MpData": {
+                "type": "object",
+                "required": [
+                    "mp_account",
+                    "nfts_for_sale",
+                    "sell_offers",
+                    "buy_offers",
+                    "floor"
+                ],
+                "properties": {
+                    "mp_account": {
+                        "type": "string"
+                    },
+                    "nfts_for_sale": {
+                        "type": "number"
+                    },
+                    "sell_offers": {
+                        "type": "number"
+                    },
+                    "buy_offers": {
+                        "type": "number"
+                    },
+                    "floor": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FloorPriceProperty"
+                        }
+                    }
+                },
+                "title": "MpData"
             },
             "AllIssuerResponse": {
                 "type": "object",
@@ -1249,6 +1489,34 @@
                         "items": {
                             "$ref": "#/components/schemas/NFTOffer"
                         }
+                    }
+                }
+            },
+            "CollectionInfoIssuerResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/CollectionInfoData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "CollectionInfoIssuerData": {
+                "type": "object",
+                "required":["issuer","collection_info"],
+                "properties": {
+                    "issuer": {
+                        "type": "string"
+                    },
+                    "collection_info": {
+                        "$ref": "#/components/schemas/CollectionInfoData"
                     }
                 }
             }

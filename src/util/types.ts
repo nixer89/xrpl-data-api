@@ -73,18 +73,32 @@ export interface NftApiReturnObject {
 
 export interface NftCollectionInfo {
     issuer:string,
-    taxon?: number,
+    taxon: number,
     nfts: number,
     unique_owners: number,
     buy_offers:number,
     sell_offers: number,
     nfts_for_sale: number,
-    floor: {
-        [key: string]: number
+    floor: FloorPriceProperty[],
+    open_market: {
+        buy_offers:number,
+        sell_offers: number,
+        nfts_for_sale: number,
+        floor: FloorPriceProperty[]
     },
-    floor_per_mp: {
-        [key: string]: {
-            [key: string]: number
-        }
-    }
+    market_places: MarketPlaceStats[]
+}
+
+export interface MarketPlaceStats {
+    mp_account: string,
+    buy_offers:number,
+    sell_offers: number,
+    nfts_for_sale: number,
+    floor: FloorPriceProperty[]
+}
+
+export interface FloorPriceProperty {
+    issuer: string,
+    currency: string,
+    amount: number
 }

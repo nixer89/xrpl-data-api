@@ -5,7 +5,7 @@ let nftStore: NftStore = NftStore.Instance;
 
 export async function registerRoutes(fastify, opts, done) {
 
-    fastify.get('/api/v1/xls20-nfts/collection/info/issuer/:issuer', async (request, reply) => {
+    fastify.get('/api/v1/xls20-nfts/stats/issuer/:issuer', async (request, reply) => {
         try {
           if(!request.params.issuer) {
             reply.code(400).send('Please provide an issuer. Calls without issuer are not allowed');
@@ -38,7 +38,7 @@ export async function registerRoutes(fastify, opts, done) {
         }
     });
 
-    fastify.get('/api/v1/xls20-nfts/collection/info/issuer/:issuer/taxon/:taxon', async (request, reply) => {
+    fastify.get('/api/v1/xls20-nfts/stats/issuer/:issuer/taxon/:taxon', async (request, reply) => {
       try {
         if(!request.params.issuer || !request.params.taxon) {
           reply.code(400).send('Please provide an issuer and taxon. Calls without issuer and taxon are not allowed');
