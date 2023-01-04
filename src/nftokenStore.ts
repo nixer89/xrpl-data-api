@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { stringify } from 'querystring';
+import { rippleTimeToUnixTime } from 'xrpl';
 import { FloorPriceProperty, MarketPlaceStats, NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
 
 export class NftStore {
@@ -234,7 +235,7 @@ export class NftStore {
             amount = Number(singleBuyOffer.Amount.value);
           }
 
-          if(amount > 0) {
+          if(amount > 0 && !this.isNftOfferExpired(singleBuyOffer.Expiration)) {
 
             if(!buyOffers.includes(singleBuyOffer.OfferID)) {
               buyOffers.push(singleBuyOffer.OfferID)
@@ -271,7 +272,7 @@ export class NftStore {
             amount = Number(singleSellOffer.Amount.value);
           }
 
-          if(amount > 0) {
+          if(amount > 0 && !this.isNftOfferExpired(singleSellOffer.Expiration)) {
 
             if(!nftForSale.includes(collectionOffers[i].NFTokenID)) {
               nftForSale.push(collectionOffers[i].NFTokenID)
@@ -605,4 +606,13 @@ export class NftStore {
     public setCurrentLedgerCloseTimeMs(closeTimeInMs: number): void {
         this.current_ledger_time_ms_temp = closeTimeInMs;
     }
+
+    private isNftOfferExpired(offerExpiration: number | undefined) {
+      if(!offerExpiration) {
+          return false;
+      } else {
+          let dateNowWithMargin = Date.now(); //add 20 seconds margin!
+          return rippleTimeToUnixTime(offerExpiration) < dateNowWithMargin;
+      }
+  }
 }
