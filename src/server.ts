@@ -244,7 +244,7 @@ const start = async () => {
           }
   
           if(!isBlocked) {
-            //console.log("RATE LIMIT HIT BY: " + ip + " from " + req.hostname + " to: " + req.routerPath + " with: " + JSON.stringify(req.params));
+            console.log("RATE LIMIT HIT BY: " + key + " from " + req.headers['cf-connecting-ip'] + " to: " + req.routerPath + " with: " + JSON.stringify(req.params));
             error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later. Check https://api.xrpldata.com/docs for API limits and contact us to request elevated limits: @XrplServices (on twitter)'
           } else {
             showHeaders++;
