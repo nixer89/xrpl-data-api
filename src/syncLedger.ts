@@ -8,9 +8,9 @@ export class LedgerSync {
     pm2Instance:number = process.env.PM2_INSTANCE_ID ? parseInt(process.env.PM2_INSTANCE_ID) : 0;
     mainConnections:number = process.env.MAIN_CONNECTIONS ? parseInt(process.env.MAIN_CONNECTIONS) : 1;
     secondaryConnections:number = process.env.SECONDARY_CONNECTIONS ? parseInt(process.env.SECONDARY_CONNECTIONS) : 1;
-    mainNode:string = process.env.MAIN_NODE;
-    secondaryNode:string = process.env.SECONDRARY_NODE;
-    localNode:string = process.env.LOCAL_NODE;
+    mainNode:string = process.env.MAIN_NODE || 'wss://xrplcluster.com';
+    secondaryNode:string = process.env.SECONDRARY_NODE || 'wss://s1.ripple.com';
+    localNode:string = process.env.LOCAL_NODE || 'ws://127.0.0.1:6006';
 
     clientUrl:string = this.mainNode;
 
