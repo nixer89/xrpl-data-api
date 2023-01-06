@@ -11,6 +11,7 @@ import Helmet from '@fastify/helmet';
 import * as nftApiRoute from './api/nftApi';
 import * as offerApiRoute from './api/nftOfferApi';
 import * as collectionApiRoute from './api/statisticsApi';
+import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -259,163 +260,10 @@ const start = async () => {
         reply.send(error)
       });
 
-      fastify.get('/api/v1/tokens', async (request, reply) => {
-        try {
-          //let start = Date.now();
-          //console.log("request params: " + JSON.stringify(request.params));
-          totalRequests++
-          if(totalRequests%1000 == 0)
-            console.log("totalRequests: " + totalRequests);
-
-          tokenCounter++;
-          if(tokenCounter%100 == 0)
-            console.log("tokenCounter: " + tokenCounter);
-
-          let issuers = issuerAccount.getLedgerTokensV1();
-
-          let returnValue = {
-            ledger_index: issuerAccount.getLedgerIndex(),
-            ledger_hash: issuerAccount.getLedgerHash(),
-            ledger_close: issuerAccount.getLedgerCloseTime(),
-            ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
-            issuers: issuers
-          }
-
-          //console.log("tokens_"+request.hostname + ": " + (Date.now()-start) + " ms")
-
-          return returnValue;
-        } catch(err) {
-          console.log("error resolving tokens");
-          console.log(err);
-          reply.code(500).send('Error occured. Please check your request.');
-        }
-      });
-
-      fastify.get('/api/v1/nfts', async (request, reply) => {
-        try {
-          //let start = Date.now();
-          //console.log("request params: " + JSON.stringify(request.params));
-          totalRequests++
-          if(totalRequests%1000 == 0)
-            console.log("totalRequests: " + totalRequests);
-
-          xls14NftCounter++;
-          if(xls14NftCounter%100 == 0)
-            console.log("xls14NftCounter: " + xls14NftCounter);
-
-          let issuers = issuerAccount.getLedgerNftsV1();
-
-          let returnValue = {
-            ledger_index: issuerAccount.getLedgerIndex(),
-            ledger_hash: issuerAccount.getLedgerHash(),
-            ledger_close: issuerAccount.getLedgerCloseTime(),
-            ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
-            issuers: issuers
-          }
-
-          //console.log("nfts_"+request.hostname + ": " + (Date.now()-start) + " ms")
-
-          return returnValue;
-        } catch(err) {
-          console.log("error resolving nfts");
-          console.log(err);
-          reply.code(500).send('Error occured. Please check your request.');
-        }
-      });
-
-      fastify.get('/api/v1/ledgerdata', async (request, reply) => {
-        try {
-          //console.time("ledgerdata");
-          let ledgerDataObjects: any[] = await ledgerData.getLedgerDataV1();
-          //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
-
-          totalRequests++
-          if(totalRequests%1000 == 0)
-            console.log("totalRequests: " + totalRequests);
-
-          ledgerDataCounter++;
-          if(ledgerDataCounter%100 == 0)
-            console.log("ledgerDataCounter: " + ledgerDataCounter);
-
-          let returnValue = {
-            ledger_index: issuerAccount.getLedgerIndex(),
-            ledger_hash: issuerAccount.getLedgerHash(),
-            ledger_close: issuerAccount.getLedgerCloseTime(),
-            ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
-            ledger_size: ledgerDataObjects[0],
-            sizeType: "B",
-            ledger_data: ledgerDataObjects[1]
-          }
-
-          //console.timeEnd("ledgerdata");
-
-          return returnValue;
-        } catch(err) {
-          console.log("error resolving ledgerdata");
-          console.log(err);
-          reply.code(500).send('Error occured. Please check your request.');
-        }
-      });
-
-      fastify.get('/api/v1/kyc/:account', async (request, reply) => {
-        if(!request.params.account) {
-          reply.code(200).send('Please provide an account. Calls without account are not allowed');
-      } else {
-          try {
-              //console.time("kyc");
-              totalRequests++
-              if(totalRequests%1000 == 0)
-                console.log("totalRequests: " + totalRequests);
-
-              kycCounter++;
-              if(kycCounter%100 == 0)
-                console.log("KYC: " + kycCounter);
-
-              let returnValue = {
-                account: request.params.account,
-                kyc: accountNames.getKycData(request.params.account)
-              }
-              //console.timeEnd("kyc");
-
-              return returnValue;
-          } catch(err) {
-            console.log("error resolving kyc");
-            console.log(err);
-            reply.code(500).send('Error occured. Please check your request.');
-          }
-      }
-      });
-
-      fastify.get('/api/v1/tokencreation', async (request, reply) => {
-
-        try {
-
-          totalRequests++
-          if(totalRequests%1000 == 0)
-            console.log("totalRequests: " + totalRequests);
-
-          tokenCreationCounter++;
-          if(tokenCreationCounter%100 == 0)
-            console.log("tokenCreationCounter: " + tokenCreationCounter);
-
-          //console.time("tokencreation");
-          //console.log("query: " + JSON.stringify(request.query));
-          let issuer:string = request.query.issuer;
-          let currency:string = request.query.currency;
-
-          let returnValue = await tokenCreation.getTokenCreationDate(issuer, currency);
-
-          //console.timeEnd("tokencreation");
-
-          return returnValue;
-        } catch(err) {
-          console.log("error resolving token creation");
-          console.log(err);
-          reply.code(500).send('Error occured. Please check your request.');
-        }
-      });
+      
 
     console.log("declaring routes");
+    await fastify.register(tokenAnsMiscApiRoute.registerRoutes);
     await fastify.register(nftApiRoute.registerRoutes);
     await fastify.register(offerApiRoute.registerRoutes);
     await fastify.register(collectionApiRoute.registerRoutes);
@@ -460,8 +308,8 @@ const start = async () => {
 }
 
 function loadIps(tierName:string): string[] {
-  if(fs.existsSync("/home/api-ips/"+tierName)) {
-    let tier:string = fs.readFileSync("/home/api-ips/"+tierName).toString();
+  if(fs.existsSync("/home/api-limits/api-ips/"+tierName)) {
+    let tier:string = fs.readFileSync("/home/api-limits/api-ips/"+tierName).toString();
 
     //console.log(tierName + ": " + tier);
     if(tier && tier.trim().length > 0)
@@ -474,8 +322,8 @@ function loadIps(tierName:string): string[] {
 }
 
 function loadKeys(tierName:string): string[] {
-  if(fs.existsSync("/home/api-keys/"+tierName)) {
-    let tier:string = fs.readFileSync("/home/api-keys/"+tierName).toString();
+  if(fs.existsSync("/home/api-limits/api-keys/"+tierName)) {
+    let tier:string = fs.readFileSync("/home/api-limits/api-keys/"+tierName).toString();
 
     //console.log(tierName + ": " + tier);
     if(tier && tier.trim().length > 0)
@@ -488,8 +336,8 @@ function loadKeys(tierName:string): string[] {
 }
 
 function loadBlocked(): string[] {
-  if(fs.existsSync("/home/api-blocked/blocked")) {
-    let blocked:string = fs.readFileSync("/home/api-blocked/blocked").toString();
+  if(fs.existsSync("/home/api-limits/api-blocked/blocked")) {
+    let blocked:string = fs.readFileSync("/home/api-limits/api-blocked/blocked").toString();
 
     //console.log(tierName + ": " + tier);
     if(blocked && blocked.trim().length > 0)

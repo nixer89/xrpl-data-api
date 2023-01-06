@@ -6,9 +6,13 @@ import { NftStore } from './nftokenStore';
 export class LedgerSync {
 
     pm2Instance:number = process.env.PM2_INSTANCE_ID ? parseInt(process.env.PM2_INSTANCE_ID) : 0;
-    xrplClusterConnections:number = process.env.XRPL_CLUSTER_CONNECTIONS ? parseInt(process.env.XRPL_CLUSTER_CONNECTIONS) : 1;
+    mainConnections:number = process.env.MAIN_CONNECTIONS ? parseInt(process.env.MAIN_CONNECTIONS) : 1;
+    secondaryConnections:number = process.env.SECONDARY_CONNECTIONS ? parseInt(process.env.SECONDARY_CONNECTIONS) : 1;
+    mainNode:string = process.env.MAIN_NODE;
+    secondaryNode:string = process.env.SECONDRARY_NODE;
+    localNode:string = process.env.LOCAL_NODE;
 
-    clientUrl:string = this.xrplClusterConnections > 0 ? (this.pm2Instance < this.xrplClusterConnections ? "wss://xrplcluster.com" : "ws://127.0.0.1:6006") : "wss://xrplcluster.com"; 
+    clientUrl:string = this.mainNode;
 
     private static _instance: LedgerSync;
 
@@ -19,15 +23,17 @@ export class LedgerSync {
     private nftStore:NftStore;
     private currentKnownLedger: number = 0;
 
-    private totalMintedInThisLedger:number = 0;
-    private totalBurnedInThisLedger:number = 0;
-    private totalOwnerChangedInThisLedger:number = 0;
-    private totalOfferCreatedInThisLedger:number = 0;
-    private totalOfferDeletedInThisLedger:number = 0;
-
     private constructor() {
       console.log("PM2_INSTANCE_ID: " + process.env.PM2_INSTANCE_ID);
       console.log("XRPL_CLUSTER_CONNECTIONS: " + process.env.XRPL_CLUSTER_CONNECTIONS);
+
+      if(this.pm2Instance >= this.mainConnections) {
+        if((this.pm2Instance - this.mainConnections) < this.secondaryConnections) {
+          this.clientUrl = this.secondaryNode;
+        } else {
+          this.clientUrl = this.localNode;
+        }
+      }
     }
 
     public static get Instance(): LedgerSync
@@ -50,10 +56,10 @@ export class LedgerSync {
 
         if(retryCount > 5) {
           console.log("COULD NOT CONNECT TO NODE! SWITCHING!")
-          if(this.xrplClusterConnections > 0 && this.pm2Instance >= this.xrplClusterConnections) {
-            this.client = new Client("wss://xrplcluster.com")
+          if(this.mainConnections > 0 && this.pm2Instance >= this.mainConnections) {
+            this.client = new Client(this.mainNode)
           } else {
-            this.client = new Client("ws://127.0.0.1:6006")
+            this.client = new Client(this.secondaryNode)
           }
           
         } else if(retryCount > 10) {
@@ -96,7 +102,7 @@ export class LedgerSync {
 
         //get current known ledger and try to catch up
         await this.startListeningOnLedgerClose();
-        await this.iterateThroughMissingLedgers("ws://127.0.0.1:6006");
+        await this.iterateThroughMissingLedgers(this.localNode);
       } catch(err) {
         console.log("UNEXPECTED ERROR HAPPENED! RESET!")
         this.reset();
@@ -159,7 +165,7 @@ export class LedgerSync {
         console.log(err);
         if(err.data.error === 'lgrNotFound') {
           //restart by iterating with xrplcluster.com!
-          await this.iterateThroughMissingLedgers("wss://xrplcluster.com");
+          await this.iterateThroughMissingLedgers(this.mainNode);
         } else {
           this.reset();
         }
@@ -183,11 +189,6 @@ export class LedgerSync {
             //console.log("ledger closed! " + ledgerClose.ledger_index);
 
             if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
-
-              //console.log("previous ledger: " + this.currentKnownLedger + " | minted: " + this.totalMintedInThisLedger + " | burned: " + this.totalBurnedInThisLedger + " | ownerChanged: " + this.totalOwnerChangedInThisLedger + " | created: " + this.totalOfferCreatedInThisLedger + " | deleted: " + this.totalOfferDeletedInThisLedger);
-
-              //reset counters
-              this.totalMintedInThisLedger = this.totalBurnedInThisLedger = this.totalOwnerChangedInThisLedger = this.totalOfferCreatedInThisLedger = this.totalOfferDeletedInThisLedger =  0;
 
               let start = Date.now();
               let ledgerRequest:LedgerRequest = {
@@ -293,7 +294,6 @@ export class LedgerSync {
             }
 
             this.nftStore.addNFT(newNftEntry);
-            this.totalMintedInThisLedger++;
           }
 
         } else if(transaction.TransactionType === "NFTokenBurn") { // BURNED NFT
@@ -304,7 +304,6 @@ export class LedgerSync {
 
             let burnedNft = this.nftStore.getNft(burnedTokenId);
             this.nftStore.removeNft(burnedNft);
-            this.totalBurnedInThisLedger++;
           }
 
         } else { // CHECK FOR OWNER CHANGE!
@@ -319,7 +318,6 @@ export class LedgerSync {
 
             if(existingNft) {
               this.nftStore.changeOwner(existingNft,newOwnerAccount);
-              this.totalOwnerChangedInThisLedger++;
             } else {
               console.log("THIS SHOULD NEVER HAVE HAPPENED?!?!? NEW NFT NOT POSSIBLE!")
               
@@ -335,7 +333,6 @@ export class LedgerSync {
           if(createdOffers && createdOffers.length > 0) {
             for(let i = 0; i < createdOffers.length; i++) {
               this.nftStore.addNFTOffer(createdOffers[i]);
-              this.totalOfferCreatedInThisLedger++;
             }
           }
 
@@ -345,7 +342,6 @@ export class LedgerSync {
           if(deletedOffers && deletedOffers.length > 0) {
             for(let i = 0; i < deletedOffers.length; i++) {
               this.nftStore.removeNftOffer(deletedOffers[i]);
-              this.totalOfferDeletedInThisLedger++;
             }
           }
         }

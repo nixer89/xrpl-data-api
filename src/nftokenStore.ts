@@ -226,8 +226,8 @@ export class NftStore {
           let amount:number = null;
 
           if(typeof(singleBuyOffer.Amount) === 'string') {
-            issuer = "XRP"
-            currency = "in_drops";
+            issuer = "XRP_in_drops"
+            currency = "XRP";
             amount = Number(singleBuyOffer.Amount);
           } else {
             issuer = singleBuyOffer.Amount.issuer
@@ -254,7 +254,6 @@ export class NftStore {
         }
 
         for(let k = 0; k < sells.length; k++) {
-
           let singleSellOffer = sells[k];
 
           //determine issuer, currency and sell price
@@ -263,8 +262,8 @@ export class NftStore {
           let amount:number = null;
 
           if(typeof(singleSellOffer.Amount) === 'string') {
-            issuer = "XRP"
-            currency = "in_drops";
+            issuer = "XRP_in_drops"
+            currency = "XRP";
             amount = Number(singleSellOffer.Amount);
           } else {
             issuer = singleSellOffer.Amount.issuer
