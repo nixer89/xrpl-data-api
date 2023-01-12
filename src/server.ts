@@ -34,11 +34,27 @@ let tier1LimitIps:string[] = loadIps("tier1");
 let tier2LimitIps:string[] = loadIps("tier2");
 let tier3LimitIps:string[] = loadIps("tier3");
 let tier4LimitIps:string[] = loadIps("tier4");
+let tier5LimitIpsRaw:string[] = loadIps("tier5");
+let tier5IpLimitMap:Map<string, number> = new Map();
+
+for(let i = 0; i < tier5LimitIpsRaw.length; i++) {
+  let keyValue:string[] = tier5LimitIpsRaw[i].split("=");
+
+  tier5IpLimitMap.set(keyValue[0], Number(keyValue[1]));
+}
 
 let tier1LimitKeys:string[] = loadKeys("tier1");
 let tier2LimitKeys:string[] = loadKeys("tier2");
 let tier3LimitKeys:string[] = loadKeys("tier3");
 let tier4LimitKeys:string[] = loadKeys("tier4");
+let tier5LimitKeysRaw:string[] = loadKeys("tier5");
+let tier5KeyLimitMap:Map<string, number> = new Map();
+
+for(let i = 0; i < tier5LimitKeysRaw.length; i++) {
+  let keyValue:string[] = tier5LimitKeysRaw[i].split("=");
+
+  tier5KeyLimitMap.set(keyValue[0], Number(keyValue[1]));
+}
 
 let blocked:string[] = loadBlocked();
 
@@ -185,6 +201,14 @@ const start = async () => {
 
           if(tier4LimitKeys != null && tier4LimitKeys.includes(key)) {
             limit = 1200;
+          }
+
+          if(tier5IpLimitMap.has(key)) {
+            limit = tier5IpLimitMap.get(key);
+          }
+
+          if(tier5KeyLimitMap.has(key)) {
+            limit = tier5KeyLimitMap.get(key);
           }
 
           for(let m = 0; m < blocked.length; m++) {
