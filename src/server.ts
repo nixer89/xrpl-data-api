@@ -12,6 +12,7 @@ import * as nftApiRoute from './api/nftApi';
 import * as offerApiRoute from './api/nftOfferApi';
 import * as collectionApiRoute from './api/statisticsApi';
 import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
+import * as scheduler from 'node-schedule';
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -30,33 +31,21 @@ let selfAssessments:SelfAssessments;
 let ledgerSync: LedgerSync;
 
 
-let tier1LimitIps:string[] = loadIps("tier1");
-let tier2LimitIps:string[] = loadIps("tier2");
-let tier3LimitIps:string[] = loadIps("tier3");
-let tier4LimitIps:string[] = loadIps("tier4");
-let tier5LimitIpsRaw:string[] = loadIps("tier5");
+let tier1LimitIps:string[] = [];
+let tier2LimitIps:string[] = [];
+let tier3LimitIps:string[] = [];
+let tier4LimitIps:string[] = [];
+let tier5LimitIpsRaw:string[] = [];
 let tier5IpLimitMap:Map<string, number> = new Map();
 
-for(let i = 0; i < tier5LimitIpsRaw.length; i++) {
-  let keyValue:string[] = tier5LimitIpsRaw[i].split("=");
-
-  tier5IpLimitMap.set(keyValue[0], Number(keyValue[1]));
-}
-
-let tier1LimitKeys:string[] = loadKeys("tier1");
-let tier2LimitKeys:string[] = loadKeys("tier2");
-let tier3LimitKeys:string[] = loadKeys("tier3");
-let tier4LimitKeys:string[] = loadKeys("tier4");
-let tier5LimitKeysRaw:string[] = loadKeys("tier5");
+let tier1LimitKeys:string[] = [];
+let tier2LimitKeys:string[] = [];
+let tier3LimitKeys:string[] = [];
+let tier4LimitKeys:string[] = [];
+let tier5LimitKeysRaw:string[] = [];
 let tier5KeyLimitMap:Map<string, number> = new Map();
 
-for(let i = 0; i < tier5LimitKeysRaw.length; i++) {
-  let keyValue:string[] = tier5LimitKeysRaw[i].split("=");
-
-  tier5KeyLimitMap.set(keyValue[0], Number(keyValue[1]));
-}
-
-let blocked:string[] = loadBlocked();
+let blocked:string[] = [];
 
 let keyMap:Map<string,number> = new Map();
 let blockedMap:Map<string,number> = new Map();
@@ -93,6 +82,21 @@ const start = async () => {
 
     console.log("starting server");
     try {
+      loadApiKeys();
+
+      scheduler.scheduleJob("loadApiKeys1", {minute: 0, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys2", {minute: 5, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys3", {minute: 10, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys4", {minute: 15, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys5", {minute: 50, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys6", {minute: 25, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys7", {minute: 60, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys8", {minute: 35, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys9", {minute: 40, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys10", {minute: 45, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys11", {minute: 50, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys12", {minute: 55, second: 0}, () => loadApiKeys());
+
       await accountNames.init();
       await tokenCreation.init();
       await issuerAccount.init();
@@ -145,6 +149,12 @@ const start = async () => {
         redis: redis,
         skipOnError: true,
         max: async (req, key) => {
+
+          let callerIp = req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
+          || req.headers['x-real-ip'] // nginx
+          || req.headers['x-client-ip'] // apache
+          || req.headers['x-forwarded-for'] // use this only if you trust the header
+          || req.ip // fallback to default
           let limit = 10;
 
           let calls = 1;
@@ -156,7 +166,10 @@ const start = async () => {
           keyMap.set(key,calls);
 
           if(calls%100 == 0) {
-            console.log(key + " already called: " + calls + " times.");
+            if(key != callerIp)
+              console.log(key + " already called: " + calls + " times from ip " + callerIp);
+            else
+              console.log(key + " already called: " + calls + " times.");
           }
 
           for(let i = 0; i < tier1LimitIps.length; i++) {
@@ -371,6 +384,34 @@ function loadBlocked(): string[] {
   } else {
     return [];
   }
+}
+
+function loadApiKeys(): void {
+  tier1LimitIps = loadIps("tier1");
+  tier2LimitIps = loadIps("tier2");
+  tier3LimitIps = loadIps("tier3");
+  tier4LimitIps = loadIps("tier4");
+  tier5LimitIpsRaw = loadIps("tier5");
+
+  for(let i = 0; i < tier5LimitIpsRaw.length; i++) {
+    let keyValue:string[] = tier5LimitIpsRaw[i].split("=");
+
+    tier5IpLimitMap.set(keyValue[0], Number(keyValue[1]));
+  }
+
+  tier1LimitKeys = loadKeys("tier1");
+  tier2LimitKeys = loadKeys("tier2");
+  tier3LimitKeys = loadKeys("tier3");
+  tier4LimitKeys = loadKeys("tier4");
+  tier5LimitKeysRaw = loadKeys("tier5");
+
+  for(let i = 0; i < tier5LimitKeysRaw.length; i++) {
+    let keyValue:string[] = tier5LimitKeysRaw[i].split("=");
+
+    tier5KeyLimitMap.set(keyValue[0], Number(keyValue[1]));
+  }
+
+  blocked = loadBlocked();
 }
 
 console.log("running server");

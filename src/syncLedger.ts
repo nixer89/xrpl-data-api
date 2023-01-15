@@ -25,7 +25,10 @@ export class LedgerSync {
 
     private constructor() {
       console.log("PM2_INSTANCE_ID: " + process.env.PM2_INSTANCE_ID);
-      console.log("XRPL_CLUSTER_CONNECTIONS: " + process.env.XRPL_CLUSTER_CONNECTIONS);
+      console.log("MAIN_CONNECTIONS: " + process.env.MAIN_CONNECTIONS);
+      console.log("SECONDARY_CONNECTIONS: " + process.env.SECONDARY_CONNECTIONS);
+      console.log("MAIN_NODE: " + process.env.MAIN_NODE);
+      console.log("SECONDRARY_NODE: " + process.env.SECONDRARY_NODE);
 
       if(this.pm2Instance >= this.mainConnections) {
         if((this.pm2Instance - this.mainConnections) < this.secondaryConnections) {
