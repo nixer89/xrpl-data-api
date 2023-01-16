@@ -151,10 +151,11 @@ const start = async () => {
         max: async (req, key) => {
 
           let callerIp = req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
-          || req.headers['x-real-ip'] // nginx
-          || req.headers['x-client-ip'] // apache
-          || req.headers['x-forwarded-for'] // use this only if you trust the header
-          || req.ip // fallback to default
+                      || req.headers['x-real-ip'] // nginx
+                      || req.headers['x-client-ip'] // apache
+                      || req.headers['x-forwarded-for'] // use this only if you trust the header
+                      || req.ip // fallback to default
+
           let limit = 10;
 
           let calls = 1;
@@ -172,6 +173,7 @@ const start = async () => {
               console.log(key + " already called: " + calls + " times.");
           }
 
+          //TIER 1 LIMIT
           for(let i = 0; i < tier1LimitIps.length; i++) {
             if(tier1LimitIps[i] != null && tier1LimitIps[i].length > 0 && key.startsWith(tier1LimitIps[i])) {
               limit = 60;
@@ -183,6 +185,7 @@ const start = async () => {
             limit = 60;
           }
 
+          //TIER 2 LIMIT
           for(let j = 0; j < tier2LimitIps.length; j++) {
             if(tier2LimitIps[j] != null && tier2LimitIps[j].length > 0 && key.startsWith(tier2LimitIps[j])) {
               limit = 300;
@@ -194,6 +197,7 @@ const start = async () => {
             limit = 300;
           }
 
+          //TIER 3 LIMIT
           for(let k = 0; k < tier3LimitIps.length; k++) {
             if(tier3LimitIps[k] != null && tier3LimitIps[k].length > 0 && key.startsWith(tier3LimitIps[k])) {
               limit = 600;
@@ -205,6 +209,7 @@ const start = async () => {
             limit = 600;
           }
 
+          //TIER 4 LIMIT
           for(let l = 0; l < tier4LimitIps.length; l++) {
             if(tier4LimitIps[l] != null && tier4LimitIps[l].length > 0 && key.startsWith(tier4LimitIps[l])) {
               limit = 1200;
@@ -216,6 +221,7 @@ const start = async () => {
             limit = 1200;
           }
 
+          //TIER 5 LIMIT
           if(tier5IpLimitMap.has(key)) {
             limit = tier5IpLimitMap.get(key);
           }
@@ -224,6 +230,7 @@ const start = async () => {
             limit = tier5KeyLimitMap.get(key);
           }
 
+          //BLOCKED LIST
           for(let m = 0; m < blocked.length; m++) {
             if(blocked[m] != null && blocked[m].length > 0 && key.startsWith(blocked[m])) {
               limit = 0;

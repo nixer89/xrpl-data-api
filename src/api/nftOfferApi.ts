@@ -141,7 +141,13 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/offers/owner/:owner', async (request, reply) => {
         try {
 
-          console.log("OLD OFFERS BY NFT OWNER METHOD")
+          let ip = request.headers['cf-connecting-ip'] // cloudflare originally connecting IP
+                || request.headers['x-real-ip'] // nginx
+                || request.headers['x-client-ip'] // apache
+                || request.headers['x-forwarded-for'] // use this only if you trust the header
+                || request.ip // fallback to default
+
+          console.log("OLD OFFERS BY NFT OWNER METHOD FROM: " + ip);
           if(!request.params.owner) {
             reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
           }
