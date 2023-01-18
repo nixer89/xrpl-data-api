@@ -156,7 +156,7 @@ const start = async () => {
                       || req.headers['x-forwarded-for'] // use this only if you trust the header
                       || req.ip // fallback to default
 
-          let limit = 10;
+          let limit = 20;
 
           let calls = 1;
           if(keyMap.has(key)) {
@@ -188,37 +188,37 @@ const start = async () => {
           //TIER 2 LIMIT
           for(let j = 0; j < tier2LimitIps.length; j++) {
             if(tier2LimitIps[j] != null && tier2LimitIps[j].length > 0 && key.startsWith(tier2LimitIps[j])) {
-              limit = 300;
+              limit = 600;
               j = tier2LimitIps.length;
             }
           }
 
           if(tier2LimitKeys != null && tier2LimitKeys.includes(key)) {
-            limit = 300;
+            limit = 600;
           }
 
           //TIER 3 LIMIT
           for(let k = 0; k < tier3LimitIps.length; k++) {
             if(tier3LimitIps[k] != null && tier3LimitIps[k].length > 0 && key.startsWith(tier3LimitIps[k])) {
-              limit = 600;
+              limit = 1200;
               k = tier3LimitIps.length;
             }
           }
 
           if(tier3LimitKeys != null && tier3LimitKeys.includes(key)) {
-            limit = 600;
+            limit = 1200;
           }
 
           //TIER 4 LIMIT
           for(let l = 0; l < tier4LimitIps.length; l++) {
             if(tier4LimitIps[l] != null && tier4LimitIps[l].length > 0 && key.startsWith(tier4LimitIps[l])) {
-              limit = 1200;
+              limit = 2400;
               l = tier4LimitIps.length;
             }
           }
 
           if(tier4LimitKeys != null && tier4LimitKeys.includes(key)) {
-            limit = 1200;
+            limit = 2400;
           }
 
           //TIER 5 LIMIT

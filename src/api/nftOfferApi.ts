@@ -13,7 +13,8 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let offers = nftStore.findOffersByNft(request.params.nftokenid);
+          let nft = nftStore.findNftokenById(request.params.nftokenid);
+          let offers = nftStore.findOffersByNft(request.params.nftokenid, nft.Owner);
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -165,7 +166,8 @@ export async function registerRoutes(fastify, opts, done) {
             },
             data: {
               nftowner: request.params.owner,
-              offers: offers
+              offers: offers,
+              message: "THE '/owner' ENDPOINT WILL BE REMOVED SOON BECAUSE ITS NAME HAS CHANGED! PLEASE USE THE NEW ENDPOINT NAME: '/nftowner'. IT DOES EXACTLY THE SAME :-) "
             }
           }
 
@@ -265,6 +267,43 @@ export async function registerRoutes(fastify, opts, done) {
             data: {
               offerdestination: request.params.offerdestination,
               offers: offers
+            }
+          }
+
+          //console.log("xls20_offers_by_destination_"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving nfts by owner");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/offers/all/account/:xrplaccount', async (request, reply) => {
+        try {
+          if(!request.params.xrplaccount) {
+            reply.code(400).send('Please provide an xrplaccount. Calls without destination are not allowed');
+          }
+
+          let start = Date.now();
+          //onsole.log("request params: " + JSON.stringify(request.params));
+          let offersByOwner = nftStore.findOffersByOfferOwner(request.params.xrplaccount);
+          let offersByOwnedNFTs = nftStore.findOffersByNftOwner(request.params.xrplaccount);
+          let offersByDestination = nftStore.findOffersByOfferDestination(request.params.xrplaccount);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              xrplaccount: request.params.xrplaccount,
+              offers_owned: offersByOwner,
+              offers_for_own_nfts: offersByOwnedNFTs,
+              offers_as_destination: offersByDestination
             }
           }
 

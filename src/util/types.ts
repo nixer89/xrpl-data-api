@@ -55,6 +55,7 @@ export interface NFTokenOfferMapEntry {
 
 export interface NFTokenOfferReturnObject {
     NFTokenID: string,
+    NFTokenOwner: string,
     buy: NFTokenOffer[],
     sell: NFTokenOffer[]
 }

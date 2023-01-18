@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification.\n\nIf you need elevated rate limits, please contact me through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 300 Requests / Minute -> 50 XRP / Month\n- Tier 3 -> Limit: 600 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 1200 Requests / Minute -> 250 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
-        "version": "5.4.1",
+        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 20 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XRP / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
+        "version": "5.5.0",
         "title": "XRP Ledger Services NFT Api",
         "contact": {
             "name": "@XrplServices",
@@ -43,7 +43,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `issuers` = Array of all currently known NFToken Issuers",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -95,7 +95,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `nfts` = Array of all NFTs of the given Issuer",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -147,7 +147,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `taxons` = Array of all currently known Taxons used by the given Issuer",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -208,7 +208,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `nfts` = Array of all NFTs of the given Issuer with the specified Taxon",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -259,7 +259,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `nfts` = Array of all NFTs owned by the given XRPL Account",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -311,7 +311,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `nft` = single NFT object for the given NFTokenID",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -363,7 +363,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `offers` = Array of all Offers for NFTs from the given Issuer",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -424,7 +424,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `offers` = Array of all Offers for NFTs from the given Issuer and the specified Taxon",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -475,7 +475,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `offers` = Array of all Offers for NFTs owned by the specified XRPL Account",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -527,7 +527,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `offers` = Array of all Offers created/owned by the given XRPL Account",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -579,7 +579,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `offers` = Array of all Offers where the given XRPL Account is set as `Destination`",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -611,19 +611,19 @@
                 }
             }
         },
-        "/xls20-nfts/offers/nft/{nftokenid}": {
+        "/xls20-nfts/offers/all/account/{xrplaccount}": {
             "get": {
-                "summary": "Get all Offers for a single NFT.",
-                "description": "Returns Offers for a single NFT.",
+                "summary": "Get all relevant offers for a specific XRP Ledger account.",
+                "description": "Returns all relevant NFToken offers for a specific XRP Ledger account.",
                 "tags": [
                     "Offer methods"
                 ],
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "nftokenid",
+                        "name": "xrplaccount",
                         "required": true,
-                        "description": "The NFTokenID of the NFT you want to get the Offers for.",
+                        "description": "The XRPL Account which you want to get the relevant Offers for.",
                         "schema": {
                             "type": "string"
                         }
@@ -631,7 +631,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `offers_owned` = Array of all Offers created/owned by the given XRPL Account\n\n- `offers_for_own_nfts` = Array of all Offers for NFTs owned by the specified XRPL Account\n\n- `offers_as_destination` = Array of all Offers where the given XRPL Account is set as `Destination`",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -655,7 +655,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NFTOffersResponse"
+                                    "$ref": "#/components/schemas/AllAccountOffersResponse"
                                 }
                             }
                         }
@@ -683,7 +683,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `offer` = single Offer object for the given OfferID",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -715,10 +715,62 @@
                 }
             }
         },
+        "/xls20-nfts/offers/nft/{nftokenid}": {
+            "get": {
+                "summary": "Get all Offers for a single NFT.",
+                "description": "Returns Offers for a single NFT.",
+                "tags": [
+                    "Offer methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "nftokenid",
+                        "required": true,
+                        "description": "The NFTokenID of the NFT you want to get the Offers for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "- `offers` = an Object containing all buy and sell Offers for the given NFTokenID",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NFTOffersResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/xls20-nfts/stats/issuer/{issuer}": {
             "get": {
                 "summary": "Get stats about all NFTs from a specific issuer",
-                "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs\n\n`floor` holds values of the lowest sell offers for various currencies with an amount > 0 which are placed across ALL Market Places or without `Destination` (open market)\n\n`open_market` holds stats about all offers WITHOUT a `Destination` set\n\n`market_places` holds stats for NFTs which have one of the MarketPlaces set as `Destination`",
+                "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs",
                 "tags": [
                     "Statistic methods"
                 ],
@@ -735,7 +787,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `nfts` = Total number of NFTs by this Issuer\n\n- `unique_owners` = Number of unique XRPL Accounts owning NFTs by the given Issuer\n\n- `nfts_for_sale` = Number of valid sell offer (see exclusions above) for NFTs of the given Issuer \n\n- `sell_offers` = Total Number of sell offers for NFTs of the given Issuer\n\n- `buy_offers` = Total Number of buy offers for NFTs of the given Issuer\n\n- `floor` = shows lowest SELL offers for ALL available currencies across all Marketplaces including XRPL DEX\n\n- `open_market` = Stats about offers on the `Open Market` (no `Destination` set!). Freely available for everyone\n\n- `market_places` = Stats about offers where an MarketPlace is set as `Destination`. (Can only be accepted by the Marketplace!)\n\n",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -770,7 +822,7 @@
         "/xls20-nfts/stats/issuer/{issuer}/taxon/{taxon}": {
             "get": {
                 "summary": "Get stats about specific NFTs from a specific issuer with the given Taxon",
-                "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs\n\n`floor` holds values of the lowest sell offers for various currencies with an amount > 0 which are placed across ALL Market Places or without `Destination` (open market)\n\n`open_market` holds stats about all offers WITHOUT a `Destination` set\n\n`market_places` holds stats for NFTs which have one of the MarketPlaces set as `Destination`",
+                "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs with a specific `Taxon` (Collection)",
                 "tags": [
                     "Statistic methods"
                 ],
@@ -796,7 +848,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
+                        "description": "- `nfts` = Total number of NFTs by this Issuer\n\n- `unique_owners` = Number of unique XRPL Accounts owning NFTs by the given Issuer\n\n- `nfts_for_sale` = Number of valid sell offer (see exclusions above) for NFTs of the given Issuer \n\n- `sell_offers` = Total Number of sell offers for NFTs of the given Issuer\n\n- `buy_offers` = Total Number of buy offers for NFTs of the given Issuer\n\n- `floor` = shows lowest SELL offers for ALL available currencies across all Marketplaces including XRPL DEX\n\n- `open_market` = Stats about offers on the `Open Market` (no `Destination` set!). Freely available for everyone\n\n- `market_places` = Stats about offers where an MarketPlace is set as `Destination`. (Can only be accepted by the Marketplace!)\n\n",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -926,11 +978,15 @@
                 "type": "object",
                 "required": [
                     "NFTokenID",
+                    "NFTokenOwner",
                     "buy",
 					"sell"
                 ],
                 "properties": {
                     "NFTokenID": {
+                        "type": "string"
+                    },
+                    "NFTokenOwner": {
                         "type": "string"
                     },
                     "buy": {
@@ -1485,6 +1541,49 @@
                         "type": "string"
                     },
                     "offers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFTOffer"
+                        }
+                    }
+                }
+            },
+            "AllAccountOffersResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/AllAccountOffersData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "AllAccountOffersData": {
+                "type": "object",
+                "required":["xrplaccount","offers_owned", "offers_for_own_nfts"],
+                "properties": {
+                    "xrplaccount": {
+                        "type": "string"
+                    },
+                    "offers_owned": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFTOffer"
+                        }
+                    },
+                    "offers_for_own_nfts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFTOfferData"
+                        }
+                    },
+                    "offers_as_destination": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/NFTOffer"

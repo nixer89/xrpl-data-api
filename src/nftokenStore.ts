@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { stringify } from 'querystring';
 import { rippleTimeToUnixTime } from 'xrpl';
 import { FloorPriceProperty, MarketPlaceStats, NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
 
@@ -112,16 +111,18 @@ export class NftStore {
         return null;
     }
 
-    public findOffersByNft(nftokenId: string): NFTokenOfferReturnObject {
+    public findOffersByNft(nftokenId: string, nftOwner: string): NFTokenOfferReturnObject {
       if(this.offerNftIdMap.has(nftokenId)) {
         return {
           NFTokenID: nftokenId,
+          NFTokenOwner: nftOwner,
           buy: Array.from(this.offerNftIdMap.get(nftokenId).buy.values()),
           sell: Array.from(this.offerNftIdMap.get(nftokenId).sell.values())
         }
       } else
         return {
           NFTokenID: nftokenId,
+          NFTokenOwner: nftOwner,
           buy: [],
           sell: []
         };
@@ -152,7 +153,7 @@ export class NftStore {
       if(nfts && nfts.length > 0) {
         let returnArray:NFTokenOfferReturnObject[] = [];
         for(let i = 0; i < nfts.length; i++) {
-          let offerObject:NFTokenOfferReturnObject = this.findOffersByNft(nfts[i].NFTokenID);
+          let offerObject:NFTokenOfferReturnObject = this.findOffersByNft(nfts[i].NFTokenID, nfts[i].Owner);
           if(offerObject && (offerObject.buy.length > 0 || offerObject.sell.length > 0)) {
             returnArray.push(offerObject);
           }
