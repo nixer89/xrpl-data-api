@@ -156,7 +156,7 @@ const start = async () => {
                       || req.headers['x-forwarded-for'] // use this only if you trust the header
                       || req.ip // fallback to default
 
-          let limit = 20;
+          let limit = 10;
 
           let calls = 1;
           if(keyMap.has(key)) {

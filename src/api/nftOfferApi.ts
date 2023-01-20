@@ -14,7 +14,7 @@ export async function registerRoutes(fastify, opts, done) {
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let nft = nftStore.findNftokenById(request.params.nftokenid);
-          let offers = nftStore.findOffersByNft(request.params.nftokenid, nft.Owner);
+          let offers = nftStore.findOffersByNft(request.params.nftokenid, nft ? nft.Owner : null);
 
           let returnValue:NftApiReturnObject = {
             info: {
