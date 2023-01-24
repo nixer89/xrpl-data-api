@@ -520,6 +520,9 @@ export class LedgerSync {
           offerAmount = Number(offer.Amount);
           availableBalance = await this.getAvailableBalanceInDrops(offer.Owner)
 
+          console.log("available balance: " + availableBalance);
+          console.log("offerAmount: " + offerAmount);
+
           isFunded = availableBalance >= offerAmount;
         } else {
           isFunded = await this.iouOfferIsFunded(offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);

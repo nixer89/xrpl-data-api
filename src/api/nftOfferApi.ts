@@ -330,7 +330,7 @@ export async function registerRoutes(fastify, opts, done) {
             let offer = nftStore.findOfferById(request.params.offerid);
 
             if(!offer) {
-              console.log("no offer found: " + (Date.now()-start)) + " ms.";
+              console.log("no offer found: " + (Date.now()-start) + " ms.");
               return {
                 info: {
                   ledger_index: nftStore.getCurrentLedgerIndex(),
@@ -345,7 +345,7 @@ export async function registerRoutes(fastify, opts, done) {
               }
             } else {
               let isFunded = await ledgerSync.isOfferFunded(offer);
-              console.log("offer is funded: " + (Date.now()-start)) + " ms.";
+              console.log("offer is funded: " + (Date.now()-start) + " ms.");
               return {
                 info: {
                   ledger_index: nftStore.getCurrentLedgerIndex(),
