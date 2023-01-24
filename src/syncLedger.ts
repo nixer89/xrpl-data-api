@@ -633,7 +633,7 @@ export class LedgerSync {
         if(accountInfoResponse?.result?.account_data) {
             let accountInfo = accountInfoResponse.result.account_data;
     
-            let balance = Number(accountInfo.Balance);
+            balance = Number(accountInfo.Balance);
             balance = balance - 10000000; //deduct acc reserve
             balance = balance - (accountInfo.OwnerCount * 2000000); //deduct owner count
             
