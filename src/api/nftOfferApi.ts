@@ -1,7 +1,9 @@
 import { NftStore } from "../nftokenStore";
+import { LedgerSync } from "../syncLedger";
 import { NftApiReturnObject } from "../util/types";
 
 let nftStore: NftStore = NftStore.Instance;
+let ledgerSync: LedgerSync = LedgerSync.Instance;
 
 export async function registerRoutes(fastify, opts, done) {
 
@@ -304,6 +306,78 @@ export async function registerRoutes(fastify, opts, done) {
               offers_owned: offersByOwner,
               offers_for_own_nfts: offersByOwnedNFTs,
               offers_as_destination: offersByDestination
+            }
+          }
+
+          //console.log("xls20_offers_by_destination_"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+          return returnValue;
+        } catch(err) {
+          console.log("error resolving nfts by owner");
+          console.log(err);
+          reply.code(500).send('Error occured. Please check your request.');
+        }
+      });
+
+      fastify.get('/api/v1/xls20-nfts/offer/funded/:offerid', async (request, reply) => {
+        try {
+          if(!request.params.offerid) {
+            reply.code(400).send('Please provide an offerid. Calls without offerid are not allowed');
+          }
+
+          try {
+            let start = Date.now();
+            let offer = nftStore.findOfferById(request.params.offerid);
+
+            if(!offer) {
+              console.log("no offer found: " + (Date.now()-start)) + " ms.";
+              return {
+                info: {
+                  ledger_index: nftStore.getCurrentLedgerIndex(),
+                  ledger_hash: nftStore.getCurrentLedgerHash(),
+                  ledger_close: nftStore.getCurrentLedgerCloseTime(),
+                  ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+                },
+                data: {
+                  offerid: request.params.offerid,
+                  error: "Offer not found!"
+                }
+              }
+            } else {
+              let isFunded = await ledgerSync.isOfferFunded(offer);
+              console.log("offer is funded: " + (Date.now()-start)) + " ms.";
+              return {
+                info: {
+                  ledger_index: nftStore.getCurrentLedgerIndex(),
+                  ledger_hash: nftStore.getCurrentLedgerHash(),
+                  ledger_close: nftStore.getCurrentLedgerCloseTime(),
+                  ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+                },
+                data: {
+                  offerid: request.params.offerid,
+                  funded: isFunded
+                }
+              }
+            }
+            
+          } catch(err) {
+            reply.code(500).send('Internal Error. Please try again.');
+          }
+
+          let start = Date.now();
+          //onsole.log("request params: " + JSON.stringify(request.params));
+          let offers = nftStore.findOffersByOfferDestination(request.params.offerdestination);
+
+          let returnValue:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              offerdestination: request.params.offerdestination,
+              offers: offers
             }
           }
 

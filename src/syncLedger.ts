@@ -1,7 +1,10 @@
 import { NFT, NFTokenOffer } from './util/types';
-import { Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
+import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
+import { timeStamp } from 'console';
+import { RippleState } from 'xrpl/dist/npm/models/ledger';
+import { off } from 'process';
 
 export class LedgerSync {
 
@@ -17,6 +20,7 @@ export class LedgerSync {
     private static _instance: LedgerSync;
 
     private client = new Client(this.clientUrl);
+    private localClient = new Client(this.localNode);
 
     private finishedIteration:boolean = false;
 
@@ -505,4 +509,138 @@ export class LedgerSync {
 
       return [previousTokens, finalTokens];
     }
+
+    async isOfferFunded(offer: NFTokenOffer): Promise<boolean> {
+      let isFunded = false;
+      try {
+        let availableBalance = 0;
+        let offerAmount = 0;
+        
+        if(typeof(offer.Amount) === 'string') {
+          offerAmount = Number(offer.Amount);
+          availableBalance = await this.getAvailableBalanceInDrops(offer.Owner)
+
+          isFunded = availableBalance >= offerAmount;
+        } else {
+          isFunded = await this.iouOfferIsFunded(offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);
+        }
+      } catch(err) {
+        throw "err";
+      }
+
+      return isFunded;
+    }
+
+    private async iouOfferIsFunded(offerOwner:string, issuer:string, currency:string, minAmount: string) {
+      let isFunded = false;
+
+      let ripplestates = await this.getTrustlines(offerOwner);
+  
+      if(ripplestates && ripplestates.length > 0) {
+          let minAmountNumber = Number(minAmount);
+          for(let i = 0; i < ripplestates.length; i++) {
+              let rippleState = ripplestates[i];
+              let balance = Number(rippleState.Balance.value);
+  
+              if(balance < 0)
+                  balance = balance * -1;
+  
+              if((rippleState.HighLimit.issuer === issuer && rippleState.HighLimit.currency === currency) || (rippleState.LowLimit.issuer === issuer && rippleState.LowLimit.currency === currency)) {
+                  //we have correct issuer and currency
+                  if(balance >= minAmountNumber) {
+                      isFunded = true;
+                      break;
+                  }
+              }
+          }
+      }
+  
+      return isFunded;
+  }
+
+  private async getTrustlines(account:string) {
+    let rippleStates:RippleState[] = [];
+    try {
+        let accObjectRequest:AccountObjectsRequest = {
+            command: 'account_objects',
+            account: account,
+            limit: 1000,
+            type: 'state'
+        }
+
+        let accObjectResponse = await this.localClient.request(accObjectRequest);
+
+        if(accObjectResponse && accObjectResponse.result) {
+            let objects = accObjectResponse.result.account_objects;
+
+            if(objects && objects.length > 0) { 
+                for(let i = 0; i < objects.length; i++) {
+                    let rippleState = objects[i];
+
+                    if(rippleState.LedgerEntryType === 'RippleState') {
+                        rippleStates.push(rippleState);
+                    }
+                }
+            }
+        }
+
+        //console.log("getting trustlines took: " + (Date.now()-start)+ " ms.");
+    } catch(err) {
+        console.log(err);
+        console.log(JSON.stringify(err));
+    }
+
+    return rippleStates;
+}
+
+    private async getAvailableBalanceInDrops(address: string): Promise<number> {
+      let balance = 0;
+
+      try {
+
+        if(!this.localClient.isConnected()) {
+          try {
+              console.log("connecting local api...")
+              this.localClient = new Client(this.localNode);
+              await this.localClient.connect();
+              console.log("api is connected: " + this.localClient.isConnected());
+          } catch(err) {
+              console.log("api is connected: " + this.localClient.isConnected());
+              console.log(err);
+
+              try {
+                if(!this.localClient.isConnected()) {
+                  this.localClient = new Client(this.mainNode);
+                  await this.localClient.connect();
+                }
+              } catch(err) {
+                console.log("giving up, could not connect to node.")
+                throw "err";
+              }
+          }
+        }    
+
+        let ownAccountInfoRequest:AccountInfoRequest = {
+            command: 'account_info',
+            account: address                    
+        }
+    
+        let accountInfoResponse = await this.localClient.request(ownAccountInfoRequest);
+    
+        if(accountInfoResponse?.result?.account_data) {
+            let accountInfo = accountInfoResponse.result.account_data;
+    
+            let balance = Number(accountInfo.Balance);
+            balance = balance - 10000000; //deduct acc reserve
+            balance = balance - (accountInfo.OwnerCount * 2000000); //deduct owner count
+            
+        } else {
+          balance = 0;
+        }
+      } catch(err) {
+        throw "err";
+      }
+
+      return balance;
+  }
 }
