@@ -383,7 +383,7 @@ export async function registerRoutes(fastify, opts, done) {
             let offerObjects:NFTokenOffer[] = [];
 
             for(let i = 0; i < offersToCheck.length; i++) {
-              let offer = nftStore.findOfferById(request.params.offerid);
+              let offer = nftStore.findOfferById(offersToCheck[i]);
               if(offer) {
                 offerObjects.push(offer);
               }
