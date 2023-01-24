@@ -510,34 +510,40 @@ export class LedgerSync {
       return [previousTokens, finalTokens];
     }
 
-    async isOfferFunded(offer: NFTokenOffer): Promise<boolean> {
+    async isOfferFunded(offer: NFTokenOffer, retry?: boolean): Promise<any> {
       let isFunded = false;
       try {
+
+        let client = await this.getClient(retry);
+
         let availableBalance = 0;
         let offerAmount = 0;
         
         if(typeof(offer.Amount) === 'string') {
           offerAmount = Number(offer.Amount);
-          availableBalance = await this.getAvailableBalanceInDrops(offer.Owner)
+          availableBalance = await this.getAvailableBalanceInDrops(client, offer.Owner)
 
           console.log("available balance: " + availableBalance);
           console.log("offerAmount: " + offerAmount);
 
           isFunded = availableBalance >= offerAmount;
         } else {
-          isFunded = await this.iouOfferIsFunded(offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);
+          isFunded = await this.iouOfferIsFunded(client, offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);
         }
       } catch(err) {
         throw "err";
       }
 
-      return isFunded;
+      return {
+        offerid: offer.OfferID,
+        funded: isFunded
+      };
     }
 
-    private async iouOfferIsFunded(offerOwner:string, issuer:string, currency:string, minAmount: string) {
+    private async iouOfferIsFunded(client: Client, offerOwner:string, issuer:string, currency:string, minAmount: string) {
       let isFunded = false;
 
-      let ripplestates = await this.getTrustlines(offerOwner);
+      let ripplestates = await this.getTrustlines(client, offerOwner);
   
       if(ripplestates && ripplestates.length > 0) {
           let minAmountNumber = Number(minAmount);
@@ -561,20 +567,44 @@ export class LedgerSync {
       return isFunded;
   }
 
-  private async getTrustlines(account:string) {
+  private async getTrustlines(client: Client, account:string) {
     let rippleStates:RippleState[] = [];
     try {
         let accObjectRequest:AccountObjectsRequest = {
             command: 'account_objects',
             account: account,
+            ledger_index: "validated",
             limit: 1000,
             type: 'state'
         }
 
-        let accObjectResponse = await this.localClient.request(accObjectRequest);
+        let accObjectResponse = await client.request(accObjectRequest);
 
         if(accObjectResponse && accObjectResponse.result) {
             let objects = accObjectResponse.result.account_objects;
+
+            let marker = accObjectResponse.result.marker;
+
+            while(marker) {
+              //console.log("marker: " + marker);
+              accObjectRequest.marker = marker;
+              accObjectRequest.ledger_index = accObjectResponse.result.ledger_index;
+
+              //await this.xrplWebSocket.getWebsocketMessage("token-trasher", server_info, this.isTestMode);
+  
+              accObjectResponse = await client.request(accObjectRequest);
+
+              //console.log(JSON.stringify(accountObjects));
+  
+              marker = accObjectResponse?.result?.marker;
+  
+              if(accObjectResponse?.result?.account_objects) {
+                objects = objects.concat(accObjectResponse.result.account_objects)
+                accObjectRequest.marker = marker;
+              } else {
+                marker = null;
+              }
+          }
 
             if(objects && objects.length > 0) { 
                 for(let i = 0; i < objects.length; i++) {
@@ -594,56 +624,70 @@ export class LedgerSync {
     }
 
     return rippleStates;
-}
+  }
 
-    private async getAvailableBalanceInDrops(address: string): Promise<number> {
-      let balance = 0;
+  private async getAvailableBalanceInDrops(client: Client, address: string): Promise<number> {
+    let balance = 0;
 
-      try {
+    try {   
 
-        if(!this.localClient.isConnected()) {
-          try {
-              console.log("connecting local api...")
-              this.localClient = new Client(this.localNode);
-              await this.localClient.connect();
-              console.log("api is connected: " + this.localClient.isConnected());
-          } catch(err) {
-              console.log("api is connected: " + this.localClient.isConnected());
-              console.log(err);
-
-              try {
-                if(!this.localClient.isConnected()) {
-                  this.localClient = new Client(this.mainNode);
-                  await this.localClient.connect();
-                }
-              } catch(err) {
-                console.log("giving up, could not connect to node.")
-                throw "err";
-              }
-          }
-        }    
-
-        let ownAccountInfoRequest:AccountInfoRequest = {
-            command: 'account_info',
-            account: address                    
-        }
-    
-        let accountInfoResponse = await this.localClient.request(ownAccountInfoRequest);
-    
-        if(accountInfoResponse?.result?.account_data) {
-            let accountInfo = accountInfoResponse.result.account_data;
-    
-            balance = Number(accountInfo.Balance);
-            balance = balance - 10000000; //deduct acc reserve
-            balance = balance - (accountInfo.OwnerCount * 2000000); //deduct owner count
-            
-        } else {
-          balance = 0;
-        }
-      } catch(err) {
-        throw "err";
+      let ownAccountInfoRequest:AccountInfoRequest = {
+          command: 'account_info',
+          account: address,
+          ledger_index: "validated"
       }
+  
+      let accountInfoResponse = await client.request(ownAccountInfoRequest);
+  
+      if(accountInfoResponse?.result?.account_data) {
+          let accountInfo = accountInfoResponse.result.account_data;
+  
+          balance = Number(accountInfo.Balance);
+          balance = balance - 10000000; //deduct acc reserve
+          balance = balance - (accountInfo.OwnerCount * 2000000); //deduct owner count
+          
+      } else {
+        balance = 0;
+      }
+    } catch(err) {
+      throw "err";
+    }
 
-      return balance;
+    return balance;
+  }
+
+  private async getClient(retry?: boolean): Promise<Client> {
+    let clientToUse = null;
+
+    if(!this.localClient.isConnected()) {
+      try {
+          console.log("connecting local api...")
+          this.localClient = new Client(this.localNode);
+          await this.localClient.connect();
+          console.log("api is connected: " + this.localClient.isConnected());
+      } catch(err) {
+          console.log("api is connected: " + this.localClient.isConnected());
+          console.log(err);
+
+          try {
+            if(!this.localClient.isConnected()) {
+              this.localClient = new Client(this.mainNode);
+              await this.localClient.connect();
+            }
+          } catch(err) {
+            console.log("giving up, could not connect to node.")
+            throw "err";
+          }
+      }
+    }
+
+    if(this.localClient.isConnected()) {
+      clientToUse = this.localClient;
+    } else if(!retry && this.client.isConnected()) {
+      //connect remote client
+      clientToUse = this.client;
+    }
+
+    return clientToUse;
   }
 }
