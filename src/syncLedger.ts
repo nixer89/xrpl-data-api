@@ -522,21 +522,27 @@ export class LedgerSync {
 
           offerExists = true;
 
-          let client = await this.getOfferCheckClient(retry);
+          if(!offer.Flags || offer.Flags == 0) {
 
-          let availableBalance = 0;
-          let offerAmount = 0;
-          
-          if(typeof(offer.Amount) === 'string') {
-            offerAmount = Number(offer.Amount);
-            availableBalance = await this.getAvailableBalanceInDrops(client, offer.Owner)
+            let client = await this.getOfferCheckClient(retry);
 
-            //console.log("available balance: " + availableBalance);
-            //console.log("offerAmount: " + offerAmount);
+            let availableBalance = 0;
+            let offerAmount = 0;
+            
+            if(typeof(offer.Amount) === 'string') {
+              offerAmount = Number(offer.Amount);
+              availableBalance = await this.getAvailableBalanceInDrops(client, offer.Owner)
 
-            isFunded = availableBalance >= offerAmount;
+              //console.log("available balance: " + availableBalance);
+              //console.log("offerAmount: " + offerAmount);
+
+              isFunded = availableBalance >= offerAmount;
+            } else {
+              isFunded = await this.iouOfferIsFunded(client, offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);
+            }
           } else {
-            isFunded = await this.iouOfferIsFunded(client, offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);
+            //we have a sell offer! They are always funded
+            isFunded = true;
           }
         }
       } catch(err) {
