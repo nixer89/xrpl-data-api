@@ -33,7 +33,7 @@ export async function registerRoutes(fastify, opts, done) {
   scheduler.scheduleJob("loadApiKeys11", {minute: 50, second: 0}, () => loadApiKeys());
   scheduler.scheduleJob("loadApiKeys12", {minute: 55, second: 0}, () => loadApiKeys());
 
-      fastify.get('/api/v1/xls20-nfts/offer/funded/:offerid',{
+      fastify.get('/api/v1/xls20-nfts/funded/offer/:offerid',{
         config: {
           rateLimit: {
             max: async (req, key) => {
@@ -143,7 +143,7 @@ export async function registerRoutes(fastify, opts, done) {
         }
       });
 
-      fastify.post('/api/v1/xls20-nfts/offers/funded', {
+      fastify.post('/api/v1/xls20-nfts/funded/offers', {
         config: {
           rateLimit: {
             max: async (req, key) => {
