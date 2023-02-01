@@ -132,6 +132,8 @@ export async function registerRoutes(fastify, opts, done) {
               },
               data: offerStatus
             }
+
+            return returnValue;
             
           } catch(err) {
             reply.code(500).send('Internal Error. Please try again.');
@@ -299,6 +301,4 @@ function loadApiKeys(): void {
 
     tier5KeyLimitMap.set(keyValue[0], Number(keyValue[1]));
   }
-
-  tier4LimitKeys.push("123");
 }
