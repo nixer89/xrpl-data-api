@@ -103,3 +103,9 @@ export interface FloorPriceProperty {
     currency: string,
     amount: number
 }
+
+export interface NFTokenOfferFundedStatus {
+    offerid: string,
+    funded: boolean,
+    exists: boolean
+}

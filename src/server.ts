@@ -10,6 +10,7 @@ import fastifySwagger from "@fastify/swagger";
 import Helmet from '@fastify/helmet';
 import * as nftApiRoute from './api/nftApi';
 import * as offerApiRoute from './api/nftOfferApi';
+import * as offerFundedApiRoute from './api/nftOfferFundedApi';
 import * as collectionApiRoute from './api/statisticsApi';
 import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 import * as scheduler from 'node-schedule';
@@ -158,6 +159,9 @@ const start = async () => {
 
           let limit = 10;
 
+          //console.log(req.url);
+          //console.log(req.method);
+
           let calls = 1;
           if(keyMap.has(key)) {
             calls = keyMap.get(key);
@@ -287,7 +291,7 @@ const start = async () => {
               m = blocked.length;
             }
           }
-  
+
           if(!isBlocked) {
             console.log("RATE LIMIT HIT BY: " + key + " from " + req.headers['cf-connecting-ip'] + " to: " + req.routerPath + " with: " + JSON.stringify(req.params));
             error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later. Check https://api.xrpldata.com/docs for API limits and contact us to request elevated limits: @XrplServices (on twitter)'
@@ -310,6 +314,7 @@ const start = async () => {
     await fastify.register(tokenAnsMiscApiRoute.registerRoutes);
     await fastify.register(nftApiRoute.registerRoutes);
     await fastify.register(offerApiRoute.registerRoutes);
+    await fastify.register(offerFundedApiRoute.registerRoutes);
     await fastify.register(collectionApiRoute.registerRoutes);
     console.log("finished declaring routes");
 

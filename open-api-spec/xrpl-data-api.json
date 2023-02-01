@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XRP / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
-        "version": "5.5.3",
+        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/Methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XRP / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
+        "version": "5.6.0",
         "title": "XRP Ledger Services NFT Api",
         "contact": {
             "name": "@XrplServices",
@@ -17,19 +17,20 @@
     ],
     "tags": [
         {
-            "name": "NFT methods"
+            "name": "NFT Methods"
         },
         {
-            "name": "Offer methods"
+            "name": "Offer Methods"
         }
     ],
     "x-tagGroups": [
         {
             "name": "General",
             "tags": [
-                "NFT methods",
-                "Offer methods",
-                "Statistic methods"
+                "NFT Methods",
+                "Offer Methods",
+                "Funded Status",
+                "Statistic Methods"
             ]
         }
     ],
@@ -39,7 +40,7 @@
                 "summary": "Get all current Issuers of NFTs",
                 "description": "Returns an array of XRPL accounts which have currently issued NFTs on the XRP Ledger.",
                 "tags": [
-                    "NFT methods"
+                    "NFT Methods"
                 ],
                 "responses": {
                     "200": {
@@ -80,7 +81,7 @@
                 "summary": "Get all NFTs from a specific Issuer",
                 "description": "Returns an array of NFTs issued by the given Account",
                 "tags": [
-                    "NFT methods"
+                    "NFT Methods"
                 ],
                 "parameters": [
                     {
@@ -132,7 +133,7 @@
                 "summary": "Get all taxons used by a specific Issuer",
                 "description": "Returns an array of taxons used by the given XRPL account.",
                 "tags": [
-                    "NFT methods"
+                    "NFT Methods"
                 ],
                 "parameters": [
                     {
@@ -184,7 +185,7 @@
                 "summary": "Get all NFTs from a specific Issuer and Taxon.",
                 "description": "Returns an array of NFTs issued by the given Issuer with a specific Taxon. This is helpful to receive NFTs of a specific Collection.",
                 "tags": [
-                    "NFT methods"
+                    "NFT Methods"
                 ],
                 "parameters": [
                     {
@@ -244,7 +245,7 @@
                 "summary": "Get all NFTs owned by a specific account",
                 "description": "Returns an array of NFTs owned by the given Account",
                 "tags": [
-                    "NFT methods"
+                    "NFT Methods"
                 ],
                 "parameters": [
                     {
@@ -296,7 +297,7 @@
                 "summary": "Get details for a single NFT.",
                 "description": "Returns a single NFT and its details.",
                 "tags": [
-                    "NFT methods"
+                    "NFT Methods"
                 ],
                 "parameters": [
                     {
@@ -348,7 +349,7 @@
                 "summary": "Get all Offers for NFTs from a specific Issuer",
                 "description": "Returns an array of Offers from NFTs issued by the given Account",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -400,7 +401,7 @@
                 "summary": "Get all Offers for NFTs from a specific Issuer and Taxon.",
                 "description": "Returns an array of Offers for NFTs issued by the given Issuer with a specific Taxon. This is helpful to receive Offers of a specific Collection.",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -460,7 +461,7 @@
                 "summary": "Get all Offers for NFTs owned by a specific account",
                 "description": "Returns an array of Offers for NFTs owned by the given Account",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -512,7 +513,7 @@
                 "summary": "Get all NFT Offers owned by a specific account..",
                 "description": "Returns ALL NFT Offers owned by a specific account.",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -564,7 +565,7 @@
                 "summary": "Get all NFT Offers of a specific account which is set as `Destination`",
                 "description": "Returns ALL NFT Offers for a single account which is set as `Destination`.",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -616,7 +617,7 @@
                 "summary": "Get all relevant offers for a specific XRP Ledger account.",
                 "description": "Returns all relevant NFToken offers for a specific XRP Ledger account.",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -668,7 +669,7 @@
                 "summary": "Get a specifc Offer by its ID.",
                 "description": "Returns the details for a single Offer.",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -720,7 +721,7 @@
                 "summary": "Get all Offers for a single NFT.",
                 "description": "Returns Offers for a single NFT.",
                 "tags": [
-                    "Offer methods"
+                    "Offer Methods"
                 ],
                 "parameters": [
                     {
@@ -772,7 +773,7 @@
                 "summary": "Get stats about all NFTs from a specific issuer",
                 "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs",
                 "tags": [
-                    "Statistic methods"
+                    "Statistic Methods"
                 ],
                 "parameters": [
                     {
@@ -824,7 +825,7 @@
                 "summary": "Get stats about specific NFTs from a specific issuer with the given Taxon",
                 "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs with a specific `Taxon` (Collection)",
                 "tags": [
-                    "Statistic methods"
+                    "Statistic Methods"
                 ],
                 "parameters": [
                     {
@@ -873,6 +874,113 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CollectionInfoIssuerResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/offer/funded/{offerid}": {
+            "get": {
+                "summary": "Check if a single offer is actually funded or not.",
+                "description": "Returns the funded status for a specific offer.\n\n**THIS API ENDPOINT IS ONLY ACCESSIBLE VIA API KEY!**\n\nThis endpoint does not count towards the general rate limiting but has its own rate limits:\n\n`- Tier 1 -> Limit: 20 Requests / Minute`\n\n`- Tier 2 -> Limit: 40 Requests / Minute`\n\n`- Tier 3 -> Limit: 80 Requests / Minute`\n\n`- Tier 4 -> Limit: 160 Requests / Minute`\n\nNo extra payment is necessary to use this endpoint if you already purchased an API key.",
+                "tags": [
+                    "Funded Status"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "offerid",
+                        "required": true,
+                        "description": "The OfferID of the NFT Offer you want to get the funded status for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "- `offers` = an Object containing the funded status of the given NFT OfferID",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferFundedResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/xls20-nfts/offers/funded": {
+            "post": {
+                "summary": "Check a batch of offers for its funded status.",
+                "description": "Returns an array of the funded status for a the given offers.\n\n**THIS API ENDPOINT IS ONLY ACCESSIBLE VIA API KEY!**\n\nThis endpoint does not count towards the general rate limiting but has its own rate limits:\n\n`- Tier 1 -> Limit: 20 Requests / Minute`\n\n`- Tier 2 -> Limit: 40 Requests / Minute`\n\n`- Tier 3 -> Limit: 80 Requests / Minute`\n\n`- Tier 4 -> Limit: 160 Requests / Minute`\n\nNo extra payment is necessary to use this endpoint if you already purchased an API key.",
+                "tags": [
+                    "Funded Status"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "offers",
+                        "required": true,
+                        "description": "A string array of OfferIDs you want to check the status for.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "- `offers` = an array containing the funded status of all given NFT OfferIDs",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-lemaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OffersFundedResponse"
                                 }
                             }
                         }
@@ -1153,6 +1261,25 @@
                     }
                 },
                 "title": "MpData"
+            },
+            "OfferFundedSingleData": {
+                "type": "object",
+                "required": [
+                    "offerid",
+                    "funded",
+                    "exists"
+                ],
+                "properties": {
+                    "offerid": {
+                        "type": "string"
+                    },
+                    "funded": {
+                        "type": "boolean"
+                    },
+                    "exists": {
+                        "type": "boolean"
+                    }
+                }
             },
             "AllIssuerResponse": {
                 "type": "object",
@@ -1455,6 +1582,62 @@
                     },
                     "offers": {
                         "$ref": "#/components/schemas/NFTOfferData"
+                    }
+                }
+            },
+            "OfferFundedResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/OfferFundedData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "OfferFundedData": {
+                "type": "object",
+                "required": ["offerid","offer"],
+                "properties": {
+                    "offerid": {
+                        "type": "string"
+                    },
+                    "offer": {
+                        "$ref": "#/components/schemas/OfferFundedSingleData"
+                    }
+                }
+            },
+            "OffersFundedResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/OffersFundedData"
+                    }
+                },
+                "title": "ValidationError"
+            },
+            "OffersFundedData": {
+                "type": "object",
+                "required":["offers"],
+                "properties": {
+                    "offers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OfferFundedSingleData"
+                        }
                     }
                 }
             },

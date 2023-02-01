@@ -1,5 +1,5 @@
-import { NFT, NFTokenOffer } from './util/types';
-import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
+import { NFT, NFTokenOffer, NFTokenOfferFundedStatus } from './util/types';
+import { AccountInfoRequest, AccountObjectsRequest, Client, getBalanceChanges, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
 import { timeStamp } from 'console';
@@ -20,7 +20,7 @@ export class LedgerSync {
     private static _instance: LedgerSync;
 
     private client = new Client(this.clientUrl);
-    private localClient = new Client(this.localNode);
+    private offerCheckClient = new Client(this.localNode);
 
     private finishedIteration:boolean = false;
 
@@ -97,6 +97,7 @@ export class LedgerSync {
 
         try {
           await this.client.connect();
+          await this.getOfferCheckClient();
         } catch(err) {
           this.reset(retryCount);
         }
@@ -510,33 +511,42 @@ export class LedgerSync {
       return [previousTokens, finalTokens];
     }
 
-    async isOfferFunded(offer: NFTokenOffer, retry?: boolean): Promise<any> {
+    async isOfferFunded(offerid: string, retry?: boolean): Promise<NFTokenOfferFundedStatus> {
       let isFunded = false;
+      let offerExists = false;
       try {
 
-        let client = await this.getClient(retry);
+        let offer = this.nftStore.findOfferById(offerid);
 
-        let availableBalance = 0;
-        let offerAmount = 0;
-        
-        if(typeof(offer.Amount) === 'string') {
-          offerAmount = Number(offer.Amount);
-          availableBalance = await this.getAvailableBalanceInDrops(client, offer.Owner)
+        if(offer) {
 
-          console.log("available balance: " + availableBalance);
-          console.log("offerAmount: " + offerAmount);
+          offerExists = true;
 
-          isFunded = availableBalance >= offerAmount;
-        } else {
-          isFunded = await this.iouOfferIsFunded(client, offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);
+          let client = await this.getOfferCheckClient(retry);
+
+          let availableBalance = 0;
+          let offerAmount = 0;
+          
+          if(typeof(offer.Amount) === 'string') {
+            offerAmount = Number(offer.Amount);
+            availableBalance = await this.getAvailableBalanceInDrops(client, offer.Owner)
+
+            //console.log("available balance: " + availableBalance);
+            //console.log("offerAmount: " + offerAmount);
+
+            isFunded = availableBalance >= offerAmount;
+          } else {
+            isFunded = await this.iouOfferIsFunded(client, offer.Owner, offer.Amount.issuer, offer.Amount.currency, offer.Amount.value);
+          }
         }
       } catch(err) {
         throw "err";
       }
 
       return {
-        offerid: offer.OfferID,
-        funded: isFunded
+        offerid: offerid,
+        funded: isFunded,
+        exists: offerExists
       };
     }
 
@@ -656,23 +666,23 @@ export class LedgerSync {
     return balance;
   }
 
-  private async getClient(retry?: boolean): Promise<Client> {
+  private async getOfferCheckClient(retry?: boolean): Promise<Client> {
     let clientToUse = null;
 
-    if(!this.localClient.isConnected()) {
+    if(!this.offerCheckClient.isConnected()) {
       try {
           console.log("connecting local api...")
-          this.localClient = new Client(this.localNode);
-          await this.localClient.connect();
-          console.log("api is connected: " + this.localClient.isConnected());
+          this.offerCheckClient = new Client(this.localNode);
+          await this.offerCheckClient.connect();
+          console.log("api is connected: " + this.offerCheckClient.isConnected());
       } catch(err) {
-          console.log("api is connected: " + this.localClient.isConnected());
+          console.log("api is connected: " + this.offerCheckClient.isConnected());
           console.log(err);
 
           try {
-            if(!this.localClient.isConnected()) {
-              this.localClient = new Client(this.mainNode);
-              await this.localClient.connect();
+            if(!this.offerCheckClient.isConnected()) {
+              this.offerCheckClient = new Client(this.mainNode);
+              await this.offerCheckClient.connect();
             }
           } catch(err) {
             console.log("giving up, could not connect to node.")
@@ -681,9 +691,9 @@ export class LedgerSync {
       }
     }
 
-    if(this.localClient.isConnected()) {
-      clientToUse = this.localClient;
-    } else if(!retry && this.client.isConnected()) {
+    if(this.offerCheckClient.isConnected()) {
+      clientToUse = this.offerCheckClient;
+    } else if(retry && this.client.isConnected()) {
       //connect remote client
       clientToUse = this.client;
     }
