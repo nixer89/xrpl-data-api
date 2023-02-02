@@ -522,7 +522,28 @@ export class LedgerSync {
       return [previousTokens, finalTokens];
     }
 
-    async isOfferFunded(offerid: string, retry?: boolean): Promise<NFTokenOfferFundedStatus> {
+    async areOffersFunded(offers: string[], retry?: boolean): Promise<NFTokenOfferFundedStatus[]> {
+      let checkedOffers:NFTokenOfferFundedStatus[] = [];
+
+      try {
+
+        let client = await this.getOfferCheckClient(retry);
+
+        let offerPromises:any[] = [];
+
+        for(let i = 0; i < offers.length; i++) {
+          offerPromises.push(this.isOfferFunded(client, offers[i]));
+        }
+
+        checkedOffers = await Promise.all(offerPromises);
+      } catch(err) {
+        throw "err";
+      }
+
+      return checkedOffers;
+    }
+
+    async isOfferFunded(client: Client, offerid: string, retry?: boolean): Promise<NFTokenOfferFundedStatus> {
       let isFunded = false;
       let offerExists = false;
       try {
@@ -535,7 +556,8 @@ export class LedgerSync {
 
           if(!offer.Flags || offer.Flags == 0) {
 
-            let client = await this.getOfferCheckClient(retry);
+            if(!client)
+              client = await this.getOfferCheckClient(retry);
 
             let availableBalance = 0;
             let offerAmount = 0;

@@ -120,7 +120,7 @@ export async function registerRoutes(fastify, opts, done) {
 
             let returnValue:NftApiReturnObject;
 
-            let offerStatus:NFTokenOfferFundedStatus = await ledgerSync.isOfferFunded(request.params.offerid);
+            let offerStatus:NFTokenOfferFundedStatus = await ledgerSync.isOfferFunded(null, request.params.offerid);
             console.log("offer is funded: " + (Date.now()-start) + " ms.");
 
             returnValue = {
@@ -239,13 +239,7 @@ export async function registerRoutes(fastify, opts, done) {
               return;
             }
 
-            let offerPromises:any[] = [];
-
-            for(let i = 0; i < offersToCheck.length; i++) {
-              offerPromises.push(ledgerSync.isOfferFunded(offersToCheck[i]));
-            }
-
-            let checkedOffers:NFTokenOfferFundedStatus[] = await Promise.all(offerPromises);
+            let checkedOffers:NFTokenOfferFundedStatus[] = await ledgerSync.areOffersFunded(offersToCheck)
 
             console.log("offers ( " + offersToCheck.length + " ) are funded: " + (Date.now()-start) + " ms.");
             let returnValue:NftApiReturnObject = {
