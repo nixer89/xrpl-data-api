@@ -1,4 +1,3 @@
-import consoleStamp = require("console-stamp");
 import { IssuerAccounts } from './issuerAccounts';
 import { LedgerData } from './ledgerData';
 import { TokenCreation } from './tokenCreation';
@@ -14,6 +13,8 @@ import * as offerFundedApiRoute from './api/nftOfferFundedApi';
 import * as collectionApiRoute from './api/statisticsApi';
 import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 import * as scheduler from 'node-schedule';
+
+require("log-timestamp");
 
 const Redis = require('ioredis')
 const redis = new Redis({
@@ -52,8 +53,6 @@ let keyMap:Map<string,number> = new Map();
 let blockedMap:Map<string,number> = new Map();
 
 let showHeaders = 0;
-
-consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
 
 const fastify = require('fastify')({ trustProxy: true })
 

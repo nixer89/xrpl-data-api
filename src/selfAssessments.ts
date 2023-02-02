@@ -1,8 +1,7 @@
-import consoleStamp = require("console-stamp");
 import * as fs from 'fs';
 import * as scheduler from 'node-schedule';
 
-consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
+require("log-timestamp");
 
 export class SelfAssessments {
 

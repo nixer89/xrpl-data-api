@@ -393,7 +393,7 @@ export class NftStore {
       return returnInfo;
     }
 
-    public async addNFT(newNft:NFT): Promise<void> {
+    public async addNFT(newNft:NFT) {
 
       //add null URI if URI is not available:
       if(!newNft.URI)
@@ -444,7 +444,7 @@ export class NftStore {
 
     }
 
-    public async addNFTOffer(newOffer:NFTokenOffer): Promise<void> {
+    public async addNFTOffer(newOffer:NFTokenOffer) {
 
       this.offerIdMapTemp.set(newOffer.OfferID, newOffer);
 
@@ -484,7 +484,7 @@ export class NftStore {
       this.current_ledger_time_ms = this.current_ledger_time_ms_temp;
     }
 
-    public async loadNftDataFromFS(): Promise<void> {
+    public loadNftDataFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
         if(fs.existsSync("./../nftData.js")) {
@@ -554,7 +554,7 @@ export class NftStore {
       }  
     }
 
-    public async readCurrentLedgerFromFS(): Promise<number> {
+    public readCurrentLedgerFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
         if(fs.existsSync("./../nftData.js")) {

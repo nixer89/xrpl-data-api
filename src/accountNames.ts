@@ -1,11 +1,10 @@
 import * as config from './util/config'
 import * as fetch from 'node-fetch';
 import * as scheduler from 'node-schedule';
-import consoleStamp = require("console-stamp");
 import * as fs from 'fs';
 import { IssuerVerification } from './util/types';
 
-consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
+require("log-timestamp");
 
 export class AccountNames {
 

@@ -1,10 +1,8 @@
 import { NFT, NFTokenOffer, NFTokenOfferFundedStatus } from './util/types';
-import { AccountInfoRequest, AccountObjectsRequest, Client, getBalanceChanges, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
+import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
-import { timeStamp } from 'console';
 import { RippleState } from 'xrpl/dist/npm/models/ledger';
-import { off } from 'process';
 
 export class LedgerSync {
 
@@ -151,13 +149,21 @@ export class LedgerSync {
             }
 
             if(ledgerResponse.result.ledger?.transactions) {
-              let transactions = ledgerResponse.result.ledger.transactions;
+              let transactions:any[] = ledgerResponse.result.ledger.transactions;
+              transactions = transactions.sort((a,b) => b.meta.TransactionIndex - a.meta.TransactionIndex)
 
               for(let i = 0; i < transactions.length; i++) {
-                if(transactions[i] && typeof(transactions[i]) === 'object') {
-                  await this.analyzeTransaction(transactions[i]);
+                if(transactions[i] && i == transactions[i].meta.TransactionIndex) {
+                  this.analyzeTransaction(transactions[i]);
+                } else if(i != transactions[i].meta.TransactionIndex) {
+                  console.log("NOT EQUAL TRANSACTION INDEX:")
+                  console.log("i: " + i);
+                  console.log(JSON.stringify(transactions));
                 }
               }
+            } else {
+              console.log("WAIT! NO TRANSACTIONS???")
+              console.log("ledger: " + this.currentKnownLedger+1);
             }
 
             this.currentKnownLedger = ledgerResponse.result.ledger_index;
@@ -214,13 +220,18 @@ export class LedgerSync {
               let ledgerResponse:LedgerResponse = await this.client.request(ledgerRequest);
 
               if(ledgerResponse?.result?.ledger?.transactions) {
-                let transactions = ledgerResponse.result.ledger.transactions;
+                let transactions:any[] = ledgerResponse.result.ledger.transactions;
+                transactions = transactions.sort((a,b) => b.meta.TransactionIndex - a.meta.TransactionIndex)
 
                 //console.log("having transactions: " + transactions.length);
 
                 for(let i = 0; i < transactions.length; i++) {
-                  if(transactions[i]) {
-                    await this.analyzeTransaction(transactions[i]);
+                  if(transactions[i] && i == transactions[i].meta.TransactionIndex) {
+                    this.analyzeTransaction(transactions[i]);
+                  } else if(i != transactions[i].meta.TransactionIndex) {
+                    console.log("NOT EQUAL TRANSACTION INDEX:")
+                    console.log("i: " + i);
+                    console.log(JSON.stringify(transactions));
                   }
                 }
               }
@@ -673,7 +684,7 @@ export class LedgerSync {
   }
 
   private async getOfferCheckClient(retry?: boolean): Promise<Client> {
-    let clientToUse = null;
+    let clientToUse:Client = null;
 
     if(!this.offerCheckClient.isConnected()) {
       try {
@@ -682,8 +693,8 @@ export class LedgerSync {
           await this.offerCheckClient.connect();
           console.log("api is connected: " + this.offerCheckClient.isConnected());
       } catch(err) {
-          console.log("api is connected: " + this.offerCheckClient.isConnected());
-          console.log(err);
+          //console.log("api is connected: " + this.offerCheckClient.isConnected());
+          //console.log(err);
 
           try {
             if(!this.offerCheckClient.isConnected()) {
@@ -703,6 +714,9 @@ export class LedgerSync {
       //connect remote client
       clientToUse = this.client;
     }
+
+    if(clientToUse)
+      console.log("using client: " + clientToUse.url)
 
     return clientToUse;
   }

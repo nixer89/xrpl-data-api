@@ -1,12 +1,11 @@
 import * as fs from 'fs';
-import consoleStamp = require("console-stamp");
 import { AccountNames } from './accountNames';
 import { IssuerData, IssuerVerification } from "./util/types"
 import { TokenCreation } from './tokenCreation';
 import * as scheduler from 'node-schedule';
 import { SelfAssessments } from './selfAssessments';
 
-consoleStamp(console, { pattern: 'yyyy-mm-dd HH:MM:ss' });
+require("log-timestamp");
 
 export class IssuerAccounts {
 
