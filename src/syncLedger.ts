@@ -150,7 +150,7 @@ export class LedgerSync {
 
             if(ledgerResponse.result.ledger?.transactions) {
               let transactions:any[] = ledgerResponse.result.ledger.transactions;
-              transactions = transactions.sort((a,b) => b.metaData.TransactionIndex - a.metaData.TransactionIndex)
+              transactions = transactions.sort((a,b) => a.metaData.TransactionIndex - b.metaData.TransactionIndex)
 
               for(let i = 0; i < transactions.length; i++) {
                 if(transactions[i] && i == transactions[i].metaData.TransactionIndex) {
@@ -221,7 +221,7 @@ export class LedgerSync {
 
               if(ledgerResponse?.result?.ledger?.transactions) {
                 let transactions:any[] = ledgerResponse.result.ledger.transactions;
-                transactions = transactions.sort((a,b) => b.metaData.TransactionIndex - a.metaData.TransactionIndex)
+                transactions = transactions.sort((a,b) => a.metaData.TransactionIndex - b.metaData.TransactionIndex)
 
                 //console.log("having transactions: " + transactions.length);
 
