@@ -150,12 +150,12 @@ export class LedgerSync {
 
             if(ledgerResponse.result.ledger?.transactions) {
               let transactions:any[] = ledgerResponse.result.ledger.transactions;
-              transactions = transactions.sort((a,b) => b.meta.TransactionIndex - a.meta.TransactionIndex)
+              transactions = transactions.sort((a,b) => b.metaData.TransactionIndex - a.metaData.TransactionIndex)
 
               for(let i = 0; i < transactions.length; i++) {
-                if(transactions[i] && i == transactions[i].meta.TransactionIndex) {
+                if(transactions[i] && i == transactions[i].metaData.TransactionIndex) {
                   this.analyzeTransaction(transactions[i]);
-                } else if(i != transactions[i].meta.TransactionIndex) {
+                } else if(i != transactions[i].metaData.TransactionIndex) {
                   console.log("NOT EQUAL TRANSACTION INDEX:")
                   console.log("i: " + i);
                   console.log(JSON.stringify(transactions));
@@ -221,14 +221,14 @@ export class LedgerSync {
 
               if(ledgerResponse?.result?.ledger?.transactions) {
                 let transactions:any[] = ledgerResponse.result.ledger.transactions;
-                transactions = transactions.sort((a,b) => b.meta.TransactionIndex - a.meta.TransactionIndex)
+                transactions = transactions.sort((a,b) => b.metaData.TransactionIndex - a.metaData.TransactionIndex)
 
                 //console.log("having transactions: " + transactions.length);
 
                 for(let i = 0; i < transactions.length; i++) {
-                  if(transactions[i] && i == transactions[i].meta.TransactionIndex) {
+                  if(transactions[i] && i == transactions[i].metaData.TransactionIndex) {
                     this.analyzeTransaction(transactions[i]);
-                  } else if(i != transactions[i].meta.TransactionIndex) {
+                  } else if(i != transactions[i].metaData.TransactionIndex) {
                     console.log("NOT EQUAL TRANSACTION INDEX:")
                     console.log("i: " + i);
                     console.log(JSON.stringify(transactions));
