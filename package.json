@@ -1,6 +1,6 @@
 {
   "name": "xrpl-data-api",
-  "version": "5.6.8",
+  "version": "5.6.9",
   "description": "tracks periodically the latest issued token on the xrp ledger (every 10 minutes)",
   "main": "src/server.ts",
   "scripts": {

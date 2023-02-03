@@ -104,7 +104,7 @@ export async function registerRoutes(fastify, opts, done) {
               return {
                 code: 401,
                 error: 'Unauthorized',
-                message: `To use this endpoint, please provide an API key in your request!`
+                message: `To use this endpoint, please provide a valid API key in your request!`
               }
             }
           }
@@ -121,7 +121,12 @@ export async function registerRoutes(fastify, opts, done) {
             let returnValue:NftApiReturnObject;
 
             let offerStatus:NFTokenOfferFundedStatus = await ledgerSync.isOfferFunded(null, request.params.offerid);
-            console.log("offer is funded: " + (Date.now()-start) + " ms.");
+
+            let diff = Date.now() - start;
+
+            if(diff > 200) {
+              console.log("offer is funded: " + diff + " ms.");
+            }
 
             returnValue = {
               info: {
@@ -219,7 +224,7 @@ export async function registerRoutes(fastify, opts, done) {
               return {
                 code: 401,
                 error: 'Unauthorized',
-                message: `To use this endpoint, please provide an API key in your request!`
+                message: `To use this endpoint, please provide a valid API key in your request!`
               }
             }
           }
@@ -241,7 +246,12 @@ export async function registerRoutes(fastify, opts, done) {
 
             let checkedOffers:NFTokenOfferFundedStatus[] = await ledgerSync.areOffersFunded(offersToCheck)
 
-            console.log("offers ( " + offersToCheck.length + " ) are funded: " + (Date.now()-start) + " ms.");
+            let diff = Date.now()-start;
+
+            if(diff > 200) {
+              console.log("offers ( " + offersToCheck.length + " ) are funded: " + diff + " ms.");
+            }
+
             let returnValue:NftApiReturnObject = {
               info: {
                 ledger_index: nftStore.getCurrentLedgerIndex(),

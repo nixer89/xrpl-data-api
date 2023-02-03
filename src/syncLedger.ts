@@ -737,8 +737,8 @@ export class LedgerSync {
       clientToUse = this.client;
     }
 
-    if(clientToUse)
-      console.log("using client: " + clientToUse.url)
+    if(clientToUse && clientToUse.url != this.localNode)
+      console.log("USING CLIENT: " + clientToUse.url)
 
     return clientToUse;
   }
