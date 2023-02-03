@@ -247,7 +247,7 @@ export class LedgerSync {
 
               let elapsed = Date.now() - start;
 
-              if(elapsed > 1500){
+              if(elapsed > 2500){
                 console.log("long runnter: " + elapsed + " ms.")
               }
 
