@@ -247,8 +247,12 @@ export class LedgerSync {
 
               let elapsed = Date.now() - start;
 
-              if(elapsed > 2500){
-                console.log("long runnter: " + elapsed + " ms.")
+              if(elapsed > 2500) {
+                console.log("long runner: " + elapsed + " ms.")
+              }
+
+              if(elapsed > 3500) {
+                this.reset();
               }
 
             } else {
@@ -325,6 +329,14 @@ export class LedgerSync {
             this.nftStore.removeNft(burnedNft);
           }
 
+          let deletedOffers = this.getDeletedNFTOffers(transaction.metaData);
+
+          if(deletedOffers && deletedOffers.length > 0) {
+            for(let i = 0; i < deletedOffers.length; i++) {
+              this.nftStore.removeNftOffer(deletedOffers[i]);
+            }
+          }
+                    
         } else { // CHECK FOR OWNER CHANGE!
           let newNftOwner = this.getNewNFTOwnerAddress(transaction.metaData);
           let nftokenId = newNftOwner[0];
