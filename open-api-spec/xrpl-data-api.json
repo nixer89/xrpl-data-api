@@ -901,6 +901,7 @@
                 ],
                 "responses": {
                     "200": {
+                        "description": "Returns an object containing information about the existence and funded status of a single NFT offer",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {

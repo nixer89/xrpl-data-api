@@ -508,15 +508,15 @@ export class LedgerSync {
           }
 
           if(affectedNode.DeletedNode && node.FinalFields) {
-                            if(node.FinalFields.NFTokens) {
-                                for (let nftokenIndex = 0, l_len = node.FinalFields.NFTokens.length; nftokenIndex < l_len; ++nftokenIndex) {
-                                    if(node.FinalFields.NFTokens[nftokenIndex].NFToken) {
-                                        previousTokens[node.FinalFields.NFTokens[nftokenIndex].NFToken.NFTokenID] = node.FinalFields.NFTokens[nftokenIndex].NFToken;
-                                        previousTokens[node.FinalFields.NFTokens[nftokenIndex].NFToken.NFTokenID].Owner = pageOwner;
-                                    }
-                                }
-                            }
-                        }
+              if(node.FinalFields.NFTokens) {
+                  for (let nftokenIndex = 0, l_len = node.FinalFields.NFTokens.length; nftokenIndex < l_len; ++nftokenIndex) {
+                      if(node.FinalFields.NFTokens[nftokenIndex].NFToken) {
+                          previousTokens[node.FinalFields.NFTokens[nftokenIndex].NFToken.NFTokenID] = node.FinalFields.NFTokens[nftokenIndex].NFToken;
+                          previousTokens[node.FinalFields.NFTokens[nftokenIndex].NFToken.NFTokenID].Owner = pageOwner;
+                      }
+                  }
+              }
+          }
           
           if(node.PreviousFields) {
             if(node.PreviousFields.NFTokens) {
