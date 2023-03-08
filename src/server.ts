@@ -343,6 +343,8 @@ const start = async () => {
 
       console.log("http://0.0.0.0:4002/");
 
+      process.send('ready');
+
       fastify.ready(err => {
         if (err) throw err
       });
