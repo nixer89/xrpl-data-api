@@ -201,5 +201,46 @@ export async function registerRoutes(fastify, opts, done) {
         }
     });
 
-    done()
+    fastify.post('/api/v1/xls20-nfts/uri', async (request, reply) => {
+      try {
+        if(!request.body.uri) {
+          reply.code(400).send('Please provide a uri. Calls without uri are not allowed');
+        }
+
+        if(!isHex(request.body.uri)) {
+          reply.code(400).send('Invalid URI. Only HEX is allowed.');
+        }
+
+        //let start = Date.now();
+        //console.log("request params: " + JSON.stringify(request.params));
+        let nftsArray = nftStore.findNftokenByUri(request.body.uri);
+
+        let returnValue:NftApiReturnObject = {
+          info: {
+            ledger_index: nftStore.getCurrentLedgerIndex(),
+            ledger_hash: nftStore.getCurrentLedgerHash(),
+            ledger_close: nftStore.getCurrentLedgerCloseTime(),
+            ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+          },
+          data: {
+            uri: request.body.uri,
+            nfts: nftsArray
+          }
+        }
+
+        //console.log("xls20_nfts_by_nftokenid"+request.hostname + ": " + (Date.now()-start) + " ms")
+
+        return returnValue;
+      } catch(err) {
+        console.log("error resolving nfts by nftokenid");
+        console.log(err);
+        reply.code(500).send('Error occured. Please check your request.');
+      }
+  });
+
+  done()
+}
+
+function isHex(string: string): boolean {
+  return string && /^[0-9A-Fa-f]*$/.test(string);
 }

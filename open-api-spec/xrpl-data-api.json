@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/Methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XRP / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
-        "version": "5.6.14",
+        "version": "5.7.0",
         "title": "XRP Ledger Services NFT Api",
         "contact": {
             "name": "@XrplServices",
@@ -337,6 +337,57 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/NFTDetailResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },"/xls20-nfts/uri/{uri}": {
+            "get": {
+                "summary": "Get all NFTs with a specific URI",
+                "description": "Returns an array of NFTs with a specific URI",
+                "tags": [
+                    "NFT Methods"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uri",
+                        "required": true,
+                        "description": "The URI you want to get the NFTs for.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "- `nfts` = Array of all NFTs with the specified URI",
+                        "headers": {
+                            "x-ratelimit-limit": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Maximum number of requests per minute."
+                            },
+                            "x-ratelimit-remaining": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of remaining requests per minute."
+                            },
+                            "x-ratelimit-reset": {
+                                "schema": {
+                                    "type": "integer"
+                                },
+                                "description": "Number of seconds until the current rate limit window resets."
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/URINftResponse"
                                 }
                             }
                         }
@@ -1303,7 +1354,7 @@
                         "$ref": "#/components/schemas/AllIssuerData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "All Issuers Respnse"
             },
             "AllIssuerData": {
                 "type": "object",
@@ -1331,7 +1382,7 @@
                         "$ref": "#/components/schemas/TaxonData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Taxon Response"
             },
             "TaxonData": {
                 "type": "object",
@@ -1362,7 +1413,7 @@
                         "$ref": "#/components/schemas/IssuerNftData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Issuer NFT Response"
             },
             "IssuerNftData": {
                 "type": "object",
@@ -1393,7 +1444,7 @@
                         "$ref": "#/components/schemas/IssuerTaxonNftData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Issuer Taxon NFT Response"
             },
             "IssuerTaxonNftData": {
                 "type": "object",
@@ -1427,13 +1478,44 @@
                         "$ref": "#/components/schemas/OwnerNftData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "NFT Owner Response"
             },
             "OwnerNftData": {
                 "type": "object",
                 "required":["owner","nfts"],
                 "properties": {
                     "owner": {
+                        "type": "string"
+                    },
+                    "nfts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NFT"
+                        }
+                    }
+                }
+            },
+            "URINftResponse": {
+                "type": "object",
+                "required": [
+                    "info",
+					"data"
+                ],
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/Info"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/URINftData"
+                    }
+                },
+                "title": "NFT URI Response"
+            },
+            "URINftData": {
+                "type": "object",
+                "required":["uri","nfts"],
+                "properties": {
+                    "uri": {
                         "type": "string"
                     },
                     "nfts": {
@@ -1458,7 +1540,7 @@
                         "$ref": "#/components/schemas/NFTDetailData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "NFT Detail Response"
             },
             "NFTDetailData": {
                 "type": "object",
@@ -1483,7 +1565,7 @@
                         "$ref": "#/components/schemas/IssuerOfferData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Issuer Offer Response"
             },
             "IssuerOfferData": {
                 "type": "object",
@@ -1514,7 +1596,7 @@
                         "$ref": "#/components/schemas/IssuerTaxonOfferData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Issuer Taxon Offer Response"
             },
             "IssuerTaxonOfferData": {
                 "type": "object",
@@ -1548,7 +1630,7 @@
                         "$ref": "#/components/schemas/NftOwnerOfferData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "NFT Owner Offer Response"
             },
             "NftOwnerOfferData": {
                 "type": "object",
@@ -1579,7 +1661,7 @@
                         "$ref": "#/components/schemas/NFTOffersData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "NFT Offers Response"
             },
             "NFTOffersData": {
                 "type": "object",
@@ -1607,7 +1689,7 @@
                         "$ref": "#/components/schemas/OfferFundedData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Offer Funded Response"
             },
             "OfferFundedData": {
                 "type": "object",
@@ -1638,7 +1720,7 @@
                         "$ref": "#/components/schemas/OffersFundedData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Offers Funded Response"
             },
             "OffersFundedData": {
                 "type": "object",
@@ -1666,7 +1748,7 @@
                         "$ref": "#/components/schemas/NFTOfferIDData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "NFT OfferID Response"
             },
             "NFTOfferIDData": {
                 "type": "object",
@@ -1694,7 +1776,7 @@
                         "$ref": "#/components/schemas/OfferOwnerData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Offer Owner Response"
             },
             "OfferOwnerData": {
                 "type": "object",
@@ -1725,7 +1807,7 @@
                         "$ref": "#/components/schemas/OfferDestinationData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "Offer Destination Response"
             },
             "OfferDestinationData": {
                 "type": "object",
@@ -1756,7 +1838,7 @@
                         "$ref": "#/components/schemas/AllAccountOffersData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "All Account Offers Response"
             },
             "AllAccountOffersData": {
                 "type": "object",
@@ -1799,7 +1881,7 @@
                         "$ref": "#/components/schemas/CollectionInfoData"
                     }
                 },
-                "title": "ValidationError"
+                "title": "CollectionInfoIssuerResponse"
             },
             "CollectionInfoIssuerData": {
                 "type": "object",
