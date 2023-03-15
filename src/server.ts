@@ -13,15 +13,15 @@ import * as offerFundedApiRoute from './api/nftOfferFundedApi';
 import * as collectionApiRoute from './api/statisticsApi';
 import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 import * as scheduler from 'node-schedule';
-import { DATA_PATH } from './util/config';
+import { DATA_PATH, REDIS_IP, REDIS_PORT } from './util/config';
 
 require("log-timestamp");
 
 const Redis = require('ioredis')
 const redis = new Redis({
   connectionName: 'xrpl-data-api',
-  host: '127.0.0.1',
-  port: 6379,
+  host: REDIS_IP,
+  port: REDIS_PORT,
   connectTimeout: 500,
   maxRetriesPerRequest: 1
 })
