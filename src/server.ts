@@ -13,6 +13,7 @@ import * as offerFundedApiRoute from './api/nftOfferFundedApi';
 import * as collectionApiRoute from './api/statisticsApi';
 import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 import * as scheduler from 'node-schedule';
+import { DATA_PATH } from './util/config';
 
 require("log-timestamp");
 
@@ -72,6 +73,9 @@ let xls14NftCounter:number = 0;
 const start = async () => {
 
   const data:any = fs.readFileSync('./open-api-spec/xrpl-data-api.json', 'utf8').toString();
+
+  if(!fs.existsSync(DATA_PATH))
+    fs.mkdirSync(DATA_PATH);
 
   issuerAccount = IssuerAccounts.Instance;
   ledgerData = LedgerData.Instance;

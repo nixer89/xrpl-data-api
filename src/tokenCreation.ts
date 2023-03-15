@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { createInterface } from 'readline';
 import { once } from 'events';
 import * as scheduler from 'node-schedule';
+import { DATA_PATH } from './util/config';
 
 require("log-timestamp");
 
@@ -28,7 +29,7 @@ export class TokenCreation {
     private async loadIssuerCreationFromFS(): Promise<void> {
         //console.log("loading issuer creation from FS");
         try {
-            if(fs.existsSync("./../issuerCreation.txt")) {
+            if(fs.existsSync(DATA_PATH+"issuerCreation.txt")) {
                 try {
                     const rl = createInterface({
                       input: fs.createReadStream('./../issuerCreation.txt'),

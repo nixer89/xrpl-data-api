@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as scheduler from 'node-schedule';
+import { DATA_PATH } from './util/config';
 
 export class LedgerData {
 
@@ -50,8 +51,8 @@ export class LedgerData {
     private async loadLedgerDataFromFS(): Promise<void> {
       try {
         //console.log("loading ledger data from FS");
-        if(fs.existsSync("./../ledgerData.js")) {
-            let ledgerData:any = JSON.parse(fs.readFileSync("./../ledgerData.js").toString());
+        if(fs.existsSync(DATA_PATH+"ledgerData.js")) {
+            let ledgerData:any = JSON.parse(fs.readFileSync(DATA_PATH+"ledgerData.js").toString());
             if(ledgerData) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
                 this.setLedgerData(ledgerData);

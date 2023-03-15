@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { rippleTimeToUnixTime } from 'xrpl';
+import { DATA_PATH } from './util/config';
 import { FloorPriceProperty, MarketPlaceStats, NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
 
 export class NftStore {
@@ -108,7 +109,10 @@ export class NftStore {
     }
 
     public findNftokenByUri(uri:string): NFT[] {
-      return Array.from(this.nftokenUriMap.get(uri).values());
+      if(this.nftokenUriMap.has(uri))
+        return Array.from(this.nftokenUriMap.get(uri).values());
+      else
+        return [];
     }
 
     public findOfferById(offerId: string): NFTokenOffer {
@@ -529,8 +533,8 @@ export class NftStore {
     public loadNftDataFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync("./../nftData.js")) {
-            let nftData:any = JSON.parse(fs.readFileSync("./../nftData.js").toString());
+        if(fs.existsSync(DATA_PATH+"nftData.js")) {
+            let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData.js").toString());
             if(nftData && nftData.nfts) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
                 let nftArray:NFT[] = nftData.nfts;
@@ -555,8 +559,8 @@ export class NftStore {
           console.log("nft issuer data file does not exist yet.")
         }
 
-        if(fs.existsSync("./../nftOffers.js")) {
-          let nftOffers:any = JSON.parse(fs.readFileSync("./../nftOffers.js").toString());
+        if(fs.existsSync(DATA_PATH+"nftOffers.js")) {
+          let nftOffers:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftOffers.js").toString());
           if(nftOffers && nftOffers.offers) {
               //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
               let offerArray:NFTokenOffer[] = nftOffers.offers;
@@ -604,8 +608,8 @@ export class NftStore {
     public readCurrentLedgerFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync("./../nftData.js")) {
-            let nftData:any = JSON.parse(fs.readFileSync("./../nftData.js").toString());
+        if(fs.existsSync(DATA_PATH+"nftData.js")) {
+            let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData.js").toString());
             if(nftData && nftData.ledger_index) {
                 return nftData.ledger_index;
             } else {

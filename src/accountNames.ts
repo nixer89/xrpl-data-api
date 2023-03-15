@@ -3,6 +3,7 @@ import * as fetch from 'node-fetch';
 import * as scheduler from 'node-schedule';
 import * as fs from 'fs';
 import { IssuerVerification } from './util/types';
+import { DATA_PATH } from './util/config';
 
 require("log-timestamp");
 
@@ -221,8 +222,8 @@ export class AccountNames {
     private async loadBithompUserNamesFromFS(): Promise<void> {
         //console.log("loading bithomp user names from FS");
         try {
-            if(fs.existsSync("./../bithompUserNames.js")) {
-                let bithompNames:any = JSON.parse(fs.readFileSync("./../bithompUserNames.js").toString());
+            if(fs.existsSync(DATA_PATH+"bithompUserNames.js")) {
+                let bithompNames:any = JSON.parse(fs.readFileSync(DATA_PATH+"bithompUserNames.js").toString());
                 //console.log(JSON.stringify(bithompNames));
                 if(bithompNames) {
                     for (var account in bithompNames) {
@@ -246,8 +247,8 @@ export class AccountNames {
     private async loadKycDataFromFS(): Promise<void> {
         //console.log("loading kyc data from FS");
         try {
-            if(fs.existsSync("./../kycData.js")) {
-                let kycData:any = JSON.parse(fs.readFileSync("./../kycData.js").toString());
+            if(fs.existsSync(DATA_PATH+"kycData.js")) {
+                let kycData:any = JSON.parse(fs.readFileSync(DATA_PATH+"kycData.js").toString());
                 //console.log(JSON.stringify(bithompNames));
                 if(kycData) {
                     for (var account in kycData) {

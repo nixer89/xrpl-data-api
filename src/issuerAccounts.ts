@@ -4,6 +4,7 @@ import { IssuerData, IssuerVerification } from "./util/types"
 import { TokenCreation } from './tokenCreation';
 import * as scheduler from 'node-schedule';
 import { SelfAssessments } from './selfAssessments';
+import { DATA_PATH } from './util/config';
 
 require("log-timestamp");
 
@@ -111,8 +112,8 @@ export class IssuerAccounts {
       try {
         //console.log("loading issuer data from FS");
         let loadedMap:Map<string, IssuerData> = new Map();
-        if(fs.existsSync("./../issuerData.js")) {
-            let issuerData:any = JSON.parse(fs.readFileSync("./../issuerData.js").toString());
+        if(fs.existsSync(DATA_PATH+"issuerData.js")) {
+            let issuerData:any = JSON.parse(fs.readFileSync(DATA_PATH+"issuerData.js").toString());
             if(issuerData) {
                 let issuers = issuerData.issuers;
                 for (var account in issuers) {

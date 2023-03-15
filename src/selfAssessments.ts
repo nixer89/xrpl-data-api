@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as scheduler from 'node-schedule';
+import { DATA_PATH } from './util/config';
 
 require("log-timestamp");
 
@@ -35,8 +36,8 @@ export class SelfAssessments {
     private async loadSelfAssessmentsFromFS(): Promise<void> {
         //console.log("loading self assessments from FS");
         try {
-            if(fs.existsSync("./../selfAssessments.js")) {
-                let selfAssessmentsObject:any = JSON.parse(fs.readFileSync("./../selfAssessments.js").toString());
+            if(fs.existsSync(DATA_PATH+"selfAssessments.js")) {
+                let selfAssessmentsObject:any = JSON.parse(fs.readFileSync(DATA_PATH+"selfAssessments.js").toString());
                 //console.log(JSON.stringify(selfAssessmentsObject));
                 if(selfAssessmentsObject) {
                     for (var issuerToken in selfAssessmentsObject) {
