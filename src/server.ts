@@ -150,7 +150,7 @@ const start = async () => {
 
       await fastify.register(require('@fastify/rate-limit'), {
         global: true,
-        redis: redis,
+        //redis: redis,
         skipOnError: true,
         max: async (req, key) => {
 
