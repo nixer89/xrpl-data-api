@@ -17,7 +17,14 @@ import { DATA_PATH, REDIS_IP, REDIS_PORT } from './util/config';
 
 require("log-timestamp");
 
-
+const Redis = require('ioredis')
+const redis = new Redis({
+  connectionName: 'xrpl-data-api',
+  host: REDIS_IP,
+  port: REDIS_PORT,
+  connectTimeout: 500,
+  maxRetriesPerRequest: 1
+})
 
 let issuerAccount:IssuerAccounts;
 let ledgerData:LedgerData;
@@ -143,7 +150,7 @@ const start = async () => {
 
       await fastify.register(require('@fastify/rate-limit'), {
         global: true,
-        //redis: redis,
+        redis: redis,
         skipOnError: true,
         max: async (req, key) => {
 

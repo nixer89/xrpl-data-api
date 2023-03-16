@@ -13,7 +13,6 @@ export class AccountNames {
 
     private bithompServiceNames:Map<string, IssuerVerification> = new Map();
     private xrpscanUserNames:Map<string, IssuerVerification> = new Map();
-    private bithompUserNames:Map<string, IssuerVerification> = new Map();
     private kycMap:Map<string, boolean> = new Map();
     private kycDistributorMap:Map<string, string> = new Map();
 
@@ -86,14 +85,13 @@ export class AccountNames {
 
     public async init(): Promise<void> {
         try {
-            await this.loadBithompUserNamesFromFS();
+            //await this.loadBithompUserNamesFromFS();
             await this.loadKycDataFromFS();
-
             await this.getServiceNames();
 
             scheduler.scheduleJob("reloadServiceNames", {hour: 12, minute: 0, second: 0}, () => this.getServiceNames());
-            scheduler.scheduleJob("loadBithompUserNamesFromFS", "*/10 * * * *", () => this.loadBithompUserNamesFromFS());
             scheduler.scheduleJob("loadKycDataFromFS", "*/10 * * * *", () => this.loadKycDataFromFS());
+            //scheduler.scheduleJob("loadBithompUserNamesFromFS", "*/10 * * * *", () => this.loadBithompUserNamesFromFS());
         } catch(err) {
             console.log("ERROR INITIALIZING ACCOUNT NAMES");
         }
@@ -183,9 +181,6 @@ export class AccountNames {
         else if(this.bithompServiceNames.has(xrplAccount) && this.bithompServiceNames.get(xrplAccount) != null && this.bithompServiceNames.get(xrplAccount).username.trim().length > 0)
             return this.bithompServiceNames.get(xrplAccount).username + "_[Bithomp]";
         
-        else if(this.bithompUserNames.has(xrplAccount) && this.bithompUserNames.get(xrplAccount) != null && this.bithompUserNames.get(xrplAccount).username.trim().length > 0)
-            return this.bithompUserNames.get(xrplAccount).username + "_[Bithomp]";
-
         else
             //try to resolve user name - seems like it is a new one!
             return null
@@ -198,9 +193,6 @@ export class AccountNames {
         else if(this.bithompServiceNames.has(xrplAccount) && this.bithompServiceNames.get(xrplAccount) != null)
             return this.bithompServiceNames.get(xrplAccount);
         
-        else if(this.bithompUserNames.has(xrplAccount) && this.bithompUserNames.get(xrplAccount) != null)
-            return this.bithompUserNames.get(xrplAccount);
-
         else
             //try to resolve user name - seems like it is a new one!
             return null
@@ -219,6 +211,7 @@ export class AccountNames {
             return false;
     }
 
+    /**
     private async loadBithompUserNamesFromFS(): Promise<void> {
         //console.log("loading bithomp user names from FS");
         try {
@@ -243,6 +236,7 @@ export class AccountNames {
             this.bithompUserNames.clear();
         }
     }
+     */
 
     private async loadKycDataFromFS(): Promise<void> {
         //console.log("loading kyc data from FS");
