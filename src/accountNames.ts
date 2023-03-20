@@ -100,7 +100,7 @@ export class AccountNames {
     public async getServiceNames(): Promise<void> {
         try {
             //load bithomp services
-            //await this.loadBithompServiceNames();
+            await this.loadBithompServiceNames();
 
             //load xrpscan services
             await this.loadXRPScanNames();
