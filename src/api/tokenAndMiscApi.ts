@@ -17,7 +17,7 @@ export async function registerRoutes(fastify, opts, done) {
       let currentLedgerCloseTimeMs = nftStore.getCurrentLedgerCloseTimeMs();
       let currentTimeMs = Date.now();
       let diff = currentTimeMs - (currentLedgerCloseTimeMs ? (currentLedgerCloseTimeMs+946684800)*1000 : 0) ;
-      console.log("diff: " + diff);
+      //console.log("diff: " + diff);
 
       if(diff > 0 && diff < 10000) { //difference should not be more than 5 seconds!
         reply.code(200).send('I am in sync!');
