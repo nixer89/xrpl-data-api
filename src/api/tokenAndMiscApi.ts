@@ -1,14 +1,30 @@
 import { AccountNames } from "../accountNames";
 import { IssuerAccounts } from "../issuerAccounts";
 import { LedgerData } from "../ledgerData";
+import { NftStore } from "../nftokenStore";
 import { TokenCreation } from "../tokenCreation";
 
 let issuerAccount:IssuerAccounts = IssuerAccounts.Instance;
 let ledgerData:LedgerData = LedgerData.Instance;
 let accountNames:AccountNames = AccountNames.Instance;
 let tokenCreation:TokenCreation = TokenCreation.Instance;
+let nftStore: NftStore = NftStore.Instance;
 
 export async function registerRoutes(fastify, opts, done) {
+
+  console.log("declaring 200er reponse")
+    fastify.get('/api', async (request, reply) => {
+      let currentLedgerCloseTimeMs = nftStore.getCurrentLedgerCloseTimeMs();
+      let currentTimeMs = Date.now();
+      let diff = currentTimeMs - (currentLedgerCloseTimeMs ? currentLedgerCloseTimeMs : 0) ;
+      console.log("diff: " + diff);
+
+      if(diff > 0 && diff < 10000) { //difference should not be more than 5 seconds!
+        reply.code(200).send('I am in sync!');
+      } else {
+        reply.code(500).send('I am NOT in sync!');
+      }
+  });
 
   fastify.get('/api/v1/tokens', async (request, reply) => {
     try {

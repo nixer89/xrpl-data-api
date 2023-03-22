@@ -336,11 +336,6 @@ const start = async () => {
       return payload;
     });
      */
-      
-    console.log("declaring 200er reponse")
-    fastify.get('/api', async (request, reply) => {
-      reply.code(200).send('I am alive!'); 
-    });
 
     try {
       await fastify.listen({ port: 4002, host: '0.0.0.0' });
