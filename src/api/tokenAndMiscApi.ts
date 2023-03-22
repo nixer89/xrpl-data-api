@@ -19,7 +19,7 @@ export async function registerRoutes(fastify, opts, done) {
       let diff = currentTimeMs - (currentLedgerCloseTimeMs ? (currentLedgerCloseTimeMs+946684800)*1000 : 0) ;
       //console.log("diff: " + diff);
 
-      if(diff > 0 && diff < 10000) { //difference should not be more than 5 seconds!
+      if(diff > 0 && diff < 15000) { //difference should not be more than 5 seconds!
         reply.code(200).send('I am in sync!');
       } else {
         reply.code(500).send('I am NOT in sync!');
