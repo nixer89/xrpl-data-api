@@ -179,6 +179,11 @@ export class LedgerSync {
               console.log("ledger: " + this.currentKnownLedger+1);
             }
 
+            this.nftStore.setCurrentLedgerIndex(ledgerResponse.result.ledger_index);
+            this.nftStore.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
+            this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
+            this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
+            
             this.currentKnownLedger = ledgerResponse.result.ledger_index;
           }
         }
