@@ -173,15 +173,17 @@ const start = async () => {
 
           keyMap.set(key,calls);
 
-          if(key && key.length > 23) {
-            key = key.substring(23);
+          let logKey = key;
+
+          if(logKey && logKey.length > 23) {
+            logKey = logKey.substring(23);
           }
 
           if(calls%100 == 0) {
-            if(key != callerIp)
-              console.log(key + " already called: " + calls + " times from ip " + callerIp);
+            if(logKey != callerIp)
+              console.log(logKey + " already called: " + calls + " times from ip " + callerIp);
             else
-              console.log(key + " already called: " + calls + " times.");
+              console.log(logKey + " already called: " + calls + " times.");
           }
 
           //TIER 1 LIMIT
