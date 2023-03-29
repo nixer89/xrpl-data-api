@@ -175,8 +175,8 @@ const start = async () => {
 
           let logKey = key;
 
-          if(logKey && logKey.length > 23) {
-            logKey = logKey.substring(23);
+          if(logKey && logKey.length > 24) {
+            logKey = logKey.substring(24);
           }
 
           if(calls%100 == 0) {
@@ -252,7 +252,7 @@ const start = async () => {
           }
 
           if(limit == 0) {
-            console.log("blocked: " + key);
+            console.log("blocked: " + logKey);
           }
 
           return limit;
@@ -281,6 +281,12 @@ const start = async () => {
 
           let blocks = 1;
 
+          let logKey = key;
+
+          if(logKey && logKey.length > 24) {
+            logKey = logKey.substring(24);
+          }
+
           if(blockedMap.has(key)) {
             blocks = blockedMap.get(key);
             blocks++;
@@ -289,7 +295,7 @@ const start = async () => {
           blockedMap.set(key,blocks);
 
           if(blocks%100 == 0) {
-            console.log(key + " already blocked: " + blocks + " times.");
+            console.log(logKey + " already blocked: " + blocks + " times.");
           }
 
           let isBlocked = false;
@@ -302,7 +308,7 @@ const start = async () => {
           }
 
           if(!isBlocked) {
-            console.log("RATE LIMIT | " + key + " | " + req.headers['cf-connecting-ip'] + " | " + req.routerPath + " | " + JSON.stringify(req.params));
+            console.log("RATE LIMIT | " + logKey + " | " + req.headers['cf-connecting-ip'] + " | " + req.routerPath + " | " + JSON.stringify(req.params));
             error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later. Check https://api.xrpldata.com/docs for API limits and contact us throught the listed channels in the docs if you need elevated limits.'
           } else {
             showHeaders++;
