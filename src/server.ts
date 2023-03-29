@@ -152,7 +152,7 @@ const start = async () => {
         global: true,
         redis: redis,
         skipOnError: true,
-        max: async (req, key) => {
+        max: async (req, key:string) => {
 
           let callerIp = req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
                       || req.headers['x-real-ip'] // nginx
@@ -172,6 +172,10 @@ const start = async () => {
           }
 
           keyMap.set(key,calls);
+
+          if(key && key.length > 23) {
+            key = key.substring(23);
+          }
 
           if(calls%100 == 0) {
             if(key != callerIp)

@@ -14,15 +14,22 @@ export async function registerRoutes(fastify, opts, done) {
 
   console.log("declaring 200er reponse")
     fastify.get('/api', async (request, reply) => {
-      let currentLedgerCloseTimeMs = nftStore.getCurrentLedgerCloseTimeMs();
-      let currentTimeMs = Date.now();
-      let diff = currentTimeMs - (currentLedgerCloseTimeMs ? (currentLedgerCloseTimeMs+946684800)*1000 : 0) ;
-      //console.log("diff: " + diff);
+      let diff = -1;
+      try {
+        let currentLedgerCloseTimeMs = nftStore.getCurrentLedgerCloseTimeMs();
+        let currentTimeMs = Date.now();
+        diff = currentTimeMs - (currentLedgerCloseTimeMs ? (currentLedgerCloseTimeMs+946684800)*1000 : 0) ;
+        //console.log("diff: " + diff);
 
-      if(diff > 0 && diff < 15000) { //difference should not be more than 5 seconds!
-        reply.code(200).send('I am in sync!');
-      } else {
-        reply.code(500).send('I am NOT in sync!');
+        if(diff > 0 && diff < 15000) { //difference should not be more than 5 seconds!
+          reply.code(200).send('I am in sync!');
+        } else {
+          console.log("NO SYNC DIFF: " + diff);
+          reply.code(418).send('I am NOT in sync!');
+        }
+      } catch(err) {
+        console.log("ERROR DIFF: " + diff);
+        reply.code(500).send('Some error happened!');
       }
   });
 
