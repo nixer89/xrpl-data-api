@@ -3,6 +3,7 @@ import { IssuerAccounts } from "../issuerAccounts";
 import { LedgerData } from "../ledgerData";
 import { NftStore } from "../nftokenStore";
 import { TokenCreation } from "../tokenCreation";
+import { connect, reload } from 'pm2';
 
 let issuerAccount:IssuerAccounts = IssuerAccounts.Instance;
 let ledgerData:LedgerData = LedgerData.Instance;
@@ -21,15 +22,41 @@ export async function registerRoutes(fastify, opts, done) {
         diff = currentTimeMs - (currentLedgerCloseTimeMs ? (currentLedgerCloseTimeMs+946684800)*1000 : 0) ;
         //console.log("diff: " + diff);
 
-        if(diff > 0 && diff < 15000) { //difference should not be more than 5 seconds!
+        if(diff > -4000 && diff < 15000) { //difference should not be more than 5 seconds!
           reply.code(200).send('I am in sync!');
         } else {
           console.log("NO SYNC DIFF: " + diff);
           reply.code(418).send('I am NOT in sync!');
+          try {
+            console.log("RELOADING!")
+            connect((err) => {
+              reload(process.env.PM2_INSTANCE_ID, (err) => {
+                if(err) {
+                  console.log(err);
+                  process.exit(1);
+                }
+              });
+            });
+          } catch(err) {
+            process.exit(1);
+          }
         }
       } catch(err) {
         console.log("ERROR DIFF: " + diff);
         reply.code(500).send('Some error happened!');
+        try {
+          console.log("RELOADING!")
+          connect((err) => {
+            reload(process.env.PM2_INSTANCE_ID, (err) => {
+              if(err) {
+                console.log(err);
+                process.exit(1);
+              }
+            });
+          });
+        } catch(err) {
+          process.exit(1);
+        }
       }
   });
 

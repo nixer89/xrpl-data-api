@@ -3,6 +3,7 @@ import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, Ledge
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
 import { RippleState } from 'xrpl/dist/npm/models/ledger';
+import { connect, reload } from 'pm2';
 
 export class LedgerSync {
 
@@ -69,7 +70,19 @@ export class LedgerSync {
           
         } else if(retryCount > 10) {
           //force restart by pm2
-          process.exit(1);
+          try {
+            console.log("RELOADING!")
+            connect((err) => {
+              reload(process.env.PM2_INSTANCE_ID, (err) => {
+                if(err) {
+                  console.log(err);
+                  process.exit(1);
+                }
+              });
+            });
+          } catch(err) {
+            process.exit(1);
+          }
         } else {
           this.client = new Client(this.clientUrl)
         }
@@ -252,11 +265,12 @@ export class LedgerSync {
               }
 
               if(elapsed > 3500) {
+                console.log("MORE THAN 3.5 SECONDS ELAPSED TO FETCH LEDGER")
                 this.reset();
               }
 
             } else {
-              console.log("something is wrong, reset!");
+              console.log("WRONG EXPECTED LEDGER NUMBER");
               this.reset();
             }
           } else {
@@ -277,7 +291,19 @@ export class LedgerSync {
         if(retryCount == undefined) {
           console.log("EXECUTING HARD RESET!");
           //hard reset
-          process.exit(1);
+          try {
+            console.log("RELOADING!")
+            connect((err) => {
+              reload(process.env.PM2_INSTANCE_ID, (err) => {
+                if(err) {
+                  console.log(err);
+                  process.exit(1);
+                }
+              });
+            });
+          } catch(err) {
+            process.exit(1);
+          }
         } else {
           console.log("RESET WITH RETRY COUNTER")
           retryCount++;
@@ -287,7 +313,19 @@ export class LedgerSync {
       } catch(err) {
         console.log(err);
         console.log("ERR WHILE RESETTING. EXIT TOOL!");
-        process.exit(1);
+        try {
+          console.log("RELOADING!")
+          connect((err) => {
+            reload(process.env.PM2_INSTANCE_ID, (err) => {
+              if(err) {
+                console.log(err);
+                process.exit(1);
+              }
+            });
+          });
+        } catch(err) {
+          process.exit(1);
+        }
       }
     }
 
@@ -353,7 +391,19 @@ export class LedgerSync {
               console.log("THIS SHOULD NEVER HAVE HAPPENED?!?!? NEW NFT NOT POSSIBLE!")
               
               //restart tool
-              process.exit(1);
+              try {
+                console.log("RELOADING!")
+                connect((err) => {
+                  reload(process.env.PM2_INSTANCE_ID, (err) => {
+                    if(err) {
+                      console.log(err);
+                      process.exit(1);
+                    }
+                  });
+                });
+              } catch(err) {
+                process.exit(1);
+              }
             }
           }
         }
