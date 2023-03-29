@@ -270,7 +270,7 @@ export class LedgerSync {
               }
 
             } else {
-              console.log("WRONG EXPECTED LEDGER NUMBER");
+              console.log("WRONG EXPECTED LEDGER NUMBER. EXPECTED: " + this.currentKnownLedger+1 + " | GOT: " + ledgerClose.ledger_index);
               this.reset();
             }
           } else {
