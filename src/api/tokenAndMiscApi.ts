@@ -14,19 +14,34 @@ let nftStore: NftStore = NftStore.Instance;
 export async function registerRoutes(fastify, opts, done) {
 
   console.log("declaring 200er reponse")
-    fastify.get('/api', async (request, reply) => {
+    fastify.get('/api', { config: {
+      rateLimit: {
+        timeWindow: '1 minute',
+        max: 60,
+        keyGenerator: function(req) {
+          return req.headers['x-api-key']
+          || req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
+          || req.headers['x-real-ip'] // nginx
+          || req.headers['x-client-ip'] // apache
+          || req.headers['x-forwarded-for'] // use this only if you trust the header
+          || req.ip // fallback to default
+        }
+      }
+    }
+  }, async (request, reply) => {
       let diff = -1;
       try {
         let currentLedgerCloseTimeMs = nftStore.getCurrentLedgerCloseTimeMs();
         let currentTimeMs = Date.now();
         diff = currentTimeMs - (currentLedgerCloseTimeMs ? (currentLedgerCloseTimeMs+946684800)*1000 : 0) ;
+        let pm2Instance:number = process.env.PM2_INSTANCE_ID ? parseInt(process.env.PM2_INSTANCE_ID) : 0;
         //console.log("diff: " + diff);
 
         if(diff > -4000 && diff < 15000) { //difference should not be more than 5 seconds!
           reply.code(200).send('I am in sync!');
         } else {
           console.log("NO SYNC DIFF: " + diff);
-          reply.code(418).send('I am NOT in sync!');
+          reply.code((400+pm2Instance)).send('I am NOT in sync!');
           try {
             console.log("RELOADING!")
             connect((err) => {

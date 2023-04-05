@@ -36,6 +36,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/funded/offer/:offerid',{
         config: {
           rateLimit: {
+            timeWindow: '1 minute',
             max: async (req, key) => {
 
               let callerIp = req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
@@ -153,6 +154,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.post('/api/v1/xls20-nfts/funded/offers', {
         config: {
           rateLimit: {
+            timeWindow: '1 minute',
             max: async (req, key) => {
 
               let callerIp = req.headers['cf-connecting-ip'] // cloudflare originally connecting IP
