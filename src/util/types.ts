@@ -119,6 +119,6 @@ export interface SupplyInfoType {
         xrpTotalSupply: number,
         xrpTotalBalance: number,
         xrpTotalReserved: number,
-        xrpTotalReservedOffers: number
+        xrpTotalTransientReserves: number
     }
 }
