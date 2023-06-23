@@ -194,7 +194,7 @@ export async function registerRoutes(fastify, opts, done) {
     }
   });
 
-  fastify.get('/api/v1/supplyinfo', async (request, reply) => {
+  fastify.get('/api/v1/supply_info', async (request, reply) => {
     try {
 
       let callIP = request.headers['x-api-key']
@@ -208,7 +208,7 @@ export async function registerRoutes(fastify, opts, done) {
 
       if(WHITELIST_IP === callIP) {
 
-        let supplyInfoResponse: SupplyInfoType = supplyInfo.getSupplyInfo();
+        let supplyInfoResponse:SupplyInfoType = supplyInfo.getSupplyInfo();
 
         if(supplyInfoResponse) {
           return supplyInfoResponse
@@ -216,7 +216,7 @@ export async function registerRoutes(fastify, opts, done) {
           return null;
         }
       } else {
-        reply.code(404).send({"message":"Route GET:/api/v1/supplyinfo not found","error":"Not Found","statusCode":404});
+        reply.code(404).send({"message":"Route GET:/api/v1/supply_info not found","error":"Not Found","statusCode":404});
       }
 
       //console.timeEnd("ledgerdata");
