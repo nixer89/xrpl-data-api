@@ -2,14 +2,18 @@ import { AccountNames } from "../accountNames";
 import { IssuerAccounts } from "../issuerAccounts";
 import { LedgerData } from "../ledgerData";
 import { NftStore } from "../nftokenStore";
+import { SupplyInfo } from "../supplyInfo";
 import { TokenCreation } from "../tokenCreation";
 import { connect, reload } from 'pm2';
+import { SupplyInfoType } from "../util/types";
+import { WHITELIST_IP } from '../util/config';
 
 let issuerAccount:IssuerAccounts = IssuerAccounts.Instance;
 let ledgerData:LedgerData = LedgerData.Instance;
 let accountNames:AccountNames = AccountNames.Instance;
 let tokenCreation:TokenCreation = TokenCreation.Instance;
 let nftStore: NftStore = NftStore.Instance;
+let supplyInfo: SupplyInfo = SupplyInfo.Instance;
 
 export async function registerRoutes(fastify, opts, done) {
 
@@ -190,5 +194,39 @@ export async function registerRoutes(fastify, opts, done) {
     }
   });
 
-    done()
+  fastify.get('/api/v1/supplyinfo', async (request, reply) => {
+    try {
+
+      let callIP = request.headers['x-api-key']
+      || request.headers['cf-connecting-ip'] // cloudflare originally connecting IP
+      || request.headers['x-real-ip'] // nginx
+      || request.headers['x-client-ip'] // apache
+      || request.headers['x-forwarded-for'] // use this only if you trust the header
+      || request.ip // fallback to default
+
+      console.log("supply info call IP: " + callIP);
+
+      if(WHITELIST_IP === callIP) {
+
+        let supplyInfoResponse: SupplyInfoType = supplyInfo.getSupplyInfo();
+
+        if(supplyInfoResponse) {
+          return supplyInfoResponse
+        } else {
+          return null;
+        }
+      } else {
+        reply.code(404).send({"message":"Route GET:/api/v1/supplyinfo not found","error":"Not Found","statusCode":404});
+      }
+
+      //console.timeEnd("ledgerdata");
+
+    } catch(err) {
+      console.log("error getting supply info");
+      console.log(err);
+      reply.code(500).send('Error occured. Please check your request.');
+    }
+  });
+
+  done()
 }

@@ -14,6 +14,7 @@ import * as collectionApiRoute from './api/statisticsApi';
 import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 import * as scheduler from 'node-schedule';
 import { DATA_PATH, REDIS_IP, REDIS_PORT } from './util/config';
+import { SupplyInfo } from './supplyInfo';
 
 require("log-timestamp");
 
@@ -32,6 +33,7 @@ let tokenCreation:TokenCreation;
 let accountNames:AccountNames;
 let selfAssessments:SelfAssessments;
 let ledgerSync: LedgerSync;
+let supplyInfo: SupplyInfo;
 
 
 let tier1LimitIps:string[] = [];
@@ -83,6 +85,7 @@ const start = async () => {
   accountNames = AccountNames.Instance;
   selfAssessments = SelfAssessments.Instance;
   ledgerSync = LedgerSync.Instance;
+  supplyInfo = SupplyInfo.Instance;
 
     console.log("starting server");
     try {
@@ -105,6 +108,7 @@ const start = async () => {
       await tokenCreation.init();
       await issuerAccount.init();
       await ledgerData.init();
+      await supplyInfo.init();
       await selfAssessments.init();
 
       //sync back to current ledger
@@ -354,11 +358,12 @@ const start = async () => {
 
       console.log("http://0.0.0.0:4002/");
 
-      process.send('ready');
-
       fastify.ready(err => {
         if (err) throw err
       });
+
+      process.send('ready');
+      
     } catch(err) {
       console.log('Error starting server:', err)
     }    

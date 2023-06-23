@@ -109,3 +109,16 @@ export interface NFTokenOfferFundedStatus {
     funded: boolean,
     exists: boolean
 }
+
+export interface SupplyInfoType {
+    ledger: number,
+    closeTimeHuman: string,
+    accounts: number,
+    xrpExisting: number,
+    xrp: {
+        xrpTotalSupply: number,
+        xrpTotalBalance: number,
+        xrpTotalReserved: number,
+        xrpTotalReservedOffers: number
+    }
+}
