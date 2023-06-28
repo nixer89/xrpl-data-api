@@ -23,7 +23,7 @@ export class SupplyInfo {
         scheduler.scheduleJob("loadSupplyInfoFromFS", "*/10 * * * *", () => this.loadSupplyInfoFromFS());
     }
 
-    public getSupplyInfo() {
+    public getSupplyInfo(): SupplyInfoType {
         return this.supplyInfo;
     }
 
