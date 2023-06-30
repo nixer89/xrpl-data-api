@@ -53,14 +53,17 @@ export async function registerRoutes(fastify, opts, done) {
               console.log("PM CONNECTED");
               pm2Lib.list((err,list) => {
                 console.log(list);
-              });
-              pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
-                if(err) {
-                  console.log(err);
-                  process.exit(1);
-                } else {
-                  "PM2 RELOAD UNDER WAY"
-                }
+
+                let processId = this.getProcessId(list);
+
+                pm2Lib.reload(processId, (err) => {
+                  if(err) {
+                    console.log(err);
+                    process.exit(1);
+                  } else {
+                    console.log("RELOAD UNDER WAY")
+                  }
+                });
               });
             });
           } catch(err) {
@@ -81,14 +84,17 @@ export async function registerRoutes(fastify, opts, done) {
               console.log("PM CONNECTED");
               pm2Lib.list((err,list) => {
                 console.log(list);
-              });
-              pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
-                if(err) {
-                  console.log(err);
-                  process.exit(1);
-                } else {
-                  "PM2 RELOAD UNDER WAY"
-                }
+
+                let processId = this.getProcessId(list);
+
+                pm2Lib.reload(processId, (err) => {
+                  if(err) {
+                    console.log(err);
+                    process.exit(1);
+                  } else {
+                    console.log("RELOAD UNDER WAY")
+                  }
+                });
               });
             }
           });
@@ -249,4 +255,26 @@ export async function registerRoutes(fastify, opts, done) {
   });
 
   done()
+}
+
+function getProcessId(list:any[]): number {
+  let processId=-1;
+  if(list) {
+    for(let i = 0; i < list.length; i++) {
+      let singleProcess = list[i];
+
+      if(singleProcess && singleProcess.name === 'xrpl-data-api') {
+        let pm2Env = singleProcess.pm2_env;
+
+        if(pm2Env && pm2Env.PM2_INSTANCE_ID === this.pm2Instance) {// same instance, get pm2_id
+          processId = pm2Env.pm_id;
+          break;
+        }
+      }
+    }
+  }
+
+  console.log("found id: " + processId);
+
+  return processId;
 }
