@@ -81,6 +81,7 @@ export class LedgerSync {
               });
             });
           } catch(err) {
+            console.log(err);
             process.exit(1);
           }
         } else {
@@ -307,6 +308,7 @@ export class LedgerSync {
               });
             });
           } catch(err) {
+            console.log(err);
             process.exit(1);
           }
         } else {
@@ -329,6 +331,7 @@ export class LedgerSync {
             });
           });
         } catch(err) {
+          console.log(err);
           process.exit(1);
         }
       }
@@ -407,6 +410,7 @@ export class LedgerSync {
                   });
                 });
               } catch(err) {
+                console.log(err);
                 process.exit(1);
               }
             }

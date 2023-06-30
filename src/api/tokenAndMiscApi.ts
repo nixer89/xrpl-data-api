@@ -57,6 +57,7 @@ export async function registerRoutes(fastify, opts, done) {
               });
             });
           } catch(err) {
+            console.log(err);
             process.exit(1);
           }
         }
@@ -74,6 +75,7 @@ export async function registerRoutes(fastify, opts, done) {
             });
           });
         } catch(err) {
+          console.log(err);
           process.exit(1);
         }
       }
