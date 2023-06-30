@@ -74,6 +74,10 @@ export class LedgerSync {
           try {
             console.log("RELOADING!")
             pm2Lib.connect((err) => {
+              console.log("PM2 CONNECTED!")
+              pm2Lib.list((list) => {
+                console.log(list);
+              });
               pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                 if(err) {
                   console.log(err);
@@ -301,6 +305,10 @@ export class LedgerSync {
           try {
             console.log("RELOADING!")
             pm2Lib.connect((err) => {
+              console.log("PM2 CONNECTED");
+              pm2Lib.list((list) => {
+                console.log(list);
+              });
               pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                 if(err) {
                   console.log(err);
@@ -324,6 +332,10 @@ export class LedgerSync {
         try {
           console.log("RELOADING!")
           pm2Lib.connect((err) => {
+            console.log("PM2 CONNECTED.")
+            pm2Lib.list((list) => {
+              console.log(list);
+            });
             pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
               if(err) {
                 console.log(err);
@@ -404,6 +416,10 @@ export class LedgerSync {
                 console.log("RELOADING!")
                 pm2Lib.connect((err) => {
                   console.log("PM CONNECTED")
+                  pm2Lib.list((list) => {
+                    console.log(list);
+                  });
+
                   pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                     if(err) {
                       console.log(err);

@@ -51,6 +51,9 @@ export async function registerRoutes(fastify, opts, done) {
             console.log("RELOADING!")
             pm2Lib.connect((err) => {
               console.log("PM CONNECTED");
+              pm2Lib.list((list) => {
+                console.log(list);
+              });
               pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                 if(err) {
                   console.log(err);
@@ -72,6 +75,9 @@ export async function registerRoutes(fastify, opts, done) {
           console.log("RELOADING!")
           pm2Lib.connect((err) => {
             console.log("PM CONNECTED");
+            pm2Lib.list((list) => {
+              console.log(list);
+            });
             pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
               if(err) {
                 console.log(err);
