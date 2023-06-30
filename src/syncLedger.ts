@@ -3,7 +3,7 @@ import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, Ledge
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
 import { RippleState } from 'xrpl/dist/npm/models/ledger';
-import { connect, reload } from 'pm2';
+import * as pm2Lib from 'pm2';
 
 export class LedgerSync {
 
@@ -72,8 +72,8 @@ export class LedgerSync {
           //force restart by pm2
           try {
             console.log("RELOADING!")
-            connect((err) => {
-              reload(process.env.PM2_INSTANCE_ID, (err) => {
+            pm2Lib.connect((err) => {
+              pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                 if(err) {
                   console.log(err);
                   process.exit(1);
@@ -299,8 +299,8 @@ export class LedgerSync {
           //hard reset
           try {
             console.log("RELOADING!")
-            connect((err) => {
-              reload(process.env.PM2_INSTANCE_ID, (err) => {
+            pm2Lib.connect((err) => {
+              pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                 if(err) {
                   console.log(err);
                   process.exit(1);
@@ -322,8 +322,8 @@ export class LedgerSync {
         console.log("ERR WHILE RESETTING. EXIT TOOL!");
         try {
           console.log("RELOADING!")
-          connect((err) => {
-            reload(process.env.PM2_INSTANCE_ID, (err) => {
+          pm2Lib.connect((err) => {
+            pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
               if(err) {
                 console.log(err);
                 process.exit(1);
@@ -401,11 +401,14 @@ export class LedgerSync {
               //restart tool
               try {
                 console.log("RELOADING!")
-                connect((err) => {
-                  reload(process.env.PM2_INSTANCE_ID, (err) => {
+                pm2Lib.connect((err) => {
+                  console.log("PM CONNECTED")
+                  pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                     if(err) {
                       console.log(err);
                       process.exit(1);
+                    } else {
+                      console.log("RELOAD UNDER WAY")
                     }
                   });
                 });

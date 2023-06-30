@@ -4,7 +4,7 @@ import { LedgerData } from "../ledgerData";
 import { NftStore } from "../nftokenStore";
 import { SupplyInfo } from "../supplyInfo";
 import { TokenCreation } from "../tokenCreation";
-import { connect, reload } from 'pm2';
+import * as pm2Lib from 'pm2';
 import { SupplyInfoType } from "../util/types";
 import { WHITELIST_IP } from '../util/config';
 
@@ -48,11 +48,14 @@ export async function registerRoutes(fastify, opts, done) {
           reply.code((400+pm2Instance)).send('I am NOT in sync!');
           try {
             console.log("RELOADING!")
-            connect((err) => {
-              reload(process.env.PM2_INSTANCE_ID, (err) => {
+            pm2Lib.connect((err) => {
+              console.log("PM CONNECTED");
+              pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
                 if(err) {
                   console.log(err);
                   process.exit(1);
+                } else {
+                  "PM2 RELOAD UNDER WAY"
                 }
               });
             });
@@ -66,11 +69,14 @@ export async function registerRoutes(fastify, opts, done) {
         reply.code(500).send('Some error happened!');
         try {
           console.log("RELOADING!")
-          connect((err) => {
-            reload(process.env.PM2_INSTANCE_ID, (err) => {
+          pm2Lib.connect((err) => {
+            console.log("PM CONNECTED");
+            pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
               if(err) {
                 console.log(err);
                 process.exit(1);
+              } else {
+                "PM2 RELOAD UNDER WAY"
               }
             });
           });
