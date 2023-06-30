@@ -73,9 +73,9 @@ export class LedgerSync {
           //force restart by pm2
           try {
             console.log("RELOADING!")
-            pm2Lib.connect((err) => {
+            pm2Lib.connect(false, (err) => {
               console.log("PM2 CONNECTED!")
-              pm2Lib.list((list) => {
+              pm2Lib.list(list => {
                 console.log(list);
               });
               pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
@@ -304,9 +304,9 @@ export class LedgerSync {
           //hard reset
           try {
             console.log("RELOADING!")
-            pm2Lib.connect((err) => {
+            pm2Lib.connect(false, (err) => {
               console.log("PM2 CONNECTED");
-              pm2Lib.list((list) => {
+              pm2Lib.list(list => {
                 console.log(list);
               });
               pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
@@ -331,9 +331,9 @@ export class LedgerSync {
         console.log("ERR WHILE RESETTING. EXIT TOOL!");
         try {
           console.log("RELOADING!")
-          pm2Lib.connect((err) => {
+          pm2Lib.connect(false, (err) => {
             console.log("PM2 CONNECTED.")
-            pm2Lib.list((list) => {
+            pm2Lib.list(list => {
               console.log(list);
             });
             pm2Lib.reload(process.env.PM2_INSTANCE_ID, (err) => {
@@ -414,9 +414,9 @@ export class LedgerSync {
               //restart tool
               try {
                 console.log("RELOADING!")
-                pm2Lib.connect((err) => {
+                pm2Lib.connect(false, (err) => {
                   console.log("PM CONNECTED")
-                  pm2Lib.list((list) => {
+                  pm2Lib.list(list => {
                     console.log(list);
                   });
 
