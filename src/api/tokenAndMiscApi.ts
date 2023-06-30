@@ -4,9 +4,10 @@ import { LedgerData } from "../ledgerData";
 import { NftStore } from "../nftokenStore";
 import { SupplyInfo } from "../supplyInfo";
 import { TokenCreation } from "../tokenCreation";
-import * as pm2Lib from 'pm2';
 import { SupplyInfoType } from "../util/types";
 import { WHITELIST_IP } from '../util/config';
+
+const pm2Lib = require('pm2')
 
 let issuerAccount:IssuerAccounts = IssuerAccounts.Instance;
 let ledgerData:LedgerData = LedgerData.Instance;

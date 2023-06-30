@@ -3,7 +3,8 @@ import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, Ledge
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
 import { RippleState } from 'xrpl/dist/npm/models/ledger';
-import * as pm2Lib from 'pm2';
+
+const pm2Lib = require('pm2')
 
 export class LedgerSync {
 
