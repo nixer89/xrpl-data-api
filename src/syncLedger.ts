@@ -76,7 +76,6 @@ export class LedgerSync {
             pm2Lib.connect(false, (err) => {
               console.log("PM2 CONNECTED!")
               pm2Lib.list((err,list) => {
-                console.log(list);
 
                 let processId = this.getProcessId(list);
 
@@ -312,7 +311,6 @@ export class LedgerSync {
             pm2Lib.connect(false, err => {
               console.log("PM2 CONNECTED");
               pm2Lib.list((err,list) => {
-                console.log(list);
 
                 let processId = this.getProcessId(list);
 
@@ -344,7 +342,6 @@ export class LedgerSync {
           pm2Lib.connect(false, (err) => {
             console.log("PM2 CONNECTED.")
             pm2Lib.list((err,list) => {
-              console.log(list);
 
               let processId = this.getProcessId(list);
 
@@ -432,8 +429,6 @@ export class LedgerSync {
                 pm2Lib.connect(false, (err) => {
                   console.log("PM CONNECTED")
                   pm2Lib.list((err,list) => {
-                    console.log(list);
-
                     let processId = this.getProcessId(list);
 
                     pm2Lib.reload(processId, (err) => {

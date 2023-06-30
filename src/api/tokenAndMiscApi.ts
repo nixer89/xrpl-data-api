@@ -52,7 +52,6 @@ export async function registerRoutes(fastify, opts, done) {
             pm2Lib.connect(err => {
               console.log("PM CONNECTED");
               pm2Lib.list((err,list) => {
-                console.log(list);
 
                 let processId = this.getProcessId(list);
 
@@ -83,7 +82,6 @@ export async function registerRoutes(fastify, opts, done) {
             } else {
               console.log("PM CONNECTED");
               pm2Lib.list((err,list) => {
-                console.log(list);
 
                 let processId = this.getProcessId(list);
 
