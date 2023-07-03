@@ -61,8 +61,9 @@ export async function registerRoutes(fastify, opts, done) {
                     process.exit(1);
                   } else {
                     console.log("RELOAD UNDER WAY")
-                    pm2Lib.disconnect();
                   }
+
+                  pm2Lib.disconnect();
                 });
               });
             });
@@ -92,8 +93,9 @@ export async function registerRoutes(fastify, opts, done) {
                     process.exit(1);
                   } else {
                     console.log("RELOAD UNDER WAY");
-                    pm2Lib.disconnect();
                   }
+
+                  pm2Lib.disconnect();
                 });
               });
             }

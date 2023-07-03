@@ -85,8 +85,9 @@ export class LedgerSync {
                     process.exit(1);
                   } else {
                     console.log("RELOAD UNDER WAY")
-                    pm2Lib.disconnect();
                   }
+
+                  pm2Lib.disconnect();
                 });
               });
             });
@@ -321,8 +322,9 @@ export class LedgerSync {
                     process.exit(1);
                   } else {
                     console.log("RELOAD UNDER WAY");
-                    pm2Lib.disconnect();
                   }
+
+                  pm2Lib.disconnect();
                 });
               });
             });
@@ -353,8 +355,9 @@ export class LedgerSync {
                   process.exit(1);
                 } else {
                   console.log("RELOAD UNDER WAY")
-                  pm2Lib.disconnect();
                 }
+
+                pm2Lib.disconnect();
               });
             });
           });
@@ -440,8 +443,9 @@ export class LedgerSync {
                         process.exit(1);
                       } else {
                         console.log("RELOAD UNDER WAY")
-                        pm2Lib.disconnect();
                       }
+                      
+                      pm2Lib.disconnect();
                     });
                   });
                 });
