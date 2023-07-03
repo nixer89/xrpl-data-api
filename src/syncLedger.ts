@@ -73,7 +73,6 @@ export class LedgerSync {
           //force restart by pm2
           try {
             console.log("RELOADING!")
-            process.exit(1);
             pm2Lib.connect(false, (err) => {
               console.log("PM2 CONNECTED!")
               pm2Lib.list((err,list) => {
@@ -86,6 +85,7 @@ export class LedgerSync {
                     process.exit(1);
                   } else {
                     console.log("RELOAD UNDER WAY")
+                    pm2Lib.disconnect();
                   }
                 });
               });
@@ -309,7 +309,6 @@ export class LedgerSync {
           //hard reset
           try {
             console.log("RELOADING!")
-            process.exit(1);
             pm2Lib.connect(false, err => {
               console.log("PM2 CONNECTED");
               pm2Lib.list((err,list) => {
@@ -321,7 +320,8 @@ export class LedgerSync {
                     console.log(err);
                     process.exit(1);
                   } else {
-                    console.log("RELOAD UNDER WAY")
+                    console.log("RELOAD UNDER WAY");
+                    pm2Lib.disconnect();
                   }
                 });
               });
@@ -341,7 +341,6 @@ export class LedgerSync {
         console.log("ERR WHILE RESETTING. EXIT TOOL!");
         try {
           console.log("RELOADING!")
-          process.exit(1);
           pm2Lib.connect(false, (err) => {
             console.log("PM2 CONNECTED.")
             pm2Lib.list((err,list) => {
@@ -354,6 +353,7 @@ export class LedgerSync {
                   process.exit(1);
                 } else {
                   console.log("RELOAD UNDER WAY")
+                  pm2Lib.disconnect();
                 }
               });
             });
@@ -429,7 +429,6 @@ export class LedgerSync {
               //restart tool
               try {
                 console.log("RELOADING!")
-                process.exit(1);
                 pm2Lib.connect(false, (err) => {
                   console.log("PM CONNECTED")
                   pm2Lib.list((err,list) => {
@@ -441,6 +440,7 @@ export class LedgerSync {
                         process.exit(1);
                       } else {
                         console.log("RELOAD UNDER WAY")
+                        pm2Lib.disconnect();
                       }
                     });
                   });

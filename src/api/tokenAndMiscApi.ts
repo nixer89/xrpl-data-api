@@ -49,7 +49,6 @@ export async function registerRoutes(fastify, opts, done) {
           reply.code((400+pm2Instance)).send('I am NOT in sync!');
           try {
             console.log("RELOADING!")
-            process.exit(1);
             pm2Lib.connect(err => {
               console.log("PM CONNECTED");
               pm2Lib.list((err,list) => {
@@ -62,6 +61,7 @@ export async function registerRoutes(fastify, opts, done) {
                     process.exit(1);
                   } else {
                     console.log("RELOAD UNDER WAY")
+                    pm2Lib.disconnect();
                   }
                 });
               });
@@ -76,7 +76,6 @@ export async function registerRoutes(fastify, opts, done) {
         reply.code(500).send('Some error happened!');
         try {
           console.log("RELOADING!")
-          process.exit(1);
           pm2Lib.connect(false, err => {
 
             if(err) {
@@ -92,7 +91,8 @@ export async function registerRoutes(fastify, opts, done) {
                     console.log(err);
                     process.exit(1);
                   } else {
-                    console.log("RELOAD UNDER WAY")
+                    console.log("RELOAD UNDER WAY");
+                    pm2Lib.disconnect();
                   }
                 });
               });
