@@ -54,12 +54,18 @@ export async function registerRoutes(fastify, opts, done) {
               }
     
               keyMap.set(key,calls);
+
+              let logKey = key;
+
+              if(logKey && logKey.length > 24) {
+                logKey = logKey.substring(24);
+              }
     
               if(calls%100 == 0) {
                 if(key != callerIp)
-                  console.log("FUNDED OFFERS: " + key + " already called: " + calls + " times from ip " + callerIp);
+                  console.log("FUNDED OFFERS: " + logKey + " already called: " + calls + " times from ip " + callerIp);
                 else
-                  console.log("FUNDED OFFERS: " + key + " already called: " + calls + " times.");
+                  console.log("FUNDED OFFERS: " + logKey + " already called: " + calls + " times.");
               }
     
               //TIER 1 LIMIT
@@ -175,12 +181,18 @@ export async function registerRoutes(fastify, opts, done) {
               }
     
               keyMap.set(key,calls);
+
+              let logKey = key;
+
+              if(logKey && logKey.length > 24) {
+                logKey = logKey.substring(24);
+              }
     
               if(calls%100 == 0) {
                 if(key != callerIp)
-                  console.log("FUNDED OFFERS: " + key + " already called: " + calls + " times from ip " + callerIp);
+                  console.log("FUNDED OFFERS: " + logKey + " already called: " + calls + " times from ip " + callerIp);
                 else
-                  console.log("FUNDED OFFERS: " + key + " already called: " + calls + " times.");
+                  console.log("FUNDED OFFERS: " + logKey + " already called: " + calls + " times.");
               }
     
               //TIER 1 LIMIT

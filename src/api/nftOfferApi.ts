@@ -13,8 +13,10 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let nft = nftStore.findNftokenById(request.params.nftokenid);
           let offers = nftStore.findOffersByNft(request.params.nftokenid, nft ? nft.Owner : null);
+          console.log("/offers/nft/:nftokenid: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -47,7 +49,9 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let offer = nftStore.findOfferById(request.params.offerid);
+          console.log("/offer/id/:offerid: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -80,7 +84,9 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let offers = nftStore.findOffersByIssuer(request.params.issuer);
+          console.log("/offers/issuer/:issuer: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -113,7 +119,9 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let offers = nftStore.findOffersByIssuerAndTaxon(request.params.issuer, request.params.taxon);
+          console.log("/offers/issuer/:issuer/taxon/:taxon: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -155,7 +163,9 @@ export async function registerRoutes(fastify, opts, done) {
 
          // let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let offers = nftStore.findOffersByNftOwner(request.params.owner);
+          console.log("/offers/owner/:owner: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -189,7 +199,9 @@ export async function registerRoutes(fastify, opts, done) {
 
          // let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let offers = nftStore.findOffersByNftOwner(request.params.nftowner);
+          console.log("/offers/nftowner/:nftowner: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -222,7 +234,9 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let offers = nftStore.findOffersByOfferOwner(request.params.offerowner);
+          console.log("/offers/offerowner/:offerowner: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -253,9 +267,10 @@ export async function registerRoutes(fastify, opts, done) {
             reply.code(400).send('Please provide an offerdestination. Calls without destination are not allowed');
           }
 
-          let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
           let offers = nftStore.findOffersByOfferDestination(request.params.offerdestination);
+          console.log("/offers/offerdestination/:offerdestination: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -286,11 +301,13 @@ export async function registerRoutes(fastify, opts, done) {
             reply.code(400).send('Please provide an xrplaccount. Calls without destination are not allowed');
           }
 
-          let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
+          let start = Date.now();
+
           let offersByOwner = nftStore.findOffersByOfferOwner(request.params.xrplaccount);
           let offersByOwnedNFTs = nftStore.findOffersByNftOwner(request.params.xrplaccount);
           let offersByDestination = nftStore.findOffersByOfferDestination(request.params.xrplaccount);
+          console.log("/offers/all/account/:xrplaccount: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
