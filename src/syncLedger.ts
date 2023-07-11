@@ -197,6 +197,9 @@ export class LedgerSync {
             this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
             
             this.currentKnownLedger = ledgerResponse.result.ledger_index;
+          } else {
+            this.finishedIteration = true;
+            break;
           }
         }
 
@@ -249,8 +252,6 @@ export class LedgerSync {
 
               let ledgerResponse:LedgerResponse = await this.client.request(ledgerRequest);
 
-              let changeHappened = false;
-
               if(ledgerResponse?.result?.ledger?.transactions) {
                 let transactions:any[] = ledgerResponse.result.ledger.transactions;
                 transactions = transactions.sort((a,b) => a.metaData.TransactionIndex - b.metaData.TransactionIndex)
@@ -275,9 +276,7 @@ export class LedgerSync {
               this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
               this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
-              if(changeHappened) {
-                this.nftStore.closeInternalStuff();
-              }
+              this.nftStore.closeInternalStuff();
 
               this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
 
