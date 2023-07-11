@@ -249,6 +249,8 @@ export class LedgerSync {
 
               let ledgerResponse:LedgerResponse = await this.client.request(ledgerRequest);
 
+              let changeHappened = false;
+
               if(ledgerResponse?.result?.ledger?.transactions) {
                 let transactions:any[] = ledgerResponse.result.ledger.transactions;
                 transactions = transactions.sort((a,b) => a.metaData.TransactionIndex - b.metaData.TransactionIndex)
@@ -257,7 +259,9 @@ export class LedgerSync {
 
                 for(let i = 0; i < transactions.length; i++) {
                   if(transactions[i] && i == transactions[i].metaData.TransactionIndex) {
+
                     this.analyzeTransaction(transactions[i]);
+                    
                   } else if(i != transactions[i].metaData.TransactionIndex) {
                     console.log("NOT EQUAL TRANSACTION INDEX:")
                     console.log("i: " + i);
@@ -271,7 +275,9 @@ export class LedgerSync {
               this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
               this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
-              this.nftStore.closeInternalStuff();
+              if(changeHappened) {
+                this.nftStore.closeInternalStuff();
+              }
 
               this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
 
@@ -369,6 +375,7 @@ export class LedgerSync {
     }
 
     private analyzeTransaction(transaction:any) {
+
       if(transaction && transaction.metaData?.TransactionResult == "tesSUCCESS" && (transaction.TransactionType == "NFTokenAcceptOffer" || transaction.TransactionType == "NFTokenCancelOffer" || transaction.TransactionType == "NFTokenCreateOffer" || transaction.TransactionType == "NFTokenBurn" || transaction.TransactionType == "NFTokenMint")) {
 
         //console.log("analyzing NFT Transaction!")
@@ -425,7 +432,7 @@ export class LedgerSync {
             let existingNft = this.nftStore.getNft(nftokenId);
 
             if(existingNft) {
-              this.nftStore.changeOwner(existingNft,newOwnerAccount);
+              this.nftStore.changeNftOwner(existingNft,newOwnerAccount);
             } else {
               console.log("THIS SHOULD NEVER HAVE HAPPENED?!?!? NEW NFT NOT POSSIBLE!")
               

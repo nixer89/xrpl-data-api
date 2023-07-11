@@ -353,6 +353,41 @@ const start = async () => {
     });
      */
 
+    await fastify.addHook('onRequest', (request, reply, done) => {
+      request['start'] = Date.now();
+      done()
+    });
+
+    await fastify.addHook('onSend', async (request, reply, payload) => {
+      // Some code
+      if(request['start']) {
+        let responseTime = Date.now() - request['start'];
+        if(responseTime > 200) {
+          console.log("response time: " + responseTime + ' ms.')
+          fs.appendFileSync('./longRunners.txt', JSON.stringify({
+            time: responseTime, 
+            request: {
+              query: request.query,
+              body: request.body,
+              params: request.params,
+              headers: request.headers,
+              ip: request.ip,
+              hostname: request.hostname,
+              method: request.method,
+              url: request.url,
+              routerPath: request.routerPath
+            },
+            response: {
+              payload: payload,
+            }
+          })+",\n");
+          console.log("saved long runner!")
+        }
+      }
+      
+      return payload;
+    })
+
     try {
       await fastify.listen({ port: 4002, host: '0.0.0.0' });
 
