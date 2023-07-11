@@ -305,7 +305,7 @@ export async function registerRoutes(fastify, opts, done) {
           let start = Date.now();
 
           let offersByOwner = nftStore.findOffersByOfferOwner(request.params.xrplaccount);
-          let offersForOwnedNFTs = nftStore.findOffersByNftOwner(request.params.xrplaccount);
+          let offersByOwnedNFTs = nftStore.findOffersByNftOwner(request.params.xrplaccount);
           let offersByDestination = nftStore.findOffersByOfferDestination(request.params.xrplaccount);
           console.log("/offers/all/account/:xrplaccount: " + (Date.now()-start) + " ms.")
 
@@ -319,7 +319,7 @@ export async function registerRoutes(fastify, opts, done) {
             data: {
               xrplaccount: request.params.xrplaccount,
               offers_owned: offersByOwner,
-              offers_for_own_nfts: offersForOwnedNFTs,
+              offers_for_own_nfts: offersByOwnedNFTs,
               offers_as_destination: offersByDestination
             }
           }
