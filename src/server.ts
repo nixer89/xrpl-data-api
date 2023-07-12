@@ -362,26 +362,8 @@ const start = async () => {
       // Some code
       if(request['start']) {
         let responseTime = Date.now() - request['start'];
-        if(responseTime > 200) {
-          console.log("response time: " + responseTime + ' ms.')
-          fs.appendFileSync('./longRunners.txt', JSON.stringify({
-            time: responseTime, 
-            request: {
-              query: request.query,
-              body: request.body,
-              params: request.params,
-              headers: request.headers,
-              ip: request.ip,
-              hostname: request.hostname,
-              method: request.method,
-              url: request.url,
-              routerPath: request.routerPath
-            },
-            response: {
-              payload: payload,
-            }
-          })+",\n");
-          console.log("saved long runner!")
+        if(responseTime > 100) {
+          console.log(request.url + " " + responseTime + ' ms.')
         }
       }
       

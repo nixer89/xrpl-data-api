@@ -10,9 +10,7 @@ export async function registerRoutes(fastify, opts, done) {
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
 
-          let start = Date.now();
           let allIssuers = nftStore.getAllIssuers();
-          console.log("/all/issuers: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -44,9 +42,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let start = Date.now();
           let nftIssuers = nftStore.findNftsByIssuer(request.params.issuer);
-          console.log("/issuer/:issuer: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -80,9 +76,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let start = Date.now();
           let nftIssuers = nftStore.findNftsByIssuerAndTaxon(request.params.issuer, request.params.taxon);
-          console.log("/issuer/:issuer/taxon/:taxon: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -116,9 +110,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let start = Date.now();
           let taxons = nftStore.findTaxonsByIssuer(request.params.issuer);
-          console.log("/taxon/:issuer: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -151,9 +143,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let start = Date.now();
           let nft = nftStore.findNftokenById(request.params.nftokenid);
-          console.log("/nft/:nftokenid: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -186,9 +176,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
-          let start = Date.now();
-          let nftsOwner = nftStore.findNFtsByOwner(request.params.owner);
-          console.log("/owner/:owner: " + (Date.now()-start) + " ms.")
+          let nftsOwner = nftStore.findNFTsByOwner(request.params.owner);
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -225,9 +213,7 @@ export async function registerRoutes(fastify, opts, done) {
 
         //let start = Date.now();
         //console.log("request params: " + JSON.stringify(request.params));
-        let start = Date.now();
         let nftsArray = nftStore.findNftokenByUri(request.body.uri);
-        console.log("/uri: " + (Date.now()-start) + " ms.")
 
         let returnValue:NftApiReturnObject = {
           info: {
