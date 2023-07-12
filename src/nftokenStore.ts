@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { rippleTimeToUnixTime } from 'xrpl';
+import { parseNFTokenID, rippleTimeToUnixTime } from 'xrpl';
 import { DATA_PATH } from './util/config';
 import { AccountOffersrMapEntry, FloorPriceProperty, MarketPlaceStats, NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
 
@@ -203,22 +203,19 @@ export class NftStore {
       //first get all NFT from an issuer
       //let offersFromOwner = Array.from(this.offerIdMap.values()).filter(offer => offer.Owner === ownerAddress);
 
-      let offersFromOwner = Array.from(this.offerAccountMap.get(ownerAddress).as_owner.values());
-
-      if(offersFromOwner && offersFromOwner.length > 0)
-        return offersFromOwner;
-      else
+      if(this.offerAccountMap.has(ownerAddress) && this.offerAccountMap.get(ownerAddress).as_owner.size > 0) {
+          return Array.from(this.offerAccountMap.get(ownerAddress).as_owner.values());
+      } else {
         return [];
+      }
     }
 
     public findOffersByOfferDestination(destinationAddress: string): NFTokenOffer[] {
       //first get all NFT from an issuer
       //let offersWithDestination = Array.from(this.offerIdMap.values()).filter(offer => offer.Destination && offer.Destination === destinationAddress);
 
-      let offersWithDestination = Array.from(this.offerAccountMap.get(destinationAddress).as_destination.values());
-
-      if(offersWithDestination && offersWithDestination.length > 0)
-        return offersWithDestination;
+      if(this.offerAccountMap.has(destinationAddress) && this.offerAccountMap.get(destinationAddress).as_destination.size > 0)
+        return Array.from(this.offerAccountMap.get(destinationAddress).as_destination.values());
       else
         return [];
     }
