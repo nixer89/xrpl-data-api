@@ -226,10 +226,10 @@ export class NftStore {
       
       if(taxon) {
         collectionNfts = this.findNftsByIssuerAndTaxon(issuer,taxon);
-        collectionOffers = this.findOffersByIssuerAndTaxon(issuer, taxon);
+        collectionOffers = this.findAllOffersFromNfts(collectionNfts);
       } else {
         collectionNfts = this.findNftsByIssuer(issuer);
-        collectionOffers = this.findOffersByIssuer(issuer);
+        collectionOffers = this.findAllOffersFromNfts(collectionNfts);
       }
 
       let holders:string[] = [];
@@ -252,6 +252,7 @@ export class NftStore {
       for(let i = 0; i < collectionOffers.length; i++) {
         let sells = collectionOffers[i].sell;
         let buys = collectionOffers[i].buy;
+        let nftOwner = collectionOffers[i].NFTokenOwner;
 
         for(let j = 0; j < buys.length; j++) {
           let singleBuyOffer = buys[j];
@@ -307,7 +308,7 @@ export class NftStore {
             amount = Number(singleSellOffer.Amount.value);
           }
 
-          if(amount > 0 && !this.isNftOfferExpired(singleSellOffer.Expiration) && singleSellOffer.Owner === this.findNftokenById(collectionOffers[i].NFTokenID).Owner) {
+          if(amount > 0 && !this.isNftOfferExpired(singleSellOffer.Expiration) && singleSellOffer.Owner === nftOwner) {
 
             if(!nftForSale.includes(collectionOffers[i].NFTokenID)) {
               nftForSale.push(collectionOffers[i].NFTokenID)
