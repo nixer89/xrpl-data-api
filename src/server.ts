@@ -362,7 +362,7 @@ const start = async () => {
       // Some code
       if(request['start']) {
         let responseTime = Date.now() - request['start'];
-        if(responseTime > 100) {
+        if(responseTime > 20) {
           console.log(request.url + " " + responseTime + ' ms.')
         }
       }
