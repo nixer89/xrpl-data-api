@@ -285,17 +285,11 @@ export async function registerRoutes(fastify, opts, done) {
             reply.code(400).send('Please provide an xrplaccount. Calls without destination are not allowed');
           }
 
-          //onsole.log("request params: " + JSON.stringify(request.params));
-          let start = Date.now();
+          //console.log("request params: " + JSON.stringify(request.params));
 
           let offersByOwner = nftStore.findOffersByOfferOwner(request.params.xrplaccount);
-          console.log("findOffersByOfferOwner: " + (Date.now()-start) + " ms.");
-          start = Date.now();
           let offersForOwnedNFTs = nftStore.findOffersByNftOwner(request.params.xrplaccount);
-          console.log("findOffersByNftOwner: " + (Date.now()-start) + " ms.");
-          start = Date.now();
           let offersByDestination = nftStore.findOffersByOfferDestination(request.params.xrplaccount);
-          console.log("findOffersByOfferDestination: " + (Date.now()-start) + " ms.")
 
           let returnValue:NftApiReturnObject = {
             info: {
