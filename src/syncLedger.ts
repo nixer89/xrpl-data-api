@@ -13,7 +13,7 @@ export class LedgerSync {
     secondaryConnections:number = process.env.SECONDARY_CONNECTIONS ? parseInt(process.env.SECONDARY_CONNECTIONS) : 1;
     mainNode:string = process.env.MAIN_NODE || 'wss://xrplcluster.com';
     secondaryNode:string = process.env.SECONDRARY_NODE || 'wss://s1.ripple.com';
-    localNode:string = process.env.LOCAL_NODE || 'ws://127.0.0.1:6006';
+    localNode:string = process.env.LOCAL_NODE || 'wss://xrpl.ws';
 
     clientUrl:string = this.mainNode;
 
