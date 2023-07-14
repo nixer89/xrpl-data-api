@@ -1,6 +1,6 @@
 {
   "name": "xrpl-data-api",
-  "version": "6.0.1",
+  "version": "6.0.10",
   "description": "tracks periodically the latest issued token on the xrp ledger (every 10 minutes)",
   "main": "src/server.ts",
   "scripts": {
@@ -34,7 +34,6 @@
     "@fastify/swagger": "^7.6.1",
     "fastify": "^4.10.2",
     "ioredis": "^5.2.4",
-    "klona": "^2.0.6",
     "log-timestamp": "^0.3.0",
     "node-fetch": "^2.6.7",
     "node-schedule": "^2.1.0",

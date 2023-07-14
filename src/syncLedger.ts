@@ -195,15 +195,13 @@ export class LedgerSync {
             this.nftStore.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
             this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
             this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
-            
+
             this.currentKnownLedger = ledgerResponse.result.ledger_index;
           } else {
             this.finishedIteration = true;
             break;
           }
         }
-
-        this.nftStore.closeInternalStuff();
 
         console.log("FINISHED SYNCING BACK!")
 
@@ -275,8 +273,6 @@ export class LedgerSync {
               this.nftStore.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
               this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
               this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
-
-              this.nftStore.closeInternalStuff();
 
               this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
 
@@ -408,7 +404,7 @@ export class LedgerSync {
           if(burnedTokenId) {
             //console.log("burned token: " + burnedTokenId);
 
-            let burnedNft = this.nftStore.getNftFromTemp(burnedTokenId);
+            let burnedNft = this.nftStore.getNft(burnedTokenId);
             this.nftStore.removeNft(burnedNft);
           }
 
@@ -428,7 +424,7 @@ export class LedgerSync {
           if(nftokenId && newOwnerAccount) {
             //console.log("changed nftoken: " + nftokenId + " new owner: " + newOwnerAccount);
 
-            let existingNft = this.nftStore.getNftFromTemp(nftokenId);
+            let existingNft = this.nftStore.getNft(nftokenId);
 
             if(existingNft) {
               this.nftStore.changeNftOwner(existingNft,newOwnerAccount);
@@ -514,7 +510,7 @@ export class LedgerSync {
         let affectedNode:any = metaData.AffectedNodes[affectedNodeIndex];
         if(affectedNode?.DeletedNode?.LedgerEntryType === "NFTokenOffer") {
           let node = affectedNode.DeletedNode;
-          let offer = this.nftStore.findOfferByIdFromTemp(node.LedgerIndex);
+          let offer = this.nftStore.findOfferById(node.LedgerIndex);
 
           if(!offer) {
             console.log("COULD NOT FIND OFFER. THAT SHOULD NOT HAVE HAPPENED:")
