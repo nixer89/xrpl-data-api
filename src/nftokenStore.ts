@@ -46,11 +46,11 @@ export class NftStore {
     }
 
     public getNft(nftokenId:string) {
-      return this.nftokenIdMap[nftokenId];
+      return this.nftokenIdMap.get(nftokenId);
     }
 
     public getAllIssuers(): string[] {
-      return Object.keys(this.nftokenIssuerMap);
+      return Array.from(this.nftokenIssuerMap.keys());
     }
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
@@ -568,13 +568,13 @@ export class NftStore {
           }
 
           console.log("NFTs loaded!");
-          console.log("nftokenIdMap: " + Object.keys(this.nftokenIdMap).length);
-          console.log("nftokenIssuerMap: " + Object.keys(this.nftokenIssuerMap).length);
-          console.log("nftokenOwnerMap: " + Object.keys(this.nftokenOwnerMap).length);
-          console.log("nftokenUriMap: " + Object.keys(this.nftokenUriMap).length);
-          console.log("offerIdMap: " + Object.keys(this.offerIdMap).length);
-          console.log("offerNftIdMap: " + Object.keys(this.offerNftIdMap).length);
-          console.log("offerAccountMap: " + Object.keys(this.offerAccountMap).length);
+          console.log("nftokenIdMap: " + this.nftokenIdMap.size);
+          console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
+          console.log("nftokenOwnerMap: " + this.nftokenOwnerMap.size);
+          console.log("nftokenUriMap: " + this.nftokenUriMap.size);
+          console.log("offerIdMap: " + this.offerIdMap.size);
+          console.log("offerNftIdMap: " + this.offerNftIdMap.size);
+          console.log("offerAccountMap: " + this.offerAccountMap.size);
 
       } else {
         console.log("nft issuer data file does not exist yet.")
