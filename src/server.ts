@@ -62,15 +62,6 @@ const fastify = require('fastify')({ trustProxy: true })
 console.log("adding response compression");
 fastify.register(require('@fastify/compress'), { encodings: ['gzip', 'deflate', 'br', '*', 'identity'] });
 
-
-let totalRequests:number = 0;
-
-let kycCounter:number = 0;
-let ledgerDataCounter:number = 0;
-let tokenCounter:number = 0;
-let tokenCreationCounter:number = 0;
-let xls14NftCounter:number = 0;
-
 // Run the server!
 const start = async () => {
 
@@ -362,7 +353,7 @@ const start = async () => {
       // Some code
       if(request['start']) {
         let responseTime = Date.now() - request['start'];
-        if(responseTime > 50 && request.url != "/api/v1/tokens") {
+        if(responseTime > 100 && request.url != "/api/v1/tokens") {
           console.log(request.url + " " + responseTime + ' ms.');
         }
       }
