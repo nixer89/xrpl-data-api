@@ -523,11 +523,13 @@ export class NftStore {
     public loadNftDataFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync(DATA_PATH+"nftData.js")) {
-            let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData.js").toString());
-            if(nftData && nftData.nfts) {
+        if(fs.existsSync(DATA_PATH+"nftData_1.js") && fs.existsSync(DATA_PATH+"nftData_2.js")) {
+            let nftData1:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData_1.js").toString());
+            let nftData2:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData_2.js").toString());
+            if(nftData1 && nftData1.nfts && nftData2 && nftData2.nfts && nftData1.ledger_index == nftData2.ledger_index) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-                let nftArray:NFT[] = nftData.nfts;
+                let nftArray1:NFT[] = nftData1.nfts;
+                let nftArray2:NFT[] = nftData2.nfts;
 
                 //console.log("nftArray: " + this.nftArray.length);
 
@@ -537,13 +539,17 @@ export class NftStore {
                 this.nftokenUriMap = new Map();
                 this.offerAccountMap = new Map();
 
-                this.setCurrentLedgerIndex(nftData.ledger_index);
-                this.setCurrentLedgerHash(nftData.ledger_hash);
-                this.setCurrentLedgerCloseTime(nftData.ledger_close);
-                this.setCurrentLedgerCloseTimeMs(nftData.ledger_close_ms);
+                this.setCurrentLedgerIndex(nftData1.ledger_index);
+                this.setCurrentLedgerHash(nftData1.ledger_hash);
+                this.setCurrentLedgerCloseTime(nftData1.ledger_close);
+                this.setCurrentLedgerCloseTimeMs(nftData1.ledger_close_ms);
 
-                for(let i = 0; i < nftArray.length; i++) {
-                  this.addNFT(nftArray[i]);
+                for(let i = 0; i < nftArray1.length; i++) {
+                  this.addNFT(nftArray1[i]);
+                }
+
+                for(let i = 0; i < nftArray2.length; i++) {
+                  this.addNFT(nftArray2[i]);
                 }
             }
         } else {
