@@ -135,6 +135,7 @@ export class LedgerSync {
         await this.startListeningOnLedgerClose();
         await this.iterateThroughMissingLedgers(this.localNode);
       } catch(err) {
+        console.log(err);
         console.log("UNEXPECTED ERROR HAPPENED! RESET!")
         this.reset();
       }
