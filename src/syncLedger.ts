@@ -290,7 +290,14 @@ export class LedgerSync {
 
             } else {
               console.log("WRONG EXPECTED LEDGER NUMBER. EXPECTED: " + (this.currentKnownLedger+1) + " | GOT: " + ledgerClose.ledger_index);
-              this.reset();
+
+              //sometimes my local node is a bit faster than remote nodes. so they report a closed ledger I already have process. just wait for the next one and don't reset.
+              if(this.currentKnownLedger != ledgerClose.ledger_index) {
+                //only reset if we are not 1 before the expected ledger!
+                this.reset();
+              } else {
+                console.log("WAITING FOR THE NEXT CLOSE");
+              }
             }
           } else {
             console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index);

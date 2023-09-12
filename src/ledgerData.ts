@@ -7,6 +7,7 @@ export class LedgerData {
     private static _instance: LedgerData;
 
     private ledgerData: any;
+    private escrows:any[] = [];
 
     private constructor() { }
 
@@ -24,6 +25,10 @@ export class LedgerData {
 
     public getLedgerData() {
         return this.ledgerData;
+    }
+
+    public getEscrows() {
+      return this.escrows;
     }
 
     public getLedgerDataV1(): any[] {
@@ -46,7 +51,11 @@ export class LedgerData {
 
     private setLedgerData(ledgerData: any): void{
         this.ledgerData = ledgerData;
-      }
+    }
+
+    private setEscrows(escrows: []): void{
+      this.escrows = escrows;
+  }
 
     private async loadLedgerDataFromFS(): Promise<void> {
       try {
@@ -60,6 +69,17 @@ export class LedgerData {
         } else {
           console.log("ledger data file does not exist yet.")
         }
+
+        if(fs.existsSync(DATA_PATH+"escrows.js")) {
+          let escrowFile:any = JSON.parse(fs.readFileSync(DATA_PATH+"escrows.js").toString());
+          if(escrowFile && escrowFile.escrows) {
+              //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
+              this.setEscrows(escrowFile.escrows);
+          }
+      } else {
+        console.log("escrows file does not exist yet.")
+      }
+
       } catch(err) {
         console.log("error reading issuer data from FS");
         console.log(err);
