@@ -180,6 +180,30 @@ export async function registerRoutes(fastify, opts, done) {
       reply.code(500).send('Error occured. Please check your request.');
     }
   });
+  
+  fastify.get('/api/v1/escrows', async (request, reply) => {
+    try {
+      //console.time("ledgerdata");
+      let escrows:any[] = await ledgerData.getEscrows();
+      //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
+
+      let returnValue = {
+        ledger_index: issuerAccount.getLedgerIndex(),
+        ledger_hash: issuerAccount.getLedgerHash(),
+        ledger_close: issuerAccount.getLedgerCloseTime(),
+        ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
+        escrows: escrows
+      }
+
+      //console.timeEnd("ledgerdata");
+
+      return returnValue;
+    } catch(err) {
+      console.log("error resolving escrows");
+      console.log(err);
+      reply.code(500).send('Error occured. Please check your request.');
+    }
+  });
 
   fastify.get('/api/v1/kyc/:account', async (request, reply) => {
     if(!request.params.account) {

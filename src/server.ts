@@ -5,6 +5,7 @@ import { AccountNames } from "./accountNames";
 import { SelfAssessments } from "./selfAssessments";
 import { LedgerSync } from "./syncLedger";
 import * as fs from 'fs';
+import { Redis } from 'ioredis';
 import fastifySwagger from "@fastify/swagger";
 import Helmet from '@fastify/helmet';
 import * as nftApiRoute from './api/nftApi';
@@ -18,14 +19,13 @@ import { SupplyInfo } from './supplyInfo';
 
 require("log-timestamp");
 
-const Redis = require('ioredis')
-const redis = new Redis({
+let redis = new Redis({
   connectionName: 'xrpl-data-api',
   host: REDIS_IP,
   port: REDIS_PORT,
   connectTimeout: 500,
   maxRetriesPerRequest: 1
-})
+});
 
 let issuerAccount:IssuerAccounts;
 let ledgerData:LedgerData;
@@ -354,7 +354,7 @@ const start = async () => {
       if(request['start']) {
         let responseTime = Date.now() - request['start'];
         if(responseTime > 100 && request.url != "/api/v1/tokens") {
-          console.log(request.url + " " + responseTime + ' ms.')
+          console.log(request.url + " " + responseTime + ' ms.');
         }
       }
       

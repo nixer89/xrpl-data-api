@@ -49,13 +49,13 @@ export interface NFTokenOffer {
 }
 
 export interface NFTokenOfferMapEntry {
-    buy: {[key: string]: NFTokenOffer},
-    sell: {[key: string]: NFTokenOffer}
+    buy: Map<string,NFTokenOffer>,
+    sell: Map<string,NFTokenOffer>
 }
 
 export interface AccountOffersrMapEntry {
-    as_destination: {[key: string]: NFTokenOffer},
-    as_owner: {[key: string]: NFTokenOffer}
+    as_destination: Map<string,NFTokenOffer>,
+    as_owner: Map<string,NFTokenOffer>
 }
 
 export interface NFTokenOfferReturnObject {
