@@ -227,6 +227,8 @@ export class LedgerSync {
 
     private async startListeningOnLedgerClose() {
 
+      let waitingForNextClose = false;
+
       this.client.on('ledgerClosed', async ledgerClose => {
 
         try {
@@ -235,6 +237,11 @@ export class LedgerSync {
             //console.log("ledger closed! " + ledgerClose.ledger_index);
 
             if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
+
+              if(waitingForNextClose) {
+                console.log("BACK IN SYNC. GOT CORRECT LEDGER: " + ledgerClose.ledger_index);
+                waitingForNextClose = false;
+              }
 
               let start = Date.now();
               let ledgerRequest:LedgerRequest = {
@@ -296,6 +303,7 @@ export class LedgerSync {
                 //only reset if we are not 1 before the expected ledger!
                 this.reset();
               } else {
+                waitingForNextClose = true;
                 console.log("WAITING FOR THE NEXT CLOSE");
               }
             }
