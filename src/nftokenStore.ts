@@ -523,41 +523,40 @@ export class NftStore {
     public loadNftDataFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync(DATA_PATH+"nftData_1.js") && fs.existsSync(DATA_PATH+"nftData_2.js")) {
-            let nftData1:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData_1.js").toString());
-            let nftData2:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData_2.js").toString());
-            if(nftData1 && nftData1.nfts && nftData2 && nftData2.nfts && nftData1.ledger_index == nftData2.ledger_index) {
-                //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-                let nftArray1:NFT[] = nftData1.nfts;
-                let nftArray2:NFT[] = nftData2.nfts;
+        if(fs.existsSync(DATA_PATH+"nfts/")) {
 
-                //console.log("nftArray: " + this.nftArray.length);
+          this.nftokenIdMap = new Map();
+          this.nftokenIssuerMap = new Map();
+          this.nftokenOwnerMap = new Map();
+          this.nftokenUriMap = new Map();
+          this.offerAccountMap = new Map();
 
-                this.nftokenIdMap = new Map();
-                this.nftokenIssuerMap = new Map();
-                this.nftokenOwnerMap = new Map();
-                this.nftokenUriMap = new Map();
-                this.offerAccountMap = new Map();
+          for(let i = 1; i < 1000 ; i++) {
+            if(fs.existsSync(DATA_PATH+"nfts/nftData_"+i+".js")) {
+              let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/nftData_"+i+".js").toString());
 
-                this.setCurrentLedgerIndex(nftData1.ledger_index);
-                this.setCurrentLedgerHash(nftData1.ledger_hash);
-                this.setCurrentLedgerCloseTime(nftData1.ledger_close);
-                this.setCurrentLedgerCloseTimeMs(nftData1.ledger_close_ms);
+              this.setCurrentLedgerIndex(nftData.ledger_index);
+              this.setCurrentLedgerHash(nftData.ledger_hash);
+              this.setCurrentLedgerCloseTime(nftData.ledger_close);
+              this.setCurrentLedgerCloseTimeMs(nftData.ledger_close_ms);
 
-                for(let i = 0; i < nftArray1.length; i++) {
-                  this.addNFT(nftArray1[i]);
-                }
+              let nftArray:NFT[] = nftData.nfts;
 
-                for(let i = 0; i < nftArray2.length; i++) {
-                  this.addNFT(nftArray2[i]);
-                }
+              for(let j = 0; j < nftArray.length; j++) {
+                this.addNFT(nftArray[j]);
+              }
+            } else {
+              console.log("scanned NFT files finished: " + i);
+              i = 2000;
             }
+          }
         } else {
-          console.log("nft issuer data file does not exist yet.")
+          console.log("nft issuer data files don't exist yet.")
         }
+        
 
-        if(fs.existsSync(DATA_PATH+"nftOffers.js")) {
-          let nftOffers:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftOffers.js").toString());
+        if(fs.existsSync(DATA_PATH+"nfts/nftOffers.js")) {
+          let nftOffers:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/nftOffers.js").toString());
           if(nftOffers && nftOffers.offers) {
               //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
               let offerArray:NFTokenOffer[] = nftOffers.offers;
@@ -570,7 +569,6 @@ export class NftStore {
               for(let i = 0; i < offerArray.length; i++) {
                 this.addNFTOffer(offerArray[i]);
               }
-
           }
 
           console.log("NFTs loaded!");
@@ -582,9 +580,9 @@ export class NftStore {
           console.log("offerNftIdMap: " + this.offerNftIdMap.size);
           console.log("offerAccountMap: " + this.offerAccountMap.size);
 
-      } else {
-        console.log("nft issuer data file does not exist yet.")
-      }
+        } else {
+          console.log("nft issuer data file does not exist yet.")
+        }
       } catch(err) {
         console.log("error reading nft issuer data from FS");
         console.log(err);
@@ -601,8 +599,8 @@ export class NftStore {
     public readCurrentLedgerFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync(DATA_PATH+"nftData.js")) {
-            let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nftData.js").toString());
+        if(fs.existsSync(DATA_PATH+"nfts/nftData_1.js")) {
+            let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/nftData_1.js").toString());
             if(nftData && nftData.ledger_index) {
                 return nftData.ledger_index;
             } else {
