@@ -531,9 +531,11 @@ export class NftStore {
           this.nftokenUriMap = new Map();
           this.offerAccountMap = new Map();
 
-          for(let i = 1; i < 1000 ; i++) {
-            if(fs.existsSync(DATA_PATH+"nfts/nftData_"+i+".js")) {
-              let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/nftData_"+i+".js").toString());
+          let fileList = fs.readdirSync(DATA_PATH+"nfts/");
+
+          for(const fileName of fileList) {
+            if(fileName.startsWith("nftData") && fs.existsSync(DATA_PATH+"nfts/"+fileName)) {
+              let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/"+fileName).toString());
 
               this.setCurrentLedgerIndex(nftData.ledger_index);
               this.setCurrentLedgerHash(nftData.ledger_hash);
@@ -545,30 +547,26 @@ export class NftStore {
               for(let j = 0; j < nftArray.length; j++) {
                 this.addNFT(nftArray[j]);
               }
-            } else {
-              console.log("scanned NFT files finished: " + i);
-              i = 2000;
             }
           }
-        } else {
-          console.log("nft issuer data files don't exist yet.")
-        }
-        
 
-        if(fs.existsSync(DATA_PATH+"nfts/nftOffers.js")) {
-          let nftOffers:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/nftOffers.js").toString());
-          if(nftOffers && nftOffers.offers) {
-              //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-              let offerArray:NFTokenOffer[] = nftOffers.offers;
-
-              //console.log("nftArray: " + this.nftArray.length);
-
-              this.offerIdMap = new Map();
-              this.offerNftIdMap = new Map();
-
-              for(let i = 0; i < offerArray.length; i++) {
-                this.addNFTOffer(offerArray[i]);
+          for(const fileName of fileList) {
+            if(fileName.startsWith("nftOffers") && fs.existsSync(DATA_PATH+"nfts/"+fileName)) {
+              let nftOffers:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/"+fileName).toString());
+              if(nftOffers && nftOffers.offers) {
+                //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
+                let offerArray:NFTokenOffer[] = nftOffers.offers;
+  
+                //console.log("nftArray: " + this.nftArray.length);
+  
+                this.offerIdMap = new Map();
+                this.offerNftIdMap = new Map();
+  
+                for(let i = 0; i < offerArray.length; i++) {
+                  this.addNFTOffer(offerArray[i]);
+                }
               }
+            }
           }
 
           console.log("NFTs loaded!");
