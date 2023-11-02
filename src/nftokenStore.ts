@@ -45,12 +45,12 @@ export class NftStore {
         return this._instance || (this._instance = new this());
     }
 
-    public getNft(nftokenId:string) {
+    public getNft(nftokenId:string): NFT {
       return this.nftokenIdMap.get(nftokenId);
     }
 
     public getAllIssuers(): string[] {
-      return Array.from(this.nftokenIssuerMap.keys());
+      return Array.from(this.nftokenIssuerMap.keys()).sort((a,b) => a.localeCompare(b));
     }
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
@@ -62,7 +62,7 @@ export class NftStore {
 
     public findNFTsByOwner(ownerAccount: string): NFT[] {
       if(this.nftokenOwnerMap.has(ownerAccount))
-        return Array.from(this.nftokenOwnerMap.get(ownerAccount).values());
+        return Array.from(this.nftokenOwnerMap.get(ownerAccount).values()).sort((a,b) => a.Issuer.localeCompare(b.Issuer) || a.Taxon - b.Taxon || a.Sequence - b.Sequence);
       else
         return [];
     }
@@ -164,7 +164,7 @@ export class NftStore {
           }
         }
 
-        return returnArray;
+        return returnArray.sort((a,b) => a.NFTokenID.localeCompare(b.NFTokenID));
       } else {
         return [];
       }
@@ -175,7 +175,7 @@ export class NftStore {
       //let offersFromOwner = Array.from(this.offerIdMap.values()).filter(offer => offer.Owner === ownerAddress);
 
       if(this.offerAccountMap.has(ownerAddress) && this.offerAccountMap.get(ownerAddress).as_owner.size > 0) {
-        return Array.from(this.offerAccountMap.get(ownerAddress).as_owner.values());
+        return Array.from(this.offerAccountMap.get(ownerAddress).as_owner.values()).sort((a,b) => a.NFTokenID.localeCompare(b.NFTokenID) || a.OfferID.localeCompare(b.OfferID));
       } else {
         return [];
       }
@@ -186,7 +186,7 @@ export class NftStore {
       //let offersWithDestination = Array.from(this.offerIdMap.values()).filter(offer => offer.Destination && offer.Destination === destinationAddress);
 
       if(this.offerAccountMap.has(destinationAddress) && this.offerAccountMap.get(destinationAddress).as_destination.size > 0)
-        return Array.from(this.offerAccountMap.get(destinationAddress).as_destination.values());
+        return Array.from(this.offerAccountMap.get(destinationAddress).as_destination.values()).sort((a,b) => a.NFTokenID.localeCompare(b.NFTokenID) || a.OfferID.localeCompare(b.OfferID));
       else
         return [];
     }

@@ -82,6 +82,24 @@ export async function registerRoutes(fastify, opts, done) {
           //console.log("request params: " + JSON.stringify(request.params));
           let offers = nftStore.findOffersByIssuer(request.params.issuer);
 
+          //check limit and skip
+          try {
+            let limit:number = Number(request.query.limit);
+            let skip:number = Number(request.query.skip);
+
+            if(limit) {
+
+              if(!skip)
+                skip = 0;
+
+                offers = offers.slice(skip, skip+limit);
+            }
+
+          } catch(err) {
+            console.log(err);
+            //do nothing more if it fails
+          }
+
           let returnValue:NftApiReturnObject = {
             info: {
               ledger_index: nftStore.getCurrentLedgerIndex(),
@@ -114,6 +132,24 @@ export async function registerRoutes(fastify, opts, done) {
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let offers = nftStore.findOffersByIssuerAndTaxon(request.params.issuer, request.params.taxon);
+
+          //check limit and skip
+          try {
+            let limit:number = Number(request.query.limit);
+            let skip:number = Number(request.query.skip);
+
+            if(limit) {
+
+              if(!skip)
+                skip = 0;
+
+                offers = offers.slice(skip, skip+limit);
+            }
+
+          } catch(err) {
+            console.log(err);
+            //do nothing more if it fails
+          }
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -153,9 +189,27 @@ export async function registerRoutes(fastify, opts, done) {
             reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
           }
 
-         // let start = Date.now();
+          // let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
           let offers = nftStore.findOffersByNftOwner(request.params.owner);
+
+          //check limit and skip
+          try {
+            let limit:number = Number(request.query.limit);
+            let skip:number = Number(request.query.skip);
+
+            if(limit) {
+
+              if(!skip)
+                skip = 0;
+
+                offers = offers.slice(skip, skip+limit);
+            }
+
+          } catch(err) {
+            console.log(err);
+            //do nothing more if it fails
+          }
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -187,9 +241,27 @@ export async function registerRoutes(fastify, opts, done) {
             reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
           }
 
-         // let start = Date.now();
+          // let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
           let offers = nftStore.findOffersByNftOwner(request.params.nftowner);
+
+          //check limit and skip
+          try {
+            let limit:number = Number(request.query.limit);
+            let skip:number = Number(request.query.skip);
+
+            if(limit) {
+
+              if(!skip)
+                skip = 0;
+
+                offers = offers.slice(skip, skip+limit);
+            }
+
+          } catch(err) {
+            console.log(err);
+            //do nothing more if it fails
+          }
 
           let returnValue:NftApiReturnObject = {
             info: {
@@ -224,6 +296,24 @@ export async function registerRoutes(fastify, opts, done) {
           //onsole.log("request params: " + JSON.stringify(request.params));
           let offers = nftStore.findOffersByOfferOwner(request.params.offerowner);
 
+          //check limit and skip
+          try {
+            let limit:number = Number(request.query.limit);
+            let skip:number = Number(request.query.skip);
+
+            if(limit) {
+
+              if(!skip)
+                skip = 0;
+
+                offers = offers.slice(skip, skip+limit);
+            }
+
+          } catch(err) {
+            console.log(err);
+            //do nothing more if it fails
+          }
+
           let returnValue:NftApiReturnObject = {
             info: {
               ledger_index: nftStore.getCurrentLedgerIndex(),
@@ -255,6 +345,24 @@ export async function registerRoutes(fastify, opts, done) {
 
           //onsole.log("request params: " + JSON.stringify(request.params));
           let offers = nftStore.findOffersByOfferDestination(request.params.offerdestination);
+
+          //check limit and skip
+          try {
+            let limit:number = Number(request.query.limit);
+            let skip:number = Number(request.query.skip);
+
+            if(limit) {
+
+              if(!skip)
+                skip = 0;
+
+                offers = offers.slice(skip, skip+limit);
+            }
+
+          } catch(err) {
+            console.log(err);
+            //do nothing more if it fails
+          }
 
           let returnValue:NftApiReturnObject = {
             info: {

@@ -42,6 +42,14 @@
                 "tags": [
                     "NFT Methods"
                 ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "- `issuers` = Array of all currently known NFToken Issuers",
@@ -92,6 +100,12 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -144,6 +158,12 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -205,6 +225,12 @@
                         "schema": {
                             "type": "number"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -256,6 +282,12 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -350,6 +382,14 @@
                 "tags": [
                     "NFT Methods"
                 ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
+                    }
+                ],
                 "requestBody": {
                     "description": "The URI to search NFTs for.",
                     "required": true,
@@ -417,6 +457,12 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -478,6 +524,12 @@
                         "schema": {
                             "type": "number"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -529,6 +581,12 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -581,6 +639,12 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -633,6 +697,12 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/skip"
                     }
                 ],
                 "responses": {
@@ -1903,6 +1973,26 @@
                         "$ref": "#/components/schemas/CollectionInfoData"
                     }
                 }
+            }
+        },
+        "parameters": {
+            "limit": {
+                "name": "limit",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "number"
+                },
+                "description": "Limit the entries in the response."
+            },
+            "skip": {
+                "name": "skip",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "number"
+                },
+                "description": "Skip a defined number of entries."
             }
         },
         "responses": {},
