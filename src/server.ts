@@ -7,6 +7,7 @@ import { LedgerSync } from "./syncLedger";
 import * as fs from 'fs';
 import { Redis } from 'ioredis';
 import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from '@fastify/swagger-ui';
 import Helmet from '@fastify/helmet';
 import * as nftApiRoute from './api/nftApi';
 import * as offerApiRoute from './api/nftOfferApi';
@@ -119,9 +120,12 @@ const start = async () => {
         mode: 'static',
         specification: {
           document: JSON.parse(data)
-        },
+        }
+      });
+
+      console.log("register swagger ui");
+      await fastify.register(fastifySwaggerUi, {
         routePrefix: '/docs',
-        exposeRoute: true,
         staticCSP: true,
         uiConfig: {
           defaultModelsExpandDepth: -1
