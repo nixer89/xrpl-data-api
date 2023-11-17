@@ -1,5 +1,4 @@
 import { HookData } from "../hookData";
-import { UriTokenApiReturnObject } from "../util/types";
 
 let hooksData: HookData = HookData.Instance;
 
@@ -46,7 +45,7 @@ export async function registerRoutes(fastify, opts, done) {
 
       return returnValue;
     } catch(err) {
-      console.log("error resolving nfts");
+      console.log("error resolving hook data");
       console.log(err);
       reply.code(500).send('Error occured. Please check your request.');
     }
@@ -57,7 +56,7 @@ export async function registerRoutes(fastify, opts, done) {
       //let start = Date.now();
       //console.log("request params: " + JSON.stringify(request.params));
 
-      let allHookDefinitions = hooksData.getHooksDefinitions();
+      let allHookDefinitions = hooksData.getHookDefinitions();
 
       //check limit and skip
       try {
@@ -93,18 +92,18 @@ export async function registerRoutes(fastify, opts, done) {
 
       return returnValue;
     } catch(err) {
-      console.log("error resolving nfts");
+      console.log("error resolving hook data");
       console.log(err);
       reply.code(500).send('Error occured. Please check your request.');
     }
   });
 
-  fastify.get('/api/v1/hook/hookstate', async (request, reply) => {
+  fastify.get('/api/v1/hook/hookstates', async (request, reply) => {
     try {
       //let start = Date.now();
       //console.log("request params: " + JSON.stringify(request.params));
 
-      let allHookStates = hooksData.getHooksStates();
+      let allHookStates = hooksData.getHookStates();
 
       //check limit and skip
       try {
@@ -140,7 +139,7 @@ export async function registerRoutes(fastify, opts, done) {
 
       return returnValue;
     } catch(err) {
-      console.log("error resolving nfts");
+      console.log("error resolving hook data");
       console.log(err);
       reply.code(500).send('Error occured. Please check your request.');
     }

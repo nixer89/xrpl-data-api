@@ -33,11 +33,11 @@ export class HookData {
         return this.Hook;
     }
 
-    public getHooksDefinitions() {
+    public getHookDefinitions() {
       return this.HookDefinition;
     }
 
-    public getHooksStates() {
+    public getHookStates() {
       return this.HookState;
     }
 
@@ -56,8 +56,8 @@ export class HookData {
     private async loadHookDataFromFs(): Promise<void> {
       try {
         //console.log("loading ledger data from FS");
-        if(fs.existsSync(DATA_PATH+"hooks/hooks.js")) {
-            let hooksData = JSON.parse(fs.readFileSync(DATA_PATH+"hooks/hooks.js").toString());
+        if(fs.existsSync(DATA_PATH+"hooks/hook.js")) {
+            let hooksData = JSON.parse(fs.readFileSync(DATA_PATH+"hooks/hook.js").toString());
             if(hooksData) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
                 this.setCurrentLedgerIndex(hooksData.ledger_index);
@@ -66,6 +66,8 @@ export class HookData {
                 this.setCurrentLedgerCloseTimeMs(hooksData.ledger_close_ms);
                 this.setHook(hooksData.hooks);
             }
+
+            console.log("Hooks loaded: " + this.getHooks().length);
         } else {
           console.log("hooksData file does not exist yet.")
         }
@@ -76,19 +78,23 @@ export class HookData {
               //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
               this.setHookDefinition(hooksDedfinitionData.hookDefinitions);
           }
-      } else {
-        console.log("hooksDefinitionData file does not exist yet.")
-      }
 
-      if(fs.existsSync(DATA_PATH+"hooks/hookStates.js")) {
-        let hooksStateData = JSON.parse(fs.readFileSync(DATA_PATH+"hooks/hookStates.js").toString());
-        if(hooksStateData) {
-            //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-            this.setHookState(hooksStateData.hookStates);
+          console.log("HookDefinitions loaded: " + this.getHookDefinitions().length);
+        } else {
+          console.log("hooksDefinitionData file does not exist yet.")
         }
-    } else {
-      console.log("hooksStateData file does not exist yet.")
-    }
+
+        if(fs.existsSync(DATA_PATH+"hooks/hookStates.js")) {
+          let hooksStateData = JSON.parse(fs.readFileSync(DATA_PATH+"hooks/hookStates.js").toString());
+          if(hooksStateData) {
+              //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
+              this.setHookState(hooksStateData.hookStates);
+          }
+
+          console.log("HookState loaded: " + this.getHookStates().length);
+        } else {
+          console.log("hooksStateData file does not exist yet.")
+        }
       } catch(err) {
         console.log("error reading hooks data from FS");
         console.log(err);
