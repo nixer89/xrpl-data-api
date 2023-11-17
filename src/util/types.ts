@@ -28,13 +28,14 @@ export interface IssuerVerification {
 }
 
 export interface URIToken {
-    URITokenID: string
+    URITokenID: string,
     Owner: string,
     Issuer: string,
     URI: string,
     Digest?: string,
     Amount?: any,
     Destination?: string,
+    Flags?: number
 }
 
 export interface UriTokenApiReturnObject {

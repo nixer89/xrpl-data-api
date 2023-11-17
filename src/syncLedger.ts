@@ -425,36 +425,29 @@ export class LedgerSync {
               let uriTokenId = modifiedNode.LedgerIndex;
 
               //resolve current token
-              let currentUriToken = this.uriTokenStore.getUriToken(uriTokenId);
+              let oldUriToken = this.uriTokenStore.getUriToken(uriTokenId);
 
-              if(currentUriToken) {
+              if(oldUriToken) {
 
                 let finalFields = modifiedNode.FinalFields;
                 let newFields = modifiedNode.NewFields;
 
                 let oldOwner:string = null;
+                let changedUriToken = null;
 
-                for (let finalKey in finalFields) {
-                  if (finalFields.hasOwnProperty(finalKey)) {
-                      if("Owner" === finalKey) {
-                        oldOwner = finalFields[finalKey];
-                      }
+                if(finalFields || newFields) {
+                  changedUriToken = finalFields || newFields;
 
-                      currentUriToken[finalKey] = finalFields[finalKey];
-                  }
+                  delete changedUriToken.OwnerNode;
+                  delete changedUriToken.PreviousTxnID;
+                  delete changedUriToken.PreviousTxnLgrSeq;
+                  delete changedUriToken.LedgerEntryType;
+                  delete changedUriToken.index;
+
+                  oldOwner = oldUriToken.Owner;
                 }
 
-                for (let newKey in newFields) {
-                  if (newFields.hasOwnProperty(newKey)) {
-                      if("Owner" === newKey) {
-                        oldOwner = newFields[newKey];
-                      }
-
-                      currentUriToken[newKey] = newFields[newKey];
-                  }
-                }
-    
-                this.uriTokenStore.changeProperties(currentUriToken, oldOwner);
+                this.uriTokenStore.changeProperties(changedUriToken, oldOwner);
               } else {
                 console.log("THIS SHOULD NEVER HAVE HAPPENED?!?!? NEW NFT NOT POSSIBLE!")
             
@@ -529,8 +522,9 @@ export class LedgerSync {
             Owner: createdNode.NewFields.Owner,
             URI: createdNode.NewFields.URI,
             Destination: createdNode.NewFields.Destination,
-            Digest: createdNode.Digest,
-            Amount: createdNode.Amount
+            Digest: createdNode.NewFields.Digest,
+            Amount: createdNode.NewFields.Amount,
+            Flags: createdNode.NewFields.Flags
           };
 
           break;
