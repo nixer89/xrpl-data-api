@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "description": "# Introduction\n\nThe purpose of this API specification is to build a NFT API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/Methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free (no API key required!)\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XRP / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
-        "version": "6.5.0",
-        "title": "XRP Ledger Services NFT Api",
+        "description": "# Introduction\n\nThe purpose of this API specification is to build a UriToken API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/Methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free (no API key required!)\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XRP / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
+        "version": "7.0.0",
+        "title": "XRP Ledger Services UriToken Api",
         "contact": {
             "name": "@XrplServices",
             "email": "info@xrpl.services",
@@ -17,7 +17,7 @@
     ],
     "tags": [
         {
-            "name": "NFT Methods"
+            "name": "UriToken Methods"
         },
         {
             "name": "Offer Methods"
@@ -27,7 +27,7 @@
         {
             "name": "General",
             "tags": [
-                "NFT Methods",
+                "UriToken Methods",
                 "Offer Methods",
                 "Funded Status",
                 "Statistic Methods"
@@ -35,12 +35,12 @@
         }
     ],
     "paths": {
-        "/xls20-nfts/all/issuers": {
+        "/uritoken/all/issuers": {
             "get": {
-                "summary": "Get all current Issuers of NFTs",
-                "description": "Returns an array of XRPL accounts which have currently issued NFTs on the XRP Ledger.",
+                "summary": "Get all current Issuers of UriTokens",
+                "description": "Returns an array of XRPL accounts which have currently issued UriTokens on the XRP Ledger.",
                 "tags": [
-                    "NFT Methods"
+                    "UriToken Methods"
                 ],
                 "parameters": [
                     {
@@ -52,7 +52,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "- `issuers` = Array of all currently known NFToken Issuers",
+                        "description": "- `issuers` = Array of all currently known UriTokenoken Issuers",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -84,19 +84,19 @@
                 }
             }
         },
-        "/xls20-nfts/issuer/{issuer}": {
+        "/uritoken/issuer/{issuer}": {
             "get": {
-                "summary": "Get all NFTs from a specific Issuer",
-                "description": "Returns an array of NFTs issued by the given Account",
+                "summary": "Get all UriTokens from a specific Issuer",
+                "description": "Returns an array of UriTokens issued by the given Account",
                 "tags": [
-                    "NFT Methods"
+                    "UriToken Methods"
                 ],
                 "parameters": [
                     {
                         "in": "path",
                         "name": "issuer",
                         "required": true,
-                        "description": "The issuer account you want to get the NFTs for.",
+                        "description": "The issuer account you want to get the UriTokens for.",
                         "schema": {
                             "type": "string"
                         }
@@ -110,7 +110,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "- `nfts` = Array of all NFTs of the given Issuer",
+                        "description": "- `uritokens` = Array of all UriTokens of the given Issuer",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -134,7 +134,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/IssuerNftResponse"
+                                    "$ref": "#/components/schemas/IssuerUriTokenResponse"
                                 }
                             }
                         }
@@ -142,143 +142,19 @@
                 }
             }
         },
-        "/xls20-nfts/taxon/{issuer}": {
+        "/uritoken/owner/{owner}": {
             "get": {
-                "summary": "Get all taxons used by a specific Issuer",
-                "description": "Returns an array of taxons used by the given XRPL account.",
+                "summary": "Get all UriTokens owned by a specific account",
+                "description": "Returns an array of UriTokens owned by the given Account",
                 "tags": [
-                    "NFT Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "issuer",
-                        "required": true,
-                        "description": "The issuer account you want to get the Taxons from.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/skip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `taxons` = Array of all currently known Taxons used by the given Issuer",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TaxonResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/issuer/{issuer}/taxon/{taxon}": {
-            "get": {
-                "summary": "Get all NFTs from a specific Issuer and Taxon.",
-                "description": "Returns an array of NFTs issued by the given Issuer with a specific Taxon. This is helpful to receive NFTs of a specific Collection.",
-                "tags": [
-                    "NFT Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "issuer",
-                        "required": true,
-                        "description": "The issuer account you want to get the NFTs for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "path",
-                        "name": "taxon",
-                        "required": true,
-                        "description": "The Taxon that the issuer set when minting the NFTs",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/skip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `nfts` = Array of all NFTs of the given Issuer with the specified Taxon",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/IssuerTaxonNftResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },"/xls20-nfts/owner/{owner}": {
-            "get": {
-                "summary": "Get all NFTs owned by a specific account",
-                "description": "Returns an array of NFTs owned by the given Account",
-                "tags": [
-                    "NFT Methods"
+                    "UriToken Methods"
                 ],
                 "parameters": [
                     {
                         "in": "path",
                         "name": "owner",
                         "required": true,
-                        "description": "The owner account you want to get the NFTs for.",
+                        "description": "The owner account you want to get the UriTokens for.",
                         "schema": {
                             "type": "string"
                         }
@@ -292,7 +168,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "- `nfts` = Array of all NFTs owned by the given XRPL Account",
+                        "description": "- `uritokens` = Array of all UriTokens owned by the given XRPL Account",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -316,7 +192,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OwnerNftResponse"
+                                    "$ref": "#/components/schemas/OwnerUriTokenResponse"
                                 }
                             }
                         }
@@ -324,19 +200,19 @@
                 }
             }
         },
-        "/xls20-nfts/nft/{nftokenid}": {
+        "/uritoken/uritokenid/{uritokenid}": {
             "get": {
-                "summary": "Get details for a single NFT.",
-                "description": "Returns a single NFT and its details.",
+                "summary": "Get details for a single UriToken.",
+                "description": "Returns a single UriToken and its details.",
                 "tags": [
-                    "NFT Methods"
+                    "UriToken Methods"
                 ],
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "nftokenid",
+                        "name": "UriTokenID",
                         "required": true,
-                        "description": "The NFTokenID of the NFT you want to get the details for.",
+                        "description": "The UriTokenID of the UriToken you want to get the details for.",
                         "schema": {
                             "type": "string"
                         }
@@ -344,7 +220,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "- `nft` = single NFT object for the given NFTokenID",
+                        "description": "- `uritoken` = single UriToken object for the given UriTokenID",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -368,19 +244,19 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NFTDetailResponse"
+                                    "$ref": "#/components/schemas/UriTokenDetailResponse"
                                 }
                             }
                         }
                     }
                 }
             }
-        },"/xls20-nfts/uri": {
+        },"/uritoken/uri": {
             "post": {
-                "summary": "Get all NFTs with a specific URI",
-                "description": "Returns an array of NFTs with a specific URI",
+                "summary": "Get all UriTokens with a specific URI",
+                "description": "Returns an array of UriTokens with a specific URI",
                 "tags": [
-                    "NFT Methods"
+                    "UriToken Methods"
                 ],
                 "parameters": [
                     {
@@ -391,7 +267,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "The URI to search NFTs for.",
+                    "description": "The URI to search UriTokens for.",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -409,7 +285,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "- `nfts` = Array of all NFTs with the specified URI",
+                        "description": "- `uritokens` = Array of all UriTokens with the specified URI",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -433,688 +309,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/URINftResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/offers/issuer/{issuer}": {
-            "get": {
-                "summary": "Get all Offers for NFTs from a specific Issuer",
-                "description": "Returns an array of Offers from NFTs issued by the given Account",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "issuer",
-                        "required": true,
-                        "description": "The issuer account you want to get the Offers for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/skip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offers` = Array of all Offers for NFTs from the given Issuer",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/IssuerOfferResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/offers/issuer/{issuer}/taxon/{taxon}": {
-            "get": {
-                "summary": "Get all Offers for NFTs from a specific Issuer and Taxon.",
-                "description": "Returns an array of Offers for NFTs issued by the given Issuer with a specific Taxon. This is helpful to receive Offers of a specific Collection.",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "issuer",
-                        "required": true,
-                        "description": "The issuer account you want to get the NFTs for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "path",
-                        "name": "taxon",
-                        "required": true,
-                        "description": "The Taxon that the issuer set when minting the NFTs",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/skip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offers` = Array of all Offers for NFTs from the given Issuer and the specified Taxon",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/IssuerTaxonOfferResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },"/xls20-nfts/offers/nftowner/{nftowner}": {
-            "get": {
-                "summary": "Get all Offers for NFTs owned by a specific account",
-                "description": "Returns an array of Offers for NFTs owned by the given Account",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "nftowner",
-                        "required": true,
-                        "description": "The nft owner account you want to get the Offers for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/skip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offers` = Array of all Offers for NFTs owned by the specified XRPL Account",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/NftOwnerOfferResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/offers/offerowner/{offerowner}": {
-            "get": {
-                "summary": "Get all NFT Offers owned by a specific account..",
-                "description": "Returns ALL NFT Offers owned by a specific account.",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "offerowner",
-                        "required": true,
-                        "description": "The Offer Owner Account which you want to get the Offers for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/skip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offers` = Array of all Offers created/owned by the given XRPL Account",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OfferOwnerResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/offers/offerdestination/{offerdestination}": {
-            "get": {
-                "summary": "Get all NFT Offers of a specific account which is set as `Destination`",
-                "description": "Returns ALL NFT Offers for a single account which is set as `Destination`.",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "offerdestination",
-                        "required": true,
-                        "description": "The Offer Destination Account which you want to get the Offers for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/limit"
-                    },
-                    {
-                        "$ref": "#/components/parameters/skip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offers` = Array of all Offers where the given XRPL Account is set as `Destination`",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OfferDestinationResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/offers/all/account/{xrplaccount}": {
-            "get": {
-                "summary": "Get all relevant offers for a specific XRP Ledger account.",
-                "description": "Returns all relevant NFToken offers for a specific XRP Ledger account.",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "xrplaccount",
-                        "required": true,
-                        "description": "The XRPL Account which you want to get the relevant Offers for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offers_owned` = Array of all Offers created/owned by the given XRPL Account\n\n- `offers_for_own_nfts` = Array of all Offers for NFTs owned by the specified XRPL Account\n\n- `offers_as_destination` = Array of all Offers where the given XRPL Account is set as `Destination`",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AllAccountOffersResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/offer/id/{offerid}": {
-            "get": {
-                "summary": "Get a specifc Offer by its ID.",
-                "description": "Returns the details for a single Offer.",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "offerid",
-                        "required": true,
-                        "description": "The OfferID of the Offer you receive.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offer` = single Offer object for the given OfferID",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/NFTOfferIDResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/offers/nft/{nftokenid}": {
-            "get": {
-                "summary": "Get all Offers for a single NFT.",
-                "description": "Returns Offers for a single NFT.",
-                "tags": [
-                    "Offer Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "nftokenid",
-                        "required": true,
-                        "description": "The NFTokenID of the NFT you want to get the Offers for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `offers` = an Object containing all buy and sell Offers for the given NFTokenID",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/NFTOffersResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/stats/issuer/{issuer}": {
-            "get": {
-                "summary": "Get stats about all NFTs from a specific issuer",
-                "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs",
-                "tags": [
-                    "Statistic Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "issuer",
-                        "required": true,
-                        "description": "The Issuer you want to receive NFT stats for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `nfts` = Total number of NFTs by this Issuer\n\n- `unique_owners` = Number of unique XRPL Accounts owning NFTs by the given Issuer\n\n- `nfts_for_sale` = Number of valid sell offer (see exclusions above) for NFTs of the given Issuer \n\n- `sell_offers` = Total Number of sell offers for NFTs of the given Issuer\n\n- `buy_offers` = Total Number of buy offers for NFTs of the given Issuer\n\n- `floor` = shows lowest SELL offers for ALL available currencies across all Marketplaces including XRPL DEX\n\n- `open_market` = Stats about offers on the `Open Market` (no `Destination` set!). Freely available for everyone\n\n- `market_places` = Stats about offers where an MarketPlace is set as `Destination`. (Can only be accepted by the Marketplace!)\n\n",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CollectionInfoIssuerResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/stats/issuer/{issuer}/taxon/{taxon}": {
-            "get": {
-                "summary": "Get stats about specific NFTs from a specific issuer with the given Taxon",
-                "description": "*THIS API ENDPOINT EXCLUDES:*\n\n`- EXPIRED BUY OR SELL OFFERS`\n\n`- BUY OR SELL OFFERS WITH AMOUNT = 0`\n\n`- SELL OFFERS WHERE THE OFFER OWNER IS *NOT* THE NFT OWNER`\n\n\n\nReturns an object containing live statistics about the issuer's NFTs with a specific `Taxon` (Collection)",
-                "tags": [
-                    "Statistic Methods"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "issuer",
-                        "required": true,
-                        "description": "The Issuer you want to receive NFT stats for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "path",
-                        "name": "taxon",
-                        "required": true,
-                        "description": "The Taxon of the issuer you want to receive NFT stats for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "- `nfts` = Total number of NFTs by this Issuer\n\n- `unique_owners` = Number of unique XRPL Accounts owning NFTs by the given Issuer\n\n- `nfts_for_sale` = Number of valid sell offer (see exclusions above) for NFTs of the given Issuer \n\n- `sell_offers` = Total Number of sell offers for NFTs of the given Issuer\n\n- `buy_offers` = Total Number of buy offers for NFTs of the given Issuer\n\n- `floor` = shows lowest SELL offers for ALL available currencies across all Marketplaces including XRPL DEX\n\n- `open_market` = Stats about offers on the `Open Market` (no `Destination` set!). Freely available for everyone\n\n- `market_places` = Stats about offers where an MarketPlace is set as `Destination`. (Can only be accepted by the Marketplace!)\n\n",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CollectionInfoIssuerResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/funded/offer/{offerid}": {
-            "get": {
-                "summary": "Check if a single offer is actually funded or not.",
-                "description": "Returns the funded status for a specific offer.\n\n**THIS API ENDPOINT IS ONLY ACCESSIBLE VIA API KEY!**\n\nThis endpoint does not count towards the general rate limiting but has its own rate limits:\n\n`- Tier 1 -> Limit: 20 Requests / Minute`\n\n`- Tier 2 -> Limit: 40 Requests / Minute`\n\n`- Tier 3 -> Limit: 80 Requests / Minute`\n\n`- Tier 4 -> Limit: 160 Requests / Minute`\n\nNo extra payment is necessary to use this endpoint if you already purchased an API key.",
-                "tags": [
-                    "Funded Status"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "offerid",
-                        "required": true,
-                        "description": "The OfferID of the NFT Offer you want to get the funded status for.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Returns an object containing information about the existence and funded status of a single NFT offer",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OfferFundedResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/xls20-nfts/funded/offers": {
-            "post": {
-                "summary": "Check a batch of offers for its funded status.",
-                "description": "Returns an array of the funded status for a the given offers.\n\n**THIS API ENDPOINT IS ONLY ACCESSIBLE VIA API KEY!**\n\nThis endpoint does not count towards the general rate limiting but has its own rate limits:\n\n`- Tier 1 -> Limit: 20 Requests / Minute`\n\n`- Tier 2 -> Limit: 40 Requests / Minute`\n\n`- Tier 3 -> Limit: 80 Requests / Minute`\n\n`- Tier 4 -> Limit: 160 Requests / Minute`\n\nNo extra payment is necessary to use this endpoint if you already purchased an API key.",
-                "tags": [
-                    "Funded Status"
-                ],
-                "requestBody": {
-                    "description": "A string array of OfferIDs you want to check the status for.\n\n**You can send a maximum of 20 OfferIDs in the array at a time!**",
-                    
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": ["offers"],
-                                "properties": {
-                                    "offers": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "- `offers` = an array containing the funded status of all given NFT OfferIDs",
-                        "headers": {
-                            "x-ratelimit-limit": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Maximum number of requests per minute."
-                            },
-                            "x-ratelimit-remaining": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of remaining requests per minute."
-                            },
-                            "x-ratelimit-reset": {
-                                "schema": {
-                                    "type": "integer"
-                                },
-                                "description": "Number of seconds until the current rate limit window resets."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OffersFundedResponse"
+                                    "$ref": "#/components/schemas/URIUriTokenResponse"
                                 }
                             }
                         }
@@ -1126,10 +321,10 @@
     "components": {
         "securitySchemes": {},
         "schemas": {
-            "NFT": {
+            "UriToken": {
                 "type": "object",
                 "required": [
-                    "NFTokenID",
+                    "UriTokenID",
                     "Issuer",
 					"Owner",
 					"Taxon",
@@ -1137,7 +332,7 @@
                     "TransferFee"
                 ],
                 "properties": {
-                    "NFTokenID": {
+                    "UriTokenID": {
                         "type": "string"
                     },
                     "Issuer": {
@@ -1162,14 +357,14 @@
                         "type": "string"
                     }
                 },
-                "title": "NFT"
+                "title": "UriToken"
             },
-            "NFTOffer": {
+            "UriTokenOffer": {
                 "type": "object",
                 "required": [
                     "Amount",
                     "Flags",
-					"NFTokenID",
+					"UriTokenID",
 					"Owner",
 					"OfferID"
                 ],
@@ -1198,7 +393,7 @@
                     "Flags": {
                         "type": "number"
                     },
-                    "NFTokenID": {
+                    "UriTokenID": {
                         "type": "string"
                     },
                     "Owner": {
@@ -1214,22 +409,22 @@
                         "type": "number"
                     }
                 },
-                "title": "NFTOffer"
+                "title": "UriTokenOffer"
             },
-            "NFTOfferData": {
+            "UriTokenOfferData": {
                 "type": "object",
                 "required": [
-                    "NFTokenID",
-                    "NFTokenOwner",
+                    "UriTokenID",
+                    "UriTokenokenOwner",
                     "URI",
                     "buy",
 					"sell"
                 ],
                 "properties": {
-                    "NFTokenID": {
+                    "UriTokenID": {
                         "type": "string"
                     },
-                    "NFTokenOwner": {
+                    "UriTokenokenOwner": {
                         "type": "string"
                     },
                     "URI": {
@@ -1238,17 +433,17 @@
                     "buy": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/UriTokenOffer"
                         }
                     },
                     "sell": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/UriTokenOffer"
                         }
                     }
                 },
-                "title": "NFTOfferData"
+                "title": "UriTokenOfferData"
             },
             "Info": {
                 "type": "object",
@@ -1299,9 +494,9 @@
                 "required": [
                     "issuer",
                     "taxon",
-                    "nfts",
+                    "UriTokens",
                     "unique_owners",
-					"nfts_for_sale",
+					"UriTokens_for_sale",
                     "sell_offers",
                     "buy_offers",
                     "floor"
@@ -1313,13 +508,13 @@
                     "taxon": {
                         "type": "string"
                     },
-                    "nfts": {
+                    "UriTokens": {
                         "type": "number"
                     },
                     "unique_owners": {
                         "type": "number"
                     },
-                    "nfts_for_sale": {
+                    "UriTokens_for_sale": {
                         "type": "number"
                     },
                     "sell_offers": {
@@ -1337,13 +532,13 @@
                     "open_market": {
                         "type": "object",
                         "required": [
-                            "nfts_for_sale",
+                            "UriTokens_for_sale",
                             "sell_offers",
                             "buy_offers",
                             "floor"
                         ],
                         "properties": {
-                            "nfts_for_sale": {
+                            "UriTokens_for_sale": {
                                 "type": "number"
                             },
                             "sell_offers": {
@@ -1373,7 +568,7 @@
                 "type": "object",
                 "required": [
                     "mp_account",
-                    "nfts_for_sale",
+                    "UriTokens_for_sale",
                     "sell_offers",
                     "buy_offers",
                     "floor"
@@ -1382,7 +577,7 @@
                     "mp_account": {
                         "type": "string"
                     },
-                    "nfts_for_sale": {
+                    "UriTokens_for_sale": {
                         "type": "number"
                     },
                     "sell_offers": {
@@ -1478,7 +673,7 @@
                     }
                 }
             },
-            "IssuerNftResponse": {
+            "IssuerUriTokenResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1489,27 +684,27 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/IssuerNftData"
+                        "$ref": "#/components/schemas/IssuerUriTokenData"
                     }
                 },
-                "title": "Issuer NFT Response"
+                "title": "Issuer UriToken Response"
             },
-            "IssuerNftData": {
+            "IssuerUriTokenData": {
                 "type": "object",
-                "required":["issuer","nfts"],
+                "required":["issuer","UriTokens"],
                 "properties": {
                     "issuer": {
                         "type": "string"
                     },
-                    "nfts": {
+                    "UriTokens": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFT"
+                            "$ref": "#/components/schemas/UriToken"
                         }
                     }
                 }
             },
-            "IssuerTaxonNftResponse": {
+            "IssuerTaxonUriTokenResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1520,14 +715,14 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/IssuerTaxonNftData"
+                        "$ref": "#/components/schemas/IssuerTaxonUriTokenData"
                     }
                 },
-                "title": "Issuer Taxon NFT Response"
+                "title": "Issuer Taxon UriToken Response"
             },
-            "IssuerTaxonNftData": {
+            "IssuerTaxonUriTokenData": {
                 "type": "object",
-                "required":["issuer","taxon","nfts"],
+                "required":["issuer","taxon","UriTokens"],
                 "properties": {
                     "issuer": {
                         "type": "string"
@@ -1535,15 +730,15 @@
                     "taxon": {
                         "type": "number"
                     },
-                    "nfts": {
+                    "UriTokens": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFT"
+                            "$ref": "#/components/schemas/UriToken"
                         }
                     }
                 }
             },
-            "OwnerNftResponse": {
+            "OwnerUriTokenResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1554,27 +749,27 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/OwnerNftData"
+                        "$ref": "#/components/schemas/OwnerUriTokenData"
                     }
                 },
-                "title": "NFT Owner Response"
+                "title": "UriToken Owner Response"
             },
-            "OwnerNftData": {
+            "OwnerUriTokenData": {
                 "type": "object",
-                "required":["owner","nfts"],
+                "required":["owner","UriTokens"],
                 "properties": {
                     "owner": {
                         "type": "string"
                     },
-                    "nfts": {
+                    "UriTokens": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFT"
+                            "$ref": "#/components/schemas/UriToken"
                         }
                     }
                 }
             },
-            "URINftResponse": {
+            "URIUriTokenResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1585,27 +780,27 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/URINftData"
+                        "$ref": "#/components/schemas/URIUriTokenData"
                     }
                 },
-                "title": "NFT URI Response"
+                "title": "UriToken URI Response"
             },
-            "URINftData": {
+            "URIUriTokenData": {
                 "type": "object",
-                "required":["uri","nfts"],
+                "required":["uri","UriTokens"],
                 "properties": {
                     "uri": {
                         "type": "string"
                     },
-                    "nfts": {
+                    "UriTokens": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFT"
+                            "$ref": "#/components/schemas/UriToken"
                         }
                     }
                 }
             },
-            "NFTDetailResponse": {
+            "UriTokenDetailResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1616,17 +811,17 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/NFTDetailData"
+                        "$ref": "#/components/schemas/UriTokenDetailData"
                     }
                 },
-                "title": "NFT Detail Response"
+                "title": "UriToken Detail Response"
             },
-            "NFTDetailData": {
+            "UriTokenDetailData": {
                 "type": "object",
-                "required":["nft"],
+                "required":["UriToken"],
                 "properties": {
-                    "nft": {
-                        "$ref": "#/components/schemas/NFT"
+                    "UriToken": {
+                        "$ref": "#/components/schemas/UriToken"
                     }
                 }
             },
@@ -1656,7 +851,7 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOfferData"
+                            "$ref": "#/components/schemas/UriTokenOfferData"
                         }
                     }
                 }
@@ -1690,12 +885,12 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOfferData"
+                            "$ref": "#/components/schemas/UriTokenOfferData"
                         }
                     }
                 }
             },
-            "NftOwnerOfferResponse": {
+            "UriTokenOwnerOfferResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1706,27 +901,27 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/NftOwnerOfferData"
+                        "$ref": "#/components/schemas/UriTokenOwnerOfferData"
                     }
                 },
-                "title": "NFT Owner Offer Response"
+                "title": "UriToken Owner Offer Response"
             },
-            "NftOwnerOfferData": {
+            "UriTokenOwnerOfferData": {
                 "type": "object",
-                "required":["nftowner","offers"],
+                "required":["UriTokenowner","offers"],
                 "properties": {
-                    "nftowner": {
+                    "UriTokenowner": {
                         "type": "string"
                     },
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOfferData"
+                            "$ref": "#/components/schemas/UriTokenOfferData"
                         }
                     }
                 }
             },
-            "NFTOffersResponse": {
+            "UriTokenOffersResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1737,20 +932,20 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/NFTOffersData"
+                        "$ref": "#/components/schemas/UriTokenOffersData"
                     }
                 },
-                "title": "NFT Offers Response"
+                "title": "UriToken Offers Response"
             },
-            "NFTOffersData": {
+            "UriTokenOffersData": {
                 "type": "object",
-                "required":["nftokenid","offers"],
+                "required":["UriTokenID","offers"],
                 "properties": {
-                    "nftokenid": {
+                    "UriTokenID": {
                         "type": "string"
                     },
                     "offers": {
-                        "$ref": "#/components/schemas/NFTOfferData"
+                        "$ref": "#/components/schemas/UriTokenOfferData"
                     }
                 }
             },
@@ -1813,7 +1008,7 @@
                     }
                 }
             },
-            "NFTOfferIDResponse": {
+            "UriTokenOfferIDResponse": {
                 "type": "object",
                 "required": [
                     "info",
@@ -1824,12 +1019,12 @@
                         "$ref": "#/components/schemas/Info"
                     },
                     "data": {
-                        "$ref": "#/components/schemas/NFTOfferIDData"
+                        "$ref": "#/components/schemas/UriTokenOfferIDData"
                     }
                 },
-                "title": "NFT OfferID Response"
+                "title": "UriToken OfferID Response"
             },
-            "NFTOfferIDData": {
+            "UriTokenOfferIDData": {
                 "type": "object",
                 "required":["offerid","offer"],
                 "properties": {
@@ -1837,7 +1032,7 @@
                         "type": "string"
                     },
                     "offer": {
-                        "$ref": "#/components/schemas/NFTOffer"
+                        "$ref": "#/components/schemas/UriTokenOffer"
                     }
                 }
             },
@@ -1867,7 +1062,7 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/UriTokenOffer"
                         }
                     }
                 }
@@ -1898,7 +1093,7 @@
                     "offers": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/UriTokenOffer"
                         }
                     }
                 }
@@ -1921,7 +1116,7 @@
             },
             "AllAccountOffersData": {
                 "type": "object",
-                "required":["xrplaccount","offers_owned", "offers_for_own_nfts"],
+                "required":["xrplaccount","offers_owned", "offers_for_own_UriTokens"],
                 "properties": {
                     "xrplaccount": {
                         "type": "string"
@@ -1929,19 +1124,19 @@
                     "offers_owned": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/UriTokenOffer"
                         }
                     },
-                    "offers_for_own_nfts": {
+                    "offers_for_own_UriTokens": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOfferData"
+                            "$ref": "#/components/schemas/UriTokenOfferData"
                         }
                     },
                     "offers_as_destination": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/NFTOffer"
+                            "$ref": "#/components/schemas/UriTokenOffer"
                         }
                     }
                 }

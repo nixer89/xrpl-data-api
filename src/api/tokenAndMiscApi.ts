@@ -1,7 +1,7 @@
 import { AccountNames } from "../accountNames";
 import { IssuerAccounts } from "../issuerAccounts";
 import { LedgerData } from "../ledgerData";
-import { NftStore } from "../nftokenStore";
+import { UriTokenStore } from "../uriTokenStore";
 import { SupplyInfo } from "../supplyInfo";
 import { TokenCreation } from "../tokenCreation";
 import { SupplyInfoType } from "../util/types";
@@ -13,7 +13,7 @@ let issuerAccount:IssuerAccounts = IssuerAccounts.Instance;
 let ledgerData:LedgerData = LedgerData.Instance;
 let accountNames:AccountNames = AccountNames.Instance;
 let tokenCreation:TokenCreation = TokenCreation.Instance;
-let nftStore: NftStore = NftStore.Instance;
+let uriTokenStore: UriTokenStore = UriTokenStore.Instance;
 let supplyInfo: SupplyInfo = SupplyInfo.Instance;
 
 export async function registerRoutes(fastify, opts, done) {
@@ -36,7 +36,7 @@ export async function registerRoutes(fastify, opts, done) {
   }, async (request, reply) => {
       let diff = -1;
       try {
-        let currentLedgerCloseTimeMs = nftStore.getCurrentLedgerCloseTimeMs();
+        let currentLedgerCloseTimeMs = uriTokenStore.getCurrentLedgerCloseTimeMs();
         let currentTimeMs = Date.now();
         diff = currentTimeMs - (currentLedgerCloseTimeMs ? (currentLedgerCloseTimeMs+946684800)*1000 : 0) ;
         let pm2Instance:number = process.env.PM2_INSTANCE_ID ? parseInt(process.env.PM2_INSTANCE_ID) : 0;

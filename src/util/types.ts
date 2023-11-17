@@ -27,46 +27,17 @@ export interface IssuerVerification {
     twitter?: string
 }
 
-export interface NFT {
-    NFTokenID: string,
-    TransferFee: number,
+export interface URIToken {
+    URITokenID: string
+    Owner: string,
     Issuer: string,
-    Owner: string,
-    Taxon: number,
-    Sequence: number,
     URI: string,
-    Flags?: number
+    Digest?: string,
+    Amount?: any,
+    Destination?: string,
 }
 
-export interface NFTokenOffer {
-    Amount: any,
-    Flags: number,
-    NFTokenID: string,
-    Owner: string,
-    OfferID: string,
-    Destination: string,
-    Expiration: number
-}
-
-export interface NFTokenOfferMapEntry {
-    buy: Map<string,NFTokenOffer>,
-    sell: Map<string,NFTokenOffer>
-}
-
-export interface AccountOffersrMapEntry {
-    as_destination: Map<string,NFTokenOffer>,
-    as_owner: Map<string,NFTokenOffer>
-}
-
-export interface NFTokenOfferReturnObject {
-    NFTokenID: string,
-    NFTokenOwner: string,
-    URI: string,
-    buy: NFTokenOffer[],
-    sell: NFTokenOffer[]
-}
-
-export interface NftApiReturnObject {
+export interface UriTokenApiReturnObject {
     info: {
         ledger_index: number,
         ledger_hash: string,
@@ -76,24 +47,6 @@ export interface NftApiReturnObject {
     data: {
         [key: string]: any
     }
-}
-
-export interface NftCollectionInfo {
-    issuer:string,
-    taxon: number,
-    nfts: number,
-    unique_owners: number,
-    buy_offers:number,
-    sell_offers: number,
-    nfts_for_sale: number,
-    floor: FloorPriceProperty[],
-    open_market: {
-        buy_offers:number,
-        sell_offers: number,
-        nfts_for_sale: number,
-        floor: FloorPriceProperty[]
-    },
-    market_places: MarketPlaceStats[]
 }
 
 export interface MarketPlaceStats {
@@ -110,22 +63,16 @@ export interface FloorPriceProperty {
     amount: number
 }
 
-export interface NFTokenOfferFundedStatus {
-    offerid: string,
-    funded: boolean,
-    exists: boolean
-}
-
 export interface SupplyInfoType {
     ledger: number,
     closeTimeHuman: string,
     accounts: number,
-    xrpExisting: number,
-    xrp: {
-        xrpTotalSupply: number,
-        xrpTotalBalance: number,
-        xrpTotalReserved: number,
-        xrpTotalTransientReserves: number
+    xahExisting: number,
+    xah: {
+        xahTotalSupply: number,
+        xahTotalBalance: number,
+        xahTotalReserved: number,
+        xahTotalTransientReserves: number
     },
     ledger_data: string
 }

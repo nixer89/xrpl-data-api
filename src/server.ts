@@ -9,10 +9,8 @@ import { Redis } from 'ioredis';
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import Helmet from '@fastify/helmet';
-import * as nftApiRoute from './api/nftApi';
-import * as offerApiRoute from './api/nftOfferApi';
-import * as offerFundedApiRoute from './api/nftOfferFundedApi';
-import * as collectionApiRoute from './api/statisticsApi';
+import * as uirTokenApiRoute from './api/uriTokenApi';
+import * as hooksApiRoute from './api/hooksApi';
 import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 import * as scheduler from 'node-schedule';
 import { DATA_PATH, REDIS_IP, REDIS_PORT } from './util/config';
@@ -325,11 +323,11 @@ const start = async () => {
       
 
     console.log("declaring routes");
+    
+    await fastify.register(uirTokenApiRoute.registerRoutes);
+    await fastify.register(hooksApiRoute.registerRoutes);
     await fastify.register(tokenAnsMiscApiRoute.registerRoutes);
-    await fastify.register(nftApiRoute.registerRoutes);
-    await fastify.register(offerApiRoute.registerRoutes);
-    await fastify.register(offerFundedApiRoute.registerRoutes);
-    await fastify.register(collectionApiRoute.registerRoutes);
+
     console.log("finished declaring routes");
 
     /**
