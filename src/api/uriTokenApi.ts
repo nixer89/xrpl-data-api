@@ -144,7 +144,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           //let start = Date.now();
           //onsole.log("request params: " + JSON.stringify(request.params));
-          let uriTokenByOwner = uirTokenStore.findNFTsByOwner(request.params.owner);
+          let uriTokenByOwner = uirTokenStore.findUriTokensByOwner(request.params.owner);
 
           //check limit and skip
           try {
@@ -199,7 +199,7 @@ export async function registerRoutes(fastify, opts, done) {
 
         //let start = Date.now();
         //console.log("request params: " + JSON.stringify(request.params));
-        let uriTokensByUri = uirTokenStore.findNftokenByUri(request.body.uri);
+        let uriTokensByUri = uirTokenStore.findUriTokensByUri(request.body.uri);
 
         //check limit and skip
         try {

@@ -42,7 +42,7 @@ export class UriTokenStore {
         return [];
     }
 
-    public findNFTsByOwner(ownerAccount: string): URIToken[] {
+    public findUriTokensByOwner(ownerAccount: string): URIToken[] {
       if(this.uriTokenOwnerMap.has(ownerAccount))
         return Array.from(this.uriTokenOwnerMap.get(ownerAccount).values()).sort((a,b) => a.Issuer.localeCompare(b.Issuer));
       else
@@ -56,7 +56,7 @@ export class UriTokenStore {
         return null;
     }
 
-    public findNftokenByUri(uri:string): URIToken[] {
+    public findUriTokensByUri(uri:string): URIToken[] {
       if(this.uriTokenUriMap.has(uri))
         return Array.from(this.uriTokenUriMap.get(uri).values());
       else
@@ -135,7 +135,7 @@ export class UriTokenStore {
     public loadUriTokenDataFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync(DATA_PATH+"nfts/")) {
+        if(fs.existsSync(DATA_PATH+"uri_tokens/")) {
 
           this.uriTokenIdMap = new Map();
           this.uriTokenIssuerMap = new Map();
@@ -184,7 +184,7 @@ export class UriTokenStore {
     public readCurrentLedgerFromFS() {
       try {
         if(fs.existsSync(DATA_PATH+"uri_tokens/uriTokenData_1.js")) {
-            let uriTokenData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/uriTokenData_1.js").toString());
+            let uriTokenData:any = JSON.parse(fs.readFileSync(DATA_PATH+"uri_tokens/uriTokenData_1.js").toString());
             if(uriTokenData && uriTokenData.ledger_index) {
                 return uriTokenData.ledger_index;
             } else {
