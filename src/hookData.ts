@@ -55,7 +55,7 @@ export class HookData {
 
     private async loadHookDataFromFs(): Promise<void> {
       try {
-        console.log("loading ledger data from FS");
+        console.log("loading hook data from FS");
         console.log("checking: " + DATA_PATH+"hooks/hook.js");
         if(fs.existsSync(DATA_PATH+"hooks/hook.js")) {
             let hooksData = JSON.parse(fs.readFileSync(DATA_PATH+"hooks/hook.js").toString());
