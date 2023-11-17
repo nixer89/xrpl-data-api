@@ -24,6 +24,7 @@ export class HookData {
     }
 
     public async init(): Promise<void> {
+        console.log("init hook data!");
         await this.loadHookDataFromFs();
 
         scheduler.scheduleJob("loadHookDataFromFs", "*/10 * * * *", () => this.loadHookDataFromFs());

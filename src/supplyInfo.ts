@@ -33,11 +33,11 @@ export class SupplyInfo {
 
     private async loadSupplyInfoFromFS(): Promise<void> {
       try {
-        //console.log("loading ledger data from FS");
+        console.log("loading ledger data from FS");
         if(fs.existsSync(DATA_PATH+"supplyInfo.js")) {
             let suppInfo:SupplyInfoType = JSON.parse(fs.readFileSync(DATA_PATH+"supplyInfo.js").toString());
             if(suppInfo) {
-                //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
+                console.log("suppInfo loaded: " + JSON.stringify(suppInfo));
                 this.setSupplyInfo(suppInfo);
             }
         } else {

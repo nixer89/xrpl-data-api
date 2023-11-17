@@ -15,6 +15,7 @@ import * as tokenAnsMiscApiRoute from './api/tokenAndMiscApi';
 import * as scheduler from 'node-schedule';
 import { DATA_PATH, REDIS_IP, REDIS_PORT } from './util/config';
 import { SupplyInfo } from './supplyInfo';
+import { HookData } from './hookData';
 
 require("log-timestamp");
 
@@ -33,6 +34,7 @@ let accountNames:AccountNames;
 let selfAssessments:SelfAssessments;
 let ledgerSync: LedgerSync;
 let supplyInfo: SupplyInfo;
+let hookData: HookData;
 
 
 let tier1LimitIps:string[] = [];
@@ -76,6 +78,7 @@ const start = async () => {
   selfAssessments = SelfAssessments.Instance;
   ledgerSync = LedgerSync.Instance;
   supplyInfo = SupplyInfo.Instance;
+  hookData = HookData.Instance;
 
     console.log("starting server");
     try {
@@ -95,10 +98,11 @@ const start = async () => {
       scheduler.scheduleJob("loadApiKeys12", {minute: 55, second: 0}, () => loadApiKeys());
 
       await accountNames.init();
-      await tokenCreation.init();
+      //await tokenCreation.init();
       await issuerAccount.init();
       await ledgerData.init();
       await supplyInfo.init();
+      await hookData.init();
       await selfAssessments.init();
 
       //sync back to current ledger
@@ -323,7 +327,7 @@ const start = async () => {
       
 
     console.log("declaring routes");
-    
+
     await fastify.register(uirTokenApiRoute.registerRoutes);
     await fastify.register(hooksApiRoute.registerRoutes);
     await fastify.register(tokenAnsMiscApiRoute.registerRoutes);
