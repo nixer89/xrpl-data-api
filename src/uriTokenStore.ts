@@ -172,7 +172,7 @@ export class UriTokenStore {
           console.log("URI Tokens data file does not exist yet.")
         }
       } catch(err) {
-        console.log("error reading nft issuer data from FS");
+        console.log("error reading uri token data from FS");
         console.log(err);
         this.uriTokenIdMap = new Map();
         this.uriTokenIssuerMap = new Map();
@@ -183,20 +183,19 @@ export class UriTokenStore {
 
     public readCurrentLedgerFromFS() {
       try {
-        //console.log("loading nft issuer data from FS");
-        if(fs.existsSync(DATA_PATH+"nfts/nftData_1.js")) {
-            let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/nftData_1.js").toString());
-            if(nftData && nftData.ledger_index) {
-                return nftData.ledger_index;
+        if(fs.existsSync(DATA_PATH+"uri_tokens/uriTokenData_1.js")) {
+            let uriTokenData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/uriTokenData_1.js").toString());
+            if(uriTokenData && uriTokenData.ledger_index) {
+                return uriTokenData.ledger_index;
             } else {
               return -1;
             }
         } else {
-          console.log("nft issuer data file does not exist yet.")
+          console.log("uri token data file does not exist yet.")
           return -1;
         }
       } catch(err) {
-        console.log("error reading nft issuer data from FS");
+        console.log("error reading uri token data from FS");
         console.log(err);
         return -1;
       }  
