@@ -1,6 +1,6 @@
 {
   "name": "xrpl-data-api",
-  "version": "6.5.0",
+  "version": "6.5.1",
   "description": "tracks periodically the latest issued token on the xrp ledger (every 10 minutes)",
   "main": "src/server.ts",
   "scripts": {
@@ -27,28 +27,28 @@
   },
   "homepage": "https://github.com/nixer89/-data-api#readme",
   "dependencies": {
-    "@fastify/compress": "^6.4.0",
-    "@fastify/cors": "^8.4.0",
+    "@fastify/compress": "^6.5.0",
+    "@fastify/cors": "^8.4.1",
     "@fastify/helmet": "^11.1.1",
-    "@fastify/rate-limit": "^8.0.1",
-    "@fastify/swagger": "^8.5.1",
-    "@fastify/swagger-ui": "^1.9.0",
-    "fastify": "^4.23.2",
-    "ioredis": "^5.2.4",
+    "@fastify/rate-limit": "^9.0.0",
+    "@fastify/swagger": "^8.12.0",
+    "@fastify/swagger-ui": "^1.10.1",
+    "fastify": "^4.24.3",
+    "ioredis": "^5.3.2",
     "log-timestamp": "^0.3.0",
-    "node-fetch": "^2.6.7",
-    "node-schedule": "^2.1.0",
+    "node-fetch": "^2.7.0",
+    "node-schedule": "^2.1.1",
     "pm2": "^5.3.0",
-    "ripple-address-codec": "^4.2.4",
-    "swagger-typescript-api": "^12.0.2",
-    "xrpl": "^2.6.0"
+    "ripple-address-codec": "^4.3.1",
+    "swagger-typescript-api": "^13.0.3",
+    "xrpl": "^2.13.0"
   },
   "devDependencies": {
-    "@types/node": "^16.18.4",
-    "@types/node-fetch": "^2.5.12",
-    "@types/node-schedule": "^2.1.0",
-    "concurrently": "^5.3.0",
-    "nodemon": "^2.0.15",
-    "typescript": "^4.9.3"
+    "@types/node": "^20.10.0",
+    "@types/node-fetch": "^2.6.9",
+    "@types/node-schedule": "^2.1.4",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1",
+    "typescript": "^5.3.2"
   }
 }

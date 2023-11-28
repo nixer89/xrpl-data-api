@@ -60,7 +60,7 @@ export class LedgerData {
     private async loadLedgerDataFromFS(): Promise<void> {
       try {
         //console.log("loading ledger data from FS");
-        if(fs.existsSync(DATA_PATH+"ledgerData.js")) {
+        if(!fs.existsSync(DATA_PATH+"processing") && fs.existsSync(DATA_PATH+"ledgerData.js")) {
             let ledgerData:any = JSON.parse(fs.readFileSync(DATA_PATH+"ledgerData.js").toString());
             if(ledgerData) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
@@ -70,7 +70,7 @@ export class LedgerData {
           console.log("ledger data file does not exist yet.")
         }
 
-        if(fs.existsSync(DATA_PATH+"escrows.js")) {
+        if(!fs.existsSync(DATA_PATH+"processing") && fs.existsSync(DATA_PATH+"escrows.js")) {
           let escrowFile:any = JSON.parse(fs.readFileSync(DATA_PATH+"escrows.js").toString());
           if(escrowFile && escrowFile.escrows) {
               //console.log("ledger data loaded: " + JSON.stringify(ledgerData));

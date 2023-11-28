@@ -523,7 +523,7 @@ export class NftStore {
     public loadNftDataFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync(DATA_PATH+"nfts/")) {
+        if(!fs.existsSync(DATA_PATH+"processing") && fs.existsSync(DATA_PATH+"nfts/")) {
 
           this.nftokenIdMap = new Map();
           this.nftokenIssuerMap = new Map();
@@ -597,7 +597,7 @@ export class NftStore {
     public readCurrentLedgerFromFS() {
       try {
         //console.log("loading nft issuer data from FS");
-        if(fs.existsSync(DATA_PATH+"nfts/nftData_1.js")) {
+        if(!fs.existsSync(DATA_PATH+"processing") && fs.existsSync(DATA_PATH+"nfts/nftData_1.js")) {
             let nftData:any = JSON.parse(fs.readFileSync(DATA_PATH+"nfts/nftData_1.js").toString());
             if(nftData && nftData.ledger_index) {
                 return nftData.ledger_index;

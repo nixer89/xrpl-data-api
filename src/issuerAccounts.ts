@@ -112,7 +112,7 @@ export class IssuerAccounts {
       try {
         //console.log("loading issuer data from FS");
         let loadedMap:Map<string, IssuerData> = new Map();
-        if(fs.existsSync(DATA_PATH+"issuerData.js")) {
+        if(!fs.existsSync(DATA_PATH+"processing") && fs.existsSync(DATA_PATH+"issuerData.js")) {
             let issuerData:any = JSON.parse(fs.readFileSync(DATA_PATH+"issuerData.js").toString());
             if(issuerData) {
                 let issuers = issuerData.issuers;

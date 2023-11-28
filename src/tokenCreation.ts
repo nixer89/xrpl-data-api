@@ -29,7 +29,7 @@ export class TokenCreation {
     private async loadIssuerCreationFromFS(): Promise<void> {
         //console.log("loading issuer creation from FS");
         try {
-            if(fs.existsSync(DATA_PATH+"issuerCreation.txt")) {
+            if(!fs.existsSync(DATA_PATH+"processing") && fs.existsSync(DATA_PATH+"issuerCreation.txt")) {
                 try {
                     const rl = createInterface({
                       input: fs.createReadStream(DATA_PATH+"issuerCreation.txt"),
