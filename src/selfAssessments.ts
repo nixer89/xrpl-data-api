@@ -36,7 +36,7 @@ export class SelfAssessments {
     private async loadSelfAssessmentsFromFS(): Promise<void> {
         //console.log("loading self assessments from FS");
         try {
-            if(!fs.existsSync(DATA_PATH+"processing") && fs.existsSync(DATA_PATH+"selfAssessments.js")) {
+            if(fs.existsSync(DATA_PATH+"selfAssessments.js")) {
                 let selfAssessmentsObject:any = JSON.parse(fs.readFileSync(DATA_PATH+"selfAssessments.js").toString());
                 //console.log(JSON.stringify(selfAssessmentsObject));
                 if(selfAssessmentsObject) {
