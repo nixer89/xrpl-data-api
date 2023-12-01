@@ -1,13 +1,13 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "description": "# Introduction\n\nThe purpose of this API specification is to build a UriToken API which complements the rippled API. This API is not built to replace the rippled API but rather introduce functions/Methods that are not provided by rippled.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free (no API key required!)\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XRP / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XRP / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XRP / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XRP / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`\n\n# Testnet API\n\nAn API for the XRPL `Testnet` is available here: [Testnet API](https://test-api.xrpldata.com/docs)",
+        "description": "# Introduction\n\nThe purpose of this API specification is to build a UriToken API which complements the xahaud API. This API is not built to replace the xahaud API but rather introduce functions/Methods that are not provided by xahaud.\n\n# Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).\n\nAnd that allows cross-domain communication from the browser.\n\nAll responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n\n# Rate Limiting\n\nThe default rate limit is 10 requests per minute. All responses include the approriate rate limiting headers according to this specifictaion. See API specification below.\n\nIf you need elevated rate limits, please contact us through the channels listed below.\n\nThe pricing is as follows:\n\n- Tier 0 -> Limit: 10 Requests / Minute -> Free (no API key required!)\n\n- Tier 1 -> Limit: 60 Requests / Minute -> 20 XAH / Month\n\n- Tier 2 -> Limit: 600 Requests / Minute -> 40 XAH / Month\n- Tier 3 -> Limit: 1200 Requests / Minute -> 100 XAH / Month\n\n- Tier 4 -> Limit: 2400 Requests / Minute -> 200 XAH / Month\n\n- Tier 5 -> Limit: Custom limits and pricing. Please get in touch!\n\nIf you want to send requests with an API key, please set the key into the `x-api-key` header of your requests like this:\n`x-api-key: abcd-abcd-0000-abcd-0123abcdabcd`",
         "version": "7.0.6",
-        "title": "XRP Ledger Services UriToken Api",
+        "title": "Xahau Services UriToken Api",
         "contact": {
-            "name": "@XrplServices",
+            "name": "@XahauServices",
             "email": "info@xrpl.services",
-            "url": "https://twitter.com/XrplServices"
+            "url": "https://twitter.com/XahauServices"
         }
     },
     "servers": [
@@ -35,7 +35,7 @@
         "/uritoken/all/issuers": {
             "get": {
                 "summary": "Get all current Issuers of UriTokens",
-                "description": "Returns an array of XRPL accounts which have currently issued UriTokens on the XRP Ledger.",
+                "description": "Returns an array of Xahau accounts which have currently issued UriTokens on the Xahau Network.",
                 "tags": [
                     "UriToken Methods"
                 ],
@@ -165,7 +165,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "- `uritokens` = Array of all UriTokens owned by the given XRPL Account",
+                        "description": "- `uritokens` = Array of all UriTokens owned by the given Xahau Account",
                         "headers": {
                             "x-ratelimit-limit": {
                                 "schema": {
@@ -1113,9 +1113,9 @@
             },
             "AllAccountOffersData": {
                 "type": "object",
-                "required":["xrplaccount","offers_owned", "offers_for_own_UriTokens"],
+                "required":["xahauaccount","offers_owned", "offers_for_own_UriTokens"],
                 "properties": {
-                    "xrplaccount": {
+                    "xahauaccount": {
                         "type": "string"
                     },
                     "offers_owned": {
