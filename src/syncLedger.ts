@@ -427,24 +427,23 @@ export class LedgerSync {
               //resolve current token
               let oldUriToken = this.uriTokenStore.getUriToken(uriTokenId);
 
+              let changedUriToken:URIToken = JSON.parse(JSON.stringify(oldUriToken));
+
               if(oldUriToken) {
+
+                let oldOwner:string = oldUriToken.Owner;
 
                 let finalFields = modifiedNode.FinalFields;
                 let newFields = modifiedNode.NewFields;
 
-                let oldOwner:string = null;
-                let changedUriToken = null;
+                let modifiedFields = null;
 
                 if(finalFields || newFields) {
-                  changedUriToken = finalFields || newFields;
+                  modifiedFields = finalFields || newFields;
 
-                  delete changedUriToken.OwnerNode;
-                  delete changedUriToken.PreviousTxnID;
-                  delete changedUriToken.PreviousTxnLgrSeq;
-                  delete changedUriToken.LedgerEntryType;
-                  delete changedUriToken.index;
-
-                  oldOwner = oldUriToken.Owner;
+                  changedUriToken.Owner = modifiedFields.Owner;
+                  changedUriToken.Amount = modifiedFields.Amount ? modifiedFields.Amount : null;
+                  changedUriToken.Destination = modifiedFields.Destination ? modifiedFields.Destination : null;
                 }
 
                 this.uriTokenStore.changeProperties(changedUriToken, oldOwner);
@@ -521,10 +520,10 @@ export class LedgerSync {
             Issuer: createdNode.NewFields.Issuer,
             Owner: createdNode.NewFields.Owner,
             URI: createdNode.NewFields.URI,
-            Destination: createdNode.NewFields.Destination,
-            Digest: createdNode.NewFields.Digest,
-            Amount: createdNode.NewFields.Amount,
-            Flags: createdNode.NewFields.Flags
+            Destination: createdNode.NewFields.Destination ? createdNode.NewFields.Destination : null,
+            Digest: createdNode.NewFields.Digest ? createdNode.NewFields.Digest : null,
+            Amount: createdNode.NewFields.Amount ? createdNode.NewFields.Amount : null,
+            Flags: createdNode.NewFields.Flags ? createdNode.NewFields.Flags : 0
           };
 
           break;

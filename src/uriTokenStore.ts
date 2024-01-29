@@ -121,6 +121,9 @@ export class UriTokenStore {
 
       this.uriTokenIdMap.set(existingUriToken.URITokenID, existingUriToken);
 
+      if(!this.uriTokenIssuerMap.has(existingUriToken.Issuer))
+        this.uriTokenIssuerMap.set(existingUriToken.Issuer, new Map());
+
       this.uriTokenIssuerMap.get(existingUriToken.Issuer).set(existingUriToken.URITokenID, existingUriToken);
 
       if(existingUriToken.URI) {
