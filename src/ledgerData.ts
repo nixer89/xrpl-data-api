@@ -64,7 +64,10 @@ export class LedgerData {
             let ledgerData:any = JSON.parse(fs.readFileSync(DATA_PATH+"ledgerData.js").toString());
             if(ledgerData) {
                 //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
-                this.setLedgerData(ledgerData);
+                if(ledgerData.ledger_data)
+                  this.setLedgerData(ledgerData.ledger_data);
+                else
+                  this.setLedgerData(ledgerData);
             }
         } else {
           console.log("ledger data file does not exist yet.")
