@@ -13,8 +13,6 @@ export class NftStore {
 
     private nftokenOwnerMap:Map<string,Map<string,NFT>> = new Map();
 
-    private nftokenUriMap:Map<string,Map<string,NFT>> = new Map();
-
     private offerIdMap:Map<string,NFTokenOffer> = new Map();
 
     private offerNftIdMap:Map<string, NFTokenOfferMapEntry> = new Map();
@@ -101,10 +99,9 @@ export class NftStore {
     }
 
     public findNftokenByUri(uri:string): NFT[] {
-      if(this.nftokenUriMap.has(uri))
-        return Array.from(this.nftokenUriMap.get(uri).values());
-      else
-        return [];
+      let filtered = Array.from(this.nftokenIdMap.values()).filter(nft => nft.URI === uri);
+
+      return filtered;
     }
 
     public findOfferById(offerId: string): NFTokenOffer {
@@ -418,12 +415,6 @@ export class NftStore {
 
       this.nftokenOwnerMap.get(newNft.Owner).set(newNft.NFTokenID, newNft);
 
-      if(newNft.URI) {
-        if(!this.nftokenUriMap.has(newNft.URI))
-          this.nftokenUriMap.set(newNft.URI, new Map());
-
-        this.nftokenUriMap.get(newNft.URI).set(newNft.NFTokenID, newNft);
-      }
     }
 
     public removeNft(burnedNft:NFT) {
@@ -437,10 +428,6 @@ export class NftStore {
       this.nftokenIssuerMap.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
 
       this.nftokenOwnerMap.get(burnedNft.Owner).delete(burnedNft.NFTokenID);
-
-      if(burnedNft.URI) {
-        this.nftokenUriMap.get(burnedNft.URI).delete(burnedNft.NFTokenID);
-      }
 
       //console.log("nftokenIdMap size AFTER: " + this.nftokenIdMap.size);
       //console.log("nftokenIssuerMap size AFTER: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
@@ -462,13 +449,6 @@ export class NftStore {
 
       this.nftokenIssuerMap.get(existingNft.Issuer).set(existingNft.NFTokenID, existingNft);
 
-      if(existingNft.URI) {
-        if(!this.nftokenUriMap.has(existingNft.URI)) {
-          this.nftokenUriMap.set(existingNft.URI, new Map());
-        }
-
-        this.nftokenUriMap.get(existingNft.URI).set(existingNft.NFTokenID, existingNft);
-      }
     }
 
     public async addNFTOffer(newOffer:NFTokenOffer) {
@@ -528,7 +508,6 @@ export class NftStore {
           this.nftokenIdMap = new Map();
           this.nftokenIssuerMap = new Map();
           this.nftokenOwnerMap = new Map();
-          this.nftokenUriMap = new Map();
           this.offerAccountMap = new Map();
 
           let fileList = fs.readdirSync(DATA_PATH+"nfts/");
@@ -573,7 +552,6 @@ export class NftStore {
           console.log("nftokenIdMap: " + this.nftokenIdMap.size);
           console.log("nftokenIssuerMap: " + this.nftokenIssuerMap.size);
           console.log("nftokenOwnerMap: " + this.nftokenOwnerMap.size);
-          console.log("nftokenUriMap: " + this.nftokenUriMap.size);
           console.log("offerIdMap: " + this.offerIdMap.size);
           console.log("offerNftIdMap: " + this.offerNftIdMap.size);
           console.log("offerAccountMap: " + this.offerAccountMap.size);
@@ -587,7 +565,6 @@ export class NftStore {
         this.nftokenIdMap = new Map();
         this.nftokenIssuerMap = new Map();
         this.nftokenOwnerMap = new Map();
-        this.nftokenUriMap =new Map();{};
         this.offerIdMap = new Map();
         this.offerNftIdMap = new Map();
         this.offerAccountMap = new Map();
