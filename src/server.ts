@@ -259,10 +259,6 @@ const start = async () => {
             console.log("blocked: " + logKey);
           }
 
-          if(key.endsWith('b58e07a9f4d7')) {
-            console.log(key + " | LIMIT: " + limit)
-          }
-
           return limit;
         },
         timeWindow: '1 minute',
@@ -459,10 +455,6 @@ function loadApiKeys(): void {
     let keyValue:string[] = tier5LimitKeysRaw[i].split("=");
 
     tier5KeyLimitMap.set(keyValue[0], Number(keyValue[1]));
-
-    if(keyValue[0].endsWith('b58e07a9f4d7')) {
-      console.log(keyValue[0] + " | LIMIT: " + Number(keyValue[1]))
-    }
   }
 
   blocked = loadBlocked();
