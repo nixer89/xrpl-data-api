@@ -53,7 +53,7 @@ export class NftStore {
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
       if(this.nftokenIssuerMap.has(issuerAddress))
-        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values()).sort((a,b) => a.Taxon - b.Taxon || a.Sequence - b.Sequence);
+        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
       else
         return [];
     }
