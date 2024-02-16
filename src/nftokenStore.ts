@@ -9,7 +9,7 @@ export class NftStore {
 
     private nftokenIdMap:Map<string,NFT> = new Map();
 
-    private nftokenIssuerMap:Map<string,Map<string,NFT>> = new Map();
+    private nftokenIssuerMap:Map<string,string[]> = new Map();
 
     private nftokenOwnerMap:Map<string,Map<string,NFT>> = new Map();
 
@@ -53,15 +53,15 @@ export class NftStore {
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
       if(this.nftokenIssuerMap.has(issuerAddress)) {
-        const issuerMap = this.nftokenIssuerMap.get(issuerAddress);
+        let issuerNFTs:string[] = this.nftokenIssuerMap.get(issuerAddress);
 
-        let result = [];
+        let nfts:NFT[] = [];
 
-        for(const entry of issuerMap) {
-          result.push(entry[1]);
+        for(let i = 0; i < issuerNFTs.length; i++) {
+          nfts.push(this.nftokenIdMap.get(issuerNFTs[i]));
         }
 
-        return result;
+        return nfts;
 
 
         //return Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
@@ -80,10 +80,16 @@ export class NftStore {
       
       if(this.nftokenIssuerMap.has(issuerAddress)) {
         let taxons:number[] = [];
-        let nfts:NFT[] = Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
+        let issuerNFTs:string[] = this.nftokenIssuerMap.get(issuerAddress);
+
+        let nfts:NFT[] = [];
+
+        for(let i = 0; i < issuerNFTs.length; i++) {
+          nfts.push(this.nftokenIdMap.get(issuerNFTs[i]));
+        }
 
         for(let i = 0; i < nfts.length; i++) {
-          if(!taxons.includes(nfts[i].Taxon)) {
+          if(nfts[i] && !taxons.includes(nfts[i].Taxon)) {
             taxons.push(nfts[i].Taxon);
           }
         }
@@ -96,9 +102,18 @@ export class NftStore {
     }
 
     public findNftsByIssuerAndTaxon(issuerAddress: string, taxon: number): NFT[] {
-      if(this.nftokenIssuerMap.has(issuerAddress))
-        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values()).filter(nft => nft.Taxon == taxon).sort((a,b) => a.Sequence - b.Sequence);
-      else
+      if(this.nftokenIssuerMap.has(issuerAddress)) {
+
+        let issuerNFTs:string[] = this.nftokenIssuerMap.get(issuerAddress);
+
+        let nfts:NFT[] = [];
+
+        for(let i = 0; i < issuerNFTs.length; i++) {
+          nfts.push(this.nftokenIdMap.get(issuerNFTs[i]));
+        }
+
+        return nfts.filter(nft => nft.Taxon == taxon).sort((a,b) => a.Sequence - b.Sequence);
+      } else
         return [];
     }
 
@@ -417,9 +432,9 @@ export class NftStore {
       this.nftokenIdMap.set(newNft.NFTokenID, newNft);
 
       if(!this.nftokenIssuerMap.has(newNft.Issuer))
-        this.nftokenIssuerMap.set(newNft.Issuer, new Map());
+        this.nftokenIssuerMap.set(newNft.Issuer, []);
 
-      this.nftokenIssuerMap.get(newNft.Issuer).set(newNft.NFTokenID, newNft);
+      this.nftokenIssuerMap.get(newNft.Issuer).push(newNft.NFTokenID);
 
       if(!this.nftokenOwnerMap.has(newNft.Owner))
         this.nftokenOwnerMap.set(newNft.Owner, new Map());
@@ -436,7 +451,7 @@ export class NftStore {
 
       this.nftokenIdMap.delete(burnedNft.NFTokenID);
 
-      this.nftokenIssuerMap.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
+      this.nftokenIssuerMap.set(burnedNft.Issuer, this.nftokenIssuerMap.get(burnedNft.Issuer).filter(singleNft => singleNft != burnedNft.NFTokenID));
 
       this.nftokenOwnerMap.get(burnedNft.Owner).delete(burnedNft.NFTokenID);
 
@@ -457,9 +472,6 @@ export class NftStore {
       this.nftokenOwnerMap.get(existingNft.Owner).set(existingNft.NFTokenID, existingNft);
 
       this.nftokenIdMap.set(existingNft.NFTokenID,existingNft);
-
-      this.nftokenIssuerMap.get(existingNft.Issuer).set(existingNft.NFTokenID, existingNft);
-
     }
 
     public async addNFTOffer(newOffer:NFTokenOffer) {
