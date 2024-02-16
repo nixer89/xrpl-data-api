@@ -337,22 +337,7 @@ const start = async () => {
     await fastify.register(collectionApiRoute.registerRoutes);
     console.log("finished declaring routes");
 
-    /**
-    await fastify.addHook('onRequest', (request, reply, done) => {
-      request['start'] = Date.now();
-      done()
-    });
-
-    await fastify.addHook('onSend', async (request, reply, payload) => {
-      if(request['start']) {
-        let responseTime = Date.now() - request['start'];
-        console.log("responseTime: " + responseTime + " ms.")
-      }
-
-      return payload;
-    });
-     */
-
+    /** 
     await fastify.addHook('onRequest', (request, reply, done) => {
       request['start'] = Date.now();
       done()
@@ -368,7 +353,8 @@ const start = async () => {
       }
       
       return payload;
-    })
+    });
+    */
 
     try {
       await fastify.listen({ port: 4002, host: '0.0.0.0' });
