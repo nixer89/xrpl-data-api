@@ -57,9 +57,9 @@ export class NftStore {
 
         let result = [];
 
-        for(let nftId in issuerMap.keys()) {
-          result.push(issuerMap.get(nftId));
-        }
+        issuerMap.forEach((value, key, map) => {
+          result.push(value);
+        });
 
         return result;
 
