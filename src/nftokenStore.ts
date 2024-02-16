@@ -53,13 +53,13 @@ export class NftStore {
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
       if(this.nftokenIssuerMap.has(issuerAddress)) {
-        let issuerMap = this.nftokenIssuerMap.get(issuerAddress);
+        const issuerMap = this.nftokenIssuerMap.get(issuerAddress);
 
         let result = [];
 
-        issuerMap.forEach((value, key, map) => {
-          result.push(value);
-        });
+        for(const entry of issuerMap) {
+          result.push(entry[1]);
+        }
 
         return result;
 
