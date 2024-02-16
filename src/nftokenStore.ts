@@ -52,9 +52,20 @@ export class NftStore {
     }
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
-      if(this.nftokenIssuerMap.has(issuerAddress))
-        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
-      else
+      if(this.nftokenIssuerMap.has(issuerAddress)) {
+        let issuerMap = this.nftokenIssuerMap.get(issuerAddress);
+
+        let result = [];
+
+        for(let nftId in issuerMap.keys()) {
+          result.push(issuerMap.get(nftId));
+        }
+
+        return result;
+
+
+        //return Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
+      } else
         return [];
     }
 
