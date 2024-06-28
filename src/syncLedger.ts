@@ -1,8 +1,6 @@
 import { URIToken } from './util/types';
-import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
-import * as rippleAddressCodec from 'ripple-address-codec';
+import { Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from '@transia/xrpl';
 import { UriTokenStore } from './uriTokenStore';
-import { RippleState } from 'xrpl/dist/npm/models/ledger';
 
 const pm2Lib = require('pm2')
 
