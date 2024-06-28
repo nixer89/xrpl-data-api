@@ -258,7 +258,7 @@ export async function registerRoutes(fastify, opts, done) {
 
       console.log("supply info call IP: " + callIP);
 
-      if(WHITELIST_IP === callIP) {
+      if(WHITELIST_IP.split(',').includes(callIP)) {
 
         let supplyInfoResponse:SupplyInfoType = supplyInfo.getSupplyInfo();
 
