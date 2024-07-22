@@ -399,56 +399,63 @@ export class NftStore {
 
     public async addNFT(newNft:NFT) {
 
-      //add null URI if URI is not available:
-      if(!newNft.URI)
-        newNft.URI = null;
+      //exclude exzessive NFT minter
+      if(newNft.Issuer != "rP7aApVAyf3bjtRVVTixVSHBbU4kpd742k") {
 
-      this.nftokenIdMap.set(newNft.NFTokenID, newNft);
+        //add null URI if URI is not available:
+        if(!newNft.URI)
+          newNft.URI = null;
 
-      if(!this.nftokenIssuerMap.has(newNft.Issuer))
-        this.nftokenIssuerMap.set(newNft.Issuer, new Map());
+        this.nftokenIdMap.set(newNft.NFTokenID, newNft);
 
-      this.nftokenIssuerMap.get(newNft.Issuer).set(newNft.NFTokenID, newNft);
+        if(!this.nftokenIssuerMap.has(newNft.Issuer))
+          this.nftokenIssuerMap.set(newNft.Issuer, new Map());
 
-      if(!this.nftokenOwnerMap.has(newNft.Owner))
-        this.nftokenOwnerMap.set(newNft.Owner, new Map());
+        this.nftokenIssuerMap.get(newNft.Issuer).set(newNft.NFTokenID, newNft);
 
-      this.nftokenOwnerMap.get(newNft.Owner).set(newNft.NFTokenID, newNft);
+        if(!this.nftokenOwnerMap.has(newNft.Owner))
+          this.nftokenOwnerMap.set(newNft.Owner, new Map());
+
+        this.nftokenOwnerMap.get(newNft.Owner).set(newNft.NFTokenID, newNft);
+      }
 
     }
 
     public removeNft(burnedNft:NFT) {
-      //console.log("burning NFT: " + burnedNft);
+      if(burnedNft.Issuer != "rP7aApVAyf3bjtRVVTixVSHBbU4kpd742k") {
+        //console.log("burning NFT: " + burnedNft);
 
-      //console.log("nftokenIdMap size BEFORE: " + this.nftokenIdMap.size);
-      //console.log("nftokenIssuerMap size BEFORE: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
+        //console.log("nftokenIdMap size BEFORE: " + this.nftokenIdMap.size);
+        //console.log("nftokenIssuerMap size BEFORE: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
 
-      this.nftokenIdMap.delete(burnedNft.NFTokenID);
+        this.nftokenIdMap.delete(burnedNft.NFTokenID);
 
-      this.nftokenIssuerMap.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
+        this.nftokenIssuerMap.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
 
-      this.nftokenOwnerMap.get(burnedNft.Owner).delete(burnedNft.NFTokenID);
+        this.nftokenOwnerMap.get(burnedNft.Owner).delete(burnedNft.NFTokenID);
 
-      //console.log("nftokenIdMap size AFTER: " + this.nftokenIdMap.size);
-      //console.log("nftokenIssuerMap size AFTER: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
+        //console.log("nftokenIdMap size AFTER: " + this.nftokenIdMap.size);
+        //console.log("nftokenIssuerMap size AFTER: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
+      }
     }
 
     public changeNftOwner(existingNft:NFT, newOwner: string) {
-      if(this.nftokenOwnerMap.has(existingNft.Owner)) {
-        this.nftokenOwnerMap.get(existingNft.Owner).delete(existingNft.NFTokenID);
+      if(existingNft.Issuer != "rP7aApVAyf3bjtRVVTixVSHBbU4kpd742k") {
+        if(this.nftokenOwnerMap.has(existingNft.Owner)) {
+          this.nftokenOwnerMap.get(existingNft.Owner).delete(existingNft.NFTokenID);
+        }
+
+        existingNft.Owner = newOwner;
+
+        if(!this.nftokenOwnerMap.has(existingNft.Owner))
+          this.nftokenOwnerMap.set(existingNft.Owner, new Map());
+
+        this.nftokenOwnerMap.get(existingNft.Owner).set(existingNft.NFTokenID, existingNft);
+
+        this.nftokenIdMap.set(existingNft.NFTokenID,existingNft);
+
+        this.nftokenIssuerMap.get(existingNft.Issuer).set(existingNft.NFTokenID, existingNft);
       }
-
-      existingNft.Owner = newOwner;
-
-      if(!this.nftokenOwnerMap.has(existingNft.Owner))
-        this.nftokenOwnerMap.set(existingNft.Owner, new Map());
-
-      this.nftokenOwnerMap.get(existingNft.Owner).set(existingNft.NFTokenID, existingNft);
-
-      this.nftokenIdMap.set(existingNft.NFTokenID,existingNft);
-
-      this.nftokenIssuerMap.get(existingNft.Issuer).set(existingNft.NFTokenID, existingNft);
-
     }
 
     public async addNFTOffer(newOffer:NFTokenOffer) {
