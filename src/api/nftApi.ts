@@ -58,7 +58,7 @@ export async function registerRoutes(fastify, opts, done) {
             reply.code(400).send('Please provide an issuer. Calls without issuer are not allowed');
           }
 
-          //let start = Date.now();
+          let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
           let nftIssuers = nftStore.findNftsByIssuer(request.params.issuer);
 
@@ -93,7 +93,7 @@ export async function registerRoutes(fastify, opts, done) {
             }
           }
 
-          //console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
+          console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
         } catch(err) {
