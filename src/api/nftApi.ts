@@ -95,6 +95,10 @@ export async function registerRoutes(fastify, opts, done) {
 
           console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
 
+          console.time("stringify");
+          JSON.stringify(returnValue);
+          console.timeEnd("stringify");
+
           return returnValue;
         } catch(err) {
           console.log("error resolving nfts by issuer");
