@@ -52,10 +52,20 @@ export class NftStore {
     }
 
     public findNftsByIssuer(issuerAddress: string): NFT[] {
-      if(this.nftokenIssuerMap.has(issuerAddress))
-        return Array.from(this.nftokenIssuerMap.get(issuerAddress).values()).sort((a,b) => a.Taxon - b.Taxon || a.Sequence - b.Sequence);
-      else
+      if(this.nftokenIssuerMap.has(issuerAddress)) {
+        console.time("findNftsByIssuer");
+        const nfts = Array.from(this.nftokenIssuerMap.get(issuerAddress).values());
+        console.timeEnd("findNftsByIssuer");
+
+        console.time("findNftsByIssuer_sort");
+        const sorted = nfts.sort((a,b) => a.Taxon - b.Taxon || a.Sequence - b.Sequence);
+        console.timeEnd("findNftsByIssuer_sort");
+        return sorted;
+
+        //return Array.from(this.nftokenIssuerMap.get(issuerAddress).values()).sort((a,b) => a.Taxon - b.Taxon || a.Sequence - b.Sequence);
+      } else {
         return [];
+      }
     }
 
     public findNFTsByOwner(ownerAccount: string): NFT[] {
