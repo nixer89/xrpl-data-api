@@ -67,8 +67,8 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
-            if(nftIssuers.length > 500_000 && (!limit || limit > 500_000)) {
-              limit = 500_000;
+            if(nftIssuers.length > 100_000 && (!limit || limit > 100_000)) {
+              limit = 100_000;
             }
 
             if(limit) {
@@ -81,7 +81,7 @@ export async function registerRoutes(fastify, opts, done) {
 
               reply.header('x-total-count', origLength);
               reply.header('x-last-index-returned', skip+limit);
-              reply.header('x-max-limit', 500_000);
+              reply.header('x-max-limit', 100_000);
             }
 
           } catch(err) {
