@@ -71,11 +71,6 @@ const start = async () => {
   if(!fs.existsSync(DATA_PATH))
     fs.mkdirSync(DATA_PATH);
 
-  if(fs.existsSync(DATA_PATH+"processing")) {
-    console.log("server startup paused for 15 seconds to wait for backend to finish writing files to filesystem")
-    await new Promise(async resolve => setTimeout(resolve, 20000));
-  }
-
   issuerAccount = IssuerAccounts.Instance;
   ledgerData = LedgerData.Instance;
   tokenCreation = TokenCreation.Instance;

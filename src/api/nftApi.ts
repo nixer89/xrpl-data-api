@@ -67,6 +67,10 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
+            if(!limit && (nftIssuers.length > 100_000_000 || limit > 100_000_000)) {
+              limit = 100_000_000;
+            }
+
             if(limit) {
 
               if(!skip)
@@ -96,7 +100,24 @@ export async function registerRoutes(fastify, opts, done) {
           console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           console.time("stringify");
-          JSON.stringify(returnValue);
+          let out = "[" + nftIssuers.map(el => JSON.stringify(el)).join(",") + "]";
+
+          let returnValue2:NftApiReturnObject = {
+            info: {
+              ledger_index: nftStore.getCurrentLedgerIndex(),
+              ledger_hash: nftStore.getCurrentLedgerHash(),
+              ledger_close: nftStore.getCurrentLedgerCloseTime(),
+              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
+            },
+            data: {
+              issuer: request.params.issuer,
+              nfts: "PLACE_HOLDER"
+            }
+          }
+
+          let stringified = JSON.stringify(returnValue2);
+          stringified = stringified.replace("\"PLACE_HOLDER\"", out);
+
           console.timeEnd("stringify");
 
           return returnValue;
