@@ -67,16 +67,21 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
-            if(!limit && (nftIssuers.length > 1_000_000 || limit > 1_000_000)) {
-              limit = 1_000_000;
+            if(nftIssuers.length > 500_000 && (!limit || limit > 500_000)) {
+              limit = 500_000;
             }
 
             if(limit) {
+              let origLength = nftIssuers.length;
 
               if(!skip)
                 skip = 0;
   
-                nftIssuers = nftIssuers.slice(skip, skip+limit);
+              nftIssuers = nftIssuers.slice(skip, skip+limit);
+
+              reply.header('x-total-count', origLength);
+              reply.header('x-last-index-returned', skip+limit);
+              reply.header('x-max-limit', 500_000);
             }
 
           } catch(err) {
@@ -99,7 +104,8 @@ export async function registerRoutes(fastify, opts, done) {
 
           console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
 
-          return returnValue;
+          reply.code(200).send(returnValue);
+
         } catch(err) {
           console.log("error resolving nfts by issuer");
           console.log(err);
