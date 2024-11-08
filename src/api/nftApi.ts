@@ -67,8 +67,8 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
-            if(!limit && (nftIssuers.length > 100_000_000 || limit > 100_000_000)) {
-              limit = 100_000_000;
+            if(!limit && (nftIssuers.length > 1_000_000 || limit > 1_000_000)) {
+              limit = 1_000_000;
             }
 
             if(limit) {
