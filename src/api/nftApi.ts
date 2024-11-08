@@ -102,8 +102,6 @@ export async function registerRoutes(fastify, opts, done) {
             }
           }
 
-          console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
-
           return returnValue
 
         } catch(err) {
@@ -128,12 +126,21 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
+            if(nftIssuers.length > 100_000 && (!limit || limit > 100_000)) {
+              limit = 100_000;
+            }
+
             if(limit) {
+              let origLength = nftIssuers.length;
 
               if(!skip)
                 skip = 0;
   
-                nftIssuers = nftIssuers.slice(skip, skip+limit);
+              nftIssuers = nftIssuers.slice(skip, skip+limit);
+
+              reply.header('x-total-count', origLength);
+              reply.header('x-last-index-returned', skip+limit);
+              reply.header('x-max-limit', 100_000);
             }
 
           } catch(err) {
@@ -264,12 +271,21 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
+            if(nftsOwner.length > 100_000 && (!limit || limit > 100_000)) {
+              limit = 100_000;
+            }
+
             if(limit) {
+              let origLength = nftsOwner.length;
 
               if(!skip)
                 skip = 0;
   
-                nftsOwner = nftsOwner.slice(skip, skip+limit);
+              nftsOwner = nftsOwner.slice(skip, skip+limit);
+
+              reply.header('x-total-count', origLength);
+              reply.header('x-last-index-returned', skip+limit);
+              reply.header('x-max-limit', 100_000);
             }
 
           } catch(err) {
@@ -293,6 +309,7 @@ export async function registerRoutes(fastify, opts, done) {
           //console.log("xls20_nfts_by_owner_"+request.hostname + ": " + (Date.now()-start) + " ms")
 
           return returnValue;
+          
         } catch(err) {
           console.log("error resolving nfts by owner");
           console.log(err);
