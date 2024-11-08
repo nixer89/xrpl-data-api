@@ -99,27 +99,6 @@ export async function registerRoutes(fastify, opts, done) {
 
           console.log("xls20_nfts_by_issuer"+request.hostname + ": " + (Date.now()-start) + " ms")
 
-          console.time("stringify");
-          let out = "[" + nftIssuers.map(el => JSON.stringify(el)).join(",") + "]";
-
-          let returnValue2:NftApiReturnObject = {
-            info: {
-              ledger_index: nftStore.getCurrentLedgerIndex(),
-              ledger_hash: nftStore.getCurrentLedgerHash(),
-              ledger_close: nftStore.getCurrentLedgerCloseTime(),
-              ledger_close_ms: nftStore.getCurrentLedgerCloseTimeMs()
-            },
-            data: {
-              issuer: request.params.issuer,
-              nfts: "PLACE_HOLDER"
-            }
-          }
-
-          let stringified = JSON.stringify(returnValue2);
-          stringified = stringified.replace("\"PLACE_HOLDER\"", out);
-
-          console.timeEnd("stringify");
-
           return returnValue;
         } catch(err) {
           console.log("error resolving nfts by issuer");
