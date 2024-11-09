@@ -72,12 +72,19 @@ export async function registerRoutes(fastify, opts, done) {
             }
 
             if(limit) {
+              limit = limit -1; //to make it 0 based
+
               let origLength = nftIssuers.length;
 
               if(!skip)
                 skip = 0;
   
+              console.log("start index: " + skip);
+              console.log("end index: " + (skip+limit));
+
               nftIssuers = nftIssuers.slice(skip, skip+limit);
+              
+              console.log("nftIssuers length: " + nftIssuers.length);
 
               reply.header('x-total-count', origLength);
               reply.header('x-last-index-returned', skip+limit);
