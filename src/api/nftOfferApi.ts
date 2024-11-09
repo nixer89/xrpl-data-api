@@ -100,7 +100,7 @@ export async function registerRoutes(fastify, opts, done) {
               offers = offers.slice(skip, skip+limit);
 
               reply.header('x-total-count', origLength);
-              reply.header('x-last-index-returned', skip+limit);
+              reply.header('x-total-skipped', skip+limit);
               reply.header('x-max-limit', 100_000);
             }
 
@@ -160,7 +160,7 @@ export async function registerRoutes(fastify, opts, done) {
               offers = offers.slice(skip, skip+limit);
 
               reply.header('x-total-count', origLength);
-              reply.header('x-last-index-returned', skip+limit);
+              reply.header('x-total-skipped', skip+limit);
               reply.header('x-max-limit', 100_000);
             }
 
