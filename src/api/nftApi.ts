@@ -67,6 +67,8 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
+            console.log("SKIP QUERY VALUE: " + request.query.skip);
+
             if(nftIssuers.length > 100_000 && (!limit || limit > 100_000)) {
               limit = 100_000;
             }
@@ -74,7 +76,7 @@ export async function registerRoutes(fastify, opts, done) {
             if(limit) {
               let origLength = nftIssuers.length;
 
-              if(!skip)
+              if(!skip || skip <= 0)
                 skip = 0;
   
               console.log("start index: " + skip);
