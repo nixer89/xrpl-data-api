@@ -162,19 +162,11 @@ export class IssuerAccounts {
       return this.ledger_index;
   }
 
-  public getLedgerIndexNew(): number {
-    return this.ledger_index;
-  }
-
   public setLedgerIndex(index:number): void {
     this.ledger_index = index;
   }
 
   public getLedgerHash(): string {
-    return this.ledger_hash;
-  }
-
-  public getLedgerHashNew(): string {
     return this.ledger_hash;
   }
 

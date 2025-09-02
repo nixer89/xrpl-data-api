@@ -387,7 +387,7 @@ export class LedgerSync {
 
     private analyzeTransaction(transaction:any) {
 
-      if(transaction && transaction.metaData?.TransactionResult == "tesSUCCESS" && (transaction.TransactionType == "NFTokenAcceptOffer" || transaction.TransactionType == "NFTokenCancelOffer" || transaction.TransactionType == "NFTokenCreateOffer" || transaction.TransactionType == "NFTokenBurn" || transaction.TransactionType == "NFTokenMint")) {
+      if(transaction && transaction.metaData?.TransactionResult === "tesSUCCESS" && (transaction.TransactionType === "NFTokenAcceptOffer" || transaction.TransactionType === "NFTokenCancelOffer" || transaction.TransactionType === "NFTokenCreateOffer" || transaction.TransactionType === "NFTokenBurn" || transaction.TransactionType === "NFTokenMint")) {
 
         //console.log("analyzing NFT Transaction!")
 
@@ -475,7 +475,7 @@ export class LedgerSync {
           }
         }
 
-        if(transaction.TransactionType === "NFTokenCreateOffer") { // NEW NFT
+        if(transaction.TransactionType === "NFTokenCreateOffer" || transaction.TransactionType === "NFTokenMint") { //mints can also create offers now!
           let createdOffers = this.getCreatedNFTOffers(transaction.metaData);
 
           if(createdOffers && createdOffers.length > 0) {
