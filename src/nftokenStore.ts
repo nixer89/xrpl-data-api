@@ -424,11 +424,14 @@ export class NftStore {
       //console.log("nftokenIdMap size BEFORE: " + this.nftokenIdMap.size);
       //console.log("nftokenIssuerMap size BEFORE: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
 
-      this.nftokenIdMap.delete(burnedNft.NFTokenID);
+      if(burnedNft) {
 
-      this.nftokenIssuerMap.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
+        this.nftokenIdMap.delete(burnedNft.NFTokenID);
 
-      this.nftokenOwnerMap.get(burnedNft.Owner).delete(burnedNft.NFTokenID);
+        this.nftokenIssuerMap.get(burnedNft.Issuer).delete(burnedNft.NFTokenID);
+
+        this.nftokenOwnerMap.get(burnedNft.Owner).delete(burnedNft.NFTokenID);
+      }
 
       //console.log("nftokenIdMap size AFTER: " + this.nftokenIdMap.size);
       //console.log("nftokenIssuerMap size AFTER: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
