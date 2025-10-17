@@ -53,7 +53,7 @@ export interface NFTokenOfferMapEntry {
     sell: Map<string,NFTokenOffer>
 }
 
-export interface AccountOffersrMapEntry {
+export interface AccountOffersMapEntry {
     as_destination: Map<string,NFTokenOffer>,
     as_owner: Map<string,NFTokenOffer>
 }

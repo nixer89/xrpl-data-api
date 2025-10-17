@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { DATA_PATH } from './util/config';
-import { AccountOffersrMapEntry, FloorPriceProperty, MarketPlaceStats, NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
+import { AccountOffersMapEntry, FloorPriceProperty, MarketPlaceStats, NFT, NftCollectionInfo, NFTokenOffer, NFTokenOfferMapEntry, NFTokenOfferReturnObject } from './util/types';
 import { rippleTimeToUnixTime } from 'xrpl';
 
 export class NftStore {
@@ -17,7 +17,7 @@ export class NftStore {
 
     private offerNftIdMap:Map<string, NFTokenOfferMapEntry> = new Map();
 
-    private offerAccountMap:Map<string, AccountOffersrMapEntry> = new Map();;
+    private offerAccountMap:Map<string, AccountOffersMapEntry> = new Map();;
 
     private current_ledger_index: number;
     private current_ledger_date: string;
@@ -400,6 +400,9 @@ export class NftStore {
 
     public async addNFT(newNft:NFT) {
 
+      if(newNft.Issuer === 'rQJgPT6xhpT5Jr6GhcQQSWH3qYq3dyFSqY') //exclude spam NFTs
+        return;
+
       //add null URI if URI is not available:
       if(!newNft.URI)
         newNft.URI = null;
@@ -419,6 +422,9 @@ export class NftStore {
     }
 
     public removeNft(burnedNft:NFT) {
+
+      if(burnedNft.Issuer === 'rQJgPT6xhpT5Jr6GhcQQSWH3qYq3dyFSqY') //exclude spam NFTs
+        return;
       //console.log("burning NFT: " + burnedNft);
 
       //console.log("nftokenIdMap size BEFORE: " + this.nftokenIdMap.size);
@@ -438,6 +444,10 @@ export class NftStore {
     }
 
     public changeNftOwner(existingNft:NFT, newOwner: string) {
+
+      if(existingNft.Issuer === 'rQJgPT6xhpT5Jr6GhcQQSWH3qYq3dyFSqY') //exclude spam NFTs
+        return;
+
       if(this.nftokenOwnerMap.has(existingNft.Owner)) {
         this.nftokenOwnerMap.get(existingNft.Owner).delete(existingNft.NFTokenID);
       }
