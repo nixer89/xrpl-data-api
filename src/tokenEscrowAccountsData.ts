@@ -44,6 +44,8 @@ export class TokenEscrowAccountsData {
               this.setCurrentLedgerCloseTimeMs(tokenEscrowFile['ledger_close_ms']);
               this.setCurrentLedgerHash(tokenEscrowFile['ledger_hash']);
               this.setTokenEscrowEnabledAccounts(tokenEscrowFile['token_escrow_enabled']);
+
+              console.log("Loaded " + this.getTokenEscrowEnabledAccounts().length + " token escrow enabled accounts from filesystem!");
           }
         } else {
           console.log("token escrow enabled accounts file does not exist yet.")
