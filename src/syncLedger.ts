@@ -452,11 +452,7 @@ export class LedgerSync {
 
             let burnedNft = this.nftStore.getNft(burnedTokenId);
 
-            if(!burnedNft) {
-              console.log("BURNED NFT NOT FOUND: " + burnedTokenId);
-            } else {
-              this.nftStore.removeNft(burnedNft);
-            }
+            this.nftStore.removeNft(burnedNft);
           }
 
           let deletedOffers = this.getDeletedNFTOffers(transaction.metaData);
@@ -531,7 +527,7 @@ export class LedgerSync {
       } else if(transaction && transaction.metaData?.TransactionResult === "tesSUCCESS" && transaction.TransactionType === "AccountSet") {
         const accSetTx = transaction as AccountSet;
 
-        if(accSetTx.SetFlag && accSetTx.SetFlag === AccountSetAsfFlags.asfAllowTrustLineLocking) {
+        if(accSetTx.SetFlag && accSetTx.SetFlag == AccountSetAsfFlags.asfAllowTrustLineLocking) {
           this.tokenEscrowAccounts.addTokenEscrowEnabledAccount(accSetTx.Account);
         }
       }
