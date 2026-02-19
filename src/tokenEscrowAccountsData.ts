@@ -37,7 +37,7 @@ export class TokenEscrowAccountsData {
       try {
         if(fs.existsSync(DATA_PATH+"token_escrow.js")) {
           let tokenEscrowFile:any = JSON.parse(fs.readFileSync(DATA_PATH+"token_escrow.js").toString());
-          if(tokenEscrowFile && tokenEscrowFile.escrows) {
+          if(tokenEscrowFile && tokenEscrowFile.token_escrow_enabled) {
               //console.log("ledger data loaded: " + JSON.stringify(ledgerData));
               this.setCurrentLedgerIndex(tokenEscrowFile['ledger_index']);
               this.setCurrentLedgerCloseTime(tokenEscrowFile['ledger_close']);
@@ -45,14 +45,14 @@ export class TokenEscrowAccountsData {
               this.setCurrentLedgerHash(tokenEscrowFile['ledger_hash']);
               this.setTokenEscrowEnabledAccounts(tokenEscrowFile['token_escrow_enabled']);
 
-              console.log("Loaded " + this.getTokenEscrowEnabledAccounts().length + " token escrow enabled accounts from filesystem!");
+              console.log("token_escrow_enabled_accounts: " + this.getTokenEscrowEnabledAccounts().length);
           }
         } else {
           console.log("token escrow enabled accounts file does not exist yet.")
         }
 
       } catch(err) {
-        console.log("error reading issuer data from FS");
+        console.log("error reading token escrow data from FS");
         console.log(err);
         this.setTokenEscrowEnabledAccounts([]);
       }  
