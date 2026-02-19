@@ -19,7 +19,7 @@ export class TokenEscrowAccountsData {
         return this._instance || (this._instance = new this());
     }
 
-    public getTokenEscrowEnabledAccount() {
+    public getTokenEscrowEnabledAccounts() {
       return this.tokenEscrowEnabled;
     }
 

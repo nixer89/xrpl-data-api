@@ -6,6 +6,7 @@ import { SupplyInfo } from "../supplyInfo";
 import { TokenCreation } from "../tokenCreation";
 import { SupplyInfoType } from "../util/types";
 import { WHITELIST_IP } from '../util/config';
+import { TokenEscrowAccountsData } from "../tokenEscrowAccountsData";
 
 const pm2Lib = require('pm2')
 
@@ -14,6 +15,7 @@ let ledgerData:LedgerData = LedgerData.Instance;
 let accountNames:AccountNames = AccountNames.Instance;
 let tokenCreation:TokenCreation = TokenCreation.Instance;
 let nftStore: NftStore = NftStore.Instance;
+let tokenEscrowData:TokenEscrowAccountsData = TokenEscrowAccountsData.Instance;
 let supplyInfo: SupplyInfo = SupplyInfo.Instance;
 
 export async function registerRoutes(fastify, opts, done) {
@@ -193,6 +195,30 @@ export async function registerRoutes(fastify, opts, done) {
         ledger_close: issuerAccount.getLedgerCloseTime(),
         ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
         escrows: escrows
+      }
+
+      //console.timeEnd("ledgerdata");
+
+      return returnValue;
+    } catch(err) {
+      console.log("error resolving escrows");
+      console.log(err);
+      reply.code(500).send('Error occured. Please check your request.');
+    }
+  });
+
+  fastify.get('/api/v1/token_escrow_enabled', async (request, reply) => {
+    try {
+      //console.time("ledgerdata");
+      let tokenEscrowEnabledAccounts:string[] = await tokenEscrowData.getTokenEscrowEnabledAccounts();
+      //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
+
+      let returnValue = {
+        ledger_index: tokenEscrowData.getCurrentLedgerIndex(),
+        ledger_hash: tokenEscrowData.getCurrentLedgerHash(),
+        ledger_close: tokenEscrowData.getCurrentLedgerCloseTime(),
+        ledger_close_ms: tokenEscrowData.getCurrentLedgerCloseTimeMs(),
+        token_escrow_enabled_accounts: tokenEscrowEnabledAccounts
       }
 
       //console.timeEnd("ledgerdata");
