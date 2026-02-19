@@ -43,6 +43,9 @@ export class LedgerSync {
           this.clientUrl = this.localNode;
         }
       }
+
+      this.client.apiVersion = 1;
+      this.offerCheckClient.apiVersion = 1;
     }
 
     public static get Instance(): LedgerSync
@@ -101,6 +104,8 @@ export class LedgerSync {
           this.client = new Client(this.clientUrl)
         }
 
+        this.client.apiVersion = 1;
+
         this.nftStore = NftStore.Instance;
         await this.nftStore.loadNftDataFromFS();
 
@@ -156,6 +161,7 @@ export class LedgerSync {
       try {
         //try sync from local node!
         iterationClient = new Client(clientToUse)
+        iterationClient.apiVersion = 1;
 
         await iterationClient.connect();
 
@@ -180,7 +186,17 @@ export class LedgerSync {
 
             if(ledgerResponse.result.ledger?.transactions) {
               let transactions:any[] = ledgerResponse.result.ledger.transactions;
-              transactions = transactions.sort((a,b) => a.metaData.TransactionIndex - b.metaData.TransactionIndex)
+              transactions = transactions.sort((a,b) => {
+                if(!a || !a.metaData) {
+                  console.log(JSON.stringify(a));
+                  return 1;
+                } else if(!b || !b.metaData) {
+                  console.log(JSON.stringify(b));
+                  return -1;
+                } else {
+                  return a.metaData.TransactionIndex - b.metaData.TransactionIndex
+                }
+              })
 
               for(let i = 0; i < transactions.length; i++) {
                 if(transactions[i] && i == transactions[i].metaData.TransactionIndex) {
@@ -873,6 +889,7 @@ export class LedgerSync {
       try {
           console.log("connecting local api...")
           this.offerCheckClient = new Client(this.localNode);
+          this.offerCheckClient.apiVersion = 1;
           await this.offerCheckClient.connect();
           console.log("api is connected: " + this.offerCheckClient.isConnected());
       } catch(err) {
@@ -882,6 +899,7 @@ export class LedgerSync {
           try {
             if(!this.offerCheckClient.isConnected()) {
               this.offerCheckClient = new Client(this.mainNode);
+              this.offerCheckClient.apiVersion = 1;
               await this.offerCheckClient.connect();
             }
           } catch(err) {
