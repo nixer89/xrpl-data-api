@@ -423,14 +423,15 @@ export class NftStore {
 
     public removeNft(burnedNft:NFT) {
 
-      if(burnedNft.Issuer === 'rQJgPT6xhpT5Jr6GhcQQSWH3qYq3dyFSqY') //exclude spam NFTs
-        return;
       //console.log("burning NFT: " + burnedNft);
 
       //console.log("nftokenIdMap size BEFORE: " + this.nftokenIdMap.size);
       //console.log("nftokenIssuerMap size BEFORE: " + this.nftokenIssuerMap.get(burnedNft.Issuer).size);
 
       if(burnedNft) {
+
+        if(burnedNft.Issuer === 'rQJgPT6xhpT5Jr6GhcQQSWH3qYq3dyFSqY') //exclude spam NFTs
+          return;
 
         this.nftokenIdMap.delete(burnedNft.NFTokenID);
 

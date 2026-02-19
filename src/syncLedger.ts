@@ -1,8 +1,9 @@
 import { NFT, NFTokenOffer, NFTokenOfferFundedStatus } from './util/types';
-import { AccountInfoRequest, AccountObjectsRequest, Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
+import { AccountInfoRequest, AccountObjectsRequest, AccountSet, AccountSetAsfFlags, Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
 import { RippleState } from 'xrpl/dist/npm/models/ledger';
+import { TokenEscrowAccountsData } from './tokenEscrowAccountsData';
 
 const pm2Lib = require('pm2')
 
@@ -25,6 +26,7 @@ export class LedgerSync {
     private finishedIteration:boolean = false;
 
     private nftStore:NftStore;
+    private tokenEscrowAccounts:TokenEscrowAccountsData;
     private currentKnownLedger: number = 0;
 
     private constructor() {
@@ -100,8 +102,10 @@ export class LedgerSync {
         }
 
         this.nftStore = NftStore.Instance;
-
         await this.nftStore.loadNftDataFromFS();
+
+        this.tokenEscrowAccounts = TokenEscrowAccountsData.Instance;
+        await this.tokenEscrowAccounts.loadTokenEscrowAccountsFromFS();
 
         //reinitialize client
         this.client.on('disconnected', async ()=> {
@@ -197,6 +201,11 @@ export class LedgerSync {
             this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
             this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
+            this.tokenEscrowAccounts.setCurrentLedgerIndex(ledgerResponse.result.ledger_index);
+            this.tokenEscrowAccounts.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
+            this.tokenEscrowAccounts.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
+            this.tokenEscrowAccounts.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
+
             this.currentKnownLedger = ledgerResponse.result.ledger_index;
           } else {
             this.finishedIteration = true;
@@ -281,6 +290,11 @@ export class LedgerSync {
               this.nftStore.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
               this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
               this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
+
+              this.tokenEscrowAccounts.setCurrentLedgerIndex(ledgerResponse.result.ledger_index);
+              this.tokenEscrowAccounts.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
+              this.tokenEscrowAccounts.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
+              this.tokenEscrowAccounts.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
               this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
 
@@ -421,7 +435,12 @@ export class LedgerSync {
             //console.log("burned token: " + burnedTokenId);
 
             let burnedNft = this.nftStore.getNft(burnedTokenId);
-            this.nftStore.removeNft(burnedNft);
+
+            if(!burnedNft) {
+              console.log("BURNED NFT NOT FOUND: " + burnedTokenId);
+            } else {
+              this.nftStore.removeNft(burnedNft);
+            }
           }
 
           let deletedOffers = this.getDeletedNFTOffers(transaction.metaData);
@@ -492,6 +511,12 @@ export class LedgerSync {
               this.nftStore.removeNftOffer(deletedOffers[i]);
             }
           }
+        }
+      } else if(transaction && transaction.metaData?.TransactionResult === "tesSUCCESS" && transaction.TransactionType === "AccountSet") {
+        const accSetTx = transaction as AccountSet;
+
+        if(accSetTx.SetFlag && accSetTx.SetFlag === AccountSetAsfFlags.asfAllowTrustLineLocking) {
+          this.tokenEscrowAccounts.addTokenEscrowEnabledAccount(accSetTx.Account);
         }
       }
     }
