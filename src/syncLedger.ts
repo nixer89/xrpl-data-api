@@ -1,8 +1,8 @@
 import { NFT, NFTokenOffer, NFTokenOfferFundedStatus } from './util/types';
-import { AccountInfoRequest, AccountObjectsRequest, AccountSet, AccountSetAsfFlags, Client, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
+import { AccountInfoRequest, AccountObjectsRequest, AccountSet, AccountSetAsfFlags, Client, LedgerEntryRequest, LedgerEntryResponse, LedgerRequest, LedgerResponse, parseNFTokenID, TransactionMetadata } from 'xrpl';
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
-import { RippleState } from 'xrpl/dist/npm/models/ledger';
+import { FeeSettings, RippleState } from 'xrpl/dist/npm/models/ledger';
 import { TokenEscrowAccountsData } from './tokenEscrowAccountsData';
 
 const pm2Lib = require('pm2')
@@ -28,6 +28,9 @@ export class LedgerSync {
     private nftStore:NftStore;
     private tokenEscrowAccounts:TokenEscrowAccountsData;
     private currentKnownLedger: number = 0;
+
+    private accountReserve:number = 1000000;
+    private ownerReserve:number = 200000;
 
     private constructor() {
       console.log("PM2_INSTANCE_ID: " + process.env.PM2_INSTANCE_ID);
@@ -62,6 +65,8 @@ export class LedgerSync {
         if(this.client.isConnected())
           await this.client.disconnect();
       }
+
+      this.loadFeeReserves();
 
       try {
         this.finishedIteration = false;
@@ -865,8 +870,8 @@ export class LedgerSync {
           let accountInfo = accountInfoResponse.result.account_data;
   
           balance = Number(accountInfo.Balance);
-          balance = balance - 10000000; //deduct acc reserve
-          balance = balance - (accountInfo.OwnerCount * 2000000); //deduct owner count
+          balance = balance - this.accountReserve; //deduct acc reserve
+          balance = balance - (accountInfo.OwnerCount * this.ownerReserve); //deduct owner count
           
       } else {
         balance = 0;
@@ -916,6 +921,41 @@ export class LedgerSync {
       console.log("USING CLIENT: " + clientToUse.url)
 
     return clientToUse;
+  }
+
+  async loadFeeReserves() {
+    try {
+      let fee_request:LedgerEntryRequest = {
+        command: "ledger_entry",
+        index: "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A651",
+        ledger_index: "validated"
+      }
+
+      if(!this.client.isConnected()) {
+        await this.client.connect();
+      }
+
+      let ledgerResponse:LedgerEntryResponse = await this.client.request(fee_request);
+
+      if(ledgerResponse?.result?.node?.LedgerEntryType == 'FeeSettings') {
+
+        const feeSetting:FeeSettings = ledgerResponse.result.node;
+
+        if('ReserveBase' in feeSetting) {
+          this.accountReserve = feeSetting.ReserveBase;
+          this.ownerReserve = feeSetting.ReserveIncrement;
+        } else {
+          this.accountReserve = Number(feeSetting.ReserveBaseDrops);
+          this.ownerReserve = Number(feeSetting.ReserveIncrementDrops);
+        }
+
+        console.log("resolved accountReserve: " + this.accountReserve);
+        console.log("resolved ownerReserve: " + this.ownerReserve);
+      }
+    } catch(err) {
+      console.log("ERR loading fee reserves");
+      console.log(JSON.stringify(err));
+    }
   }
   
   private getProcessId(list:any[]): number {
