@@ -66,8 +66,6 @@ export class LedgerSync {
           await this.client.disconnect();
       }
 
-      this.loadFeeReserves();
-
       try {
         this.finishedIteration = false;
 
@@ -138,6 +136,8 @@ export class LedgerSync {
         } catch(err) {
           this.reset(retryCount);
         }
+
+        await this.loadFeeReserves();
 
         const serverInfo = await this.client.request({ command: "server_info" });
         console.log({ serverInfo });
