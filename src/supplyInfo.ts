@@ -46,6 +46,7 @@ export class SupplyInfo {
       } catch(err) {
         console.log("error reading supply info from FS");
         console.log(err);
+        this.supplyInfo = undefined;
       }  
     }
 }

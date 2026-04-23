@@ -47,8 +47,10 @@ export class IssuerAccounts {
     
       issuers.forEach((data: IssuerData, key: string, map) => {
 
-        let acc:string = key.substring(0, key.indexOf("_"));
-        let currency:string = key.substring(key.indexOf("_")+1, key.length);
+        const underscoreIdx = key.indexOf("_");
+        if (underscoreIdx === -1) return;
+        let acc:string = key.substring(0, underscoreIdx);
+        let currency:string = key.substring(underscoreIdx + 1);
         let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
         let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
         let selfAssessment:any = this.selfAssessments.getSelfAssessment(key);

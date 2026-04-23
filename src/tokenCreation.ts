@@ -37,10 +37,15 @@ export class TokenCreation {
                     });
                 
                     rl.on('line', (line) => {
-
-                      let split:string[] = line.split('=');
-
-                      this.tokenCreation.set(split[0], JSON.parse(split[1]));
+                      try {
+                        const eqIdx = line.indexOf('=');
+                        if (eqIdx === -1) return;
+                        const key = line.substring(0, eqIdx);
+                        const value = JSON.parse(line.substring(eqIdx + 1));
+                        this.tokenCreation.set(key, value);
+                      } catch(lineErr) {
+                        console.error('Skipping malformed line in issuerCreation.txt:', line);
+                      }
                     });
                 
                     await once(rl, 'close');
@@ -78,7 +83,7 @@ export class TokenCreation {
             //take it from cache
             return this.tokenCreation.get(issuerKey);
         } else {
-            return { date: "Unkown"}
+            return { date: "Unknown"}
         }
     }
 

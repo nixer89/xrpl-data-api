@@ -69,7 +69,7 @@ const start = async () => {
   const data:any = fs.readFileSync('./open-api-spec/xrpl-data-api.json', 'utf8').toString();
 
   if(!fs.existsSync(DATA_PATH))
-    fs.mkdirSync(DATA_PATH);
+    fs.mkdirSync(DATA_PATH, { recursive: true });
 
   issuerAccount = IssuerAccounts.Instance;
   ledgerData = LedgerData.Instance;
@@ -87,9 +87,9 @@ const start = async () => {
       scheduler.scheduleJob("loadApiKeys2", {minute: 5, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys3", {minute: 10, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys4", {minute: 15, second: 0}, () => loadApiKeys());
-      scheduler.scheduleJob("loadApiKeys5", {minute: 50, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys5", {minute: 20, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys6", {minute: 25, second: 0}, () => loadApiKeys());
-      scheduler.scheduleJob("loadApiKeys7", {minute: 60, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys7", {minute: 30, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys8", {minute: 35, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys9", {minute: 40, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys10", {minute: 45, second: 0}, () => loadApiKeys());

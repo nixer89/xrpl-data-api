@@ -186,7 +186,7 @@ export async function registerRoutes(fastify, opts, done) {
   fastify.get('/api/v1/escrows', async (request, reply) => {
     try {
       //console.time("ledgerdata");
-      let escrows:any[] = await ledgerData.getEscrows();
+      let escrows:any[] = ledgerData.getEscrows();
       //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
 
       let returnValue = {
@@ -284,7 +284,7 @@ export async function registerRoutes(fastify, opts, done) {
 
       console.log("supply info call IP: " + callIP);
 
-      if(WHITELIST_IP.split(',').includes(callIP)) {
+      if(WHITELIST_IP && WHITELIST_IP.split(',').includes(callIP)) {
 
         let supplyInfoResponse:SupplyInfoType = supplyInfo.getSupplyInfo();
 

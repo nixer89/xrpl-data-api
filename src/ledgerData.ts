@@ -45,9 +45,11 @@ export class LedgerData {
         }
       }
 
-      for (let data in dataToUse) {
-        if (dataToUse.hasOwnProperty(data)) {
-            dataToUse[data].percentage = Math.round(dataToUse[data].size * 100 / totalBytes*1000000)/1000000
+      if (totalBytes > 0) {
+        for (let data in dataToUse) {
+          if (dataToUse.hasOwnProperty(data)) {
+              dataToUse[data].percentage = Math.round(dataToUse[data].size * 100 / totalBytes*1000000)/1000000
+          }
         }
       }
 

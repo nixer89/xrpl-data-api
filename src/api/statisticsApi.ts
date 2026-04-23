@@ -8,7 +8,7 @@ export async function registerRoutes(fastify, opts, done) {
     fastify.get('/api/v1/xls20-nfts/stats/issuer/:issuer', async (request, reply) => {
         try {
           if(!request.params.issuer) {
-            reply.code(400).send('Please provide an issuer. Calls without issuer are not allowed');
+            return reply.code(400).send('Please provide an issuer. Calls without issuer are not allowed');
           }
 
           //let start = Date.now();
@@ -40,13 +40,13 @@ export async function registerRoutes(fastify, opts, done) {
 
     fastify.get('/api/v1/xls20-nfts/stats/issuer/:issuer/taxon/:taxon', async (request, reply) => {
       try {
-        if(!request.params.issuer || !request.params.taxon) {
-          reply.code(400).send('Please provide an issuer and taxon. Calls without issuer and taxon are not allowed');
+        if(!request.params.issuer || request.params.taxon == null) {
+          return reply.code(400).send('Please provide an issuer and taxon. Calls without issuer and taxon are not allowed');
         }
 
         //let start = Date.now();
         //console.log("request params: " + JSON.stringify(request.params));
-        let collectionInfo = nftStore.getCollectionInfo(request.params.issuer, request.params.taxon);
+        let collectionInfo = nftStore.getCollectionInfo(request.params.issuer, Number(request.params.taxon));
 
         let returnValue:NftApiReturnObject = {
           info: {
