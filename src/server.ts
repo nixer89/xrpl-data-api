@@ -185,6 +185,14 @@ const start = async () => {
               console.log(logKey + " already called: " + calls + " times.");
           }
 
+          if(key.endsWith("opulencex")) {
+            console.log("opulencex key: " + key);
+            console.log("callerIp: " + callerIp);
+            console.log("logKey: " + logKey);
+            console.log("calls: " + calls);
+            console.log("tier3LimitKeys: " + JSON.stringify(tier3LimitKeys));
+          }
+
           //TIER 1 LIMIT
           for(let i = 0; i < tier1LimitIps.length; i++) {
             if(tier1LimitIps[i] != null && tier1LimitIps[i].length > 0 && key.startsWith(tier1LimitIps[i])) {
@@ -218,6 +226,8 @@ const start = async () => {
           }
 
           if(tier3LimitKeys != null && tier3LimitKeys.includes(key)) {
+            console.log("tier3LimitKeys: " + JSON.stringify(tier3LimitKeys));
+            console.log("key: " + key);
             limit = 1200;
           }
 
