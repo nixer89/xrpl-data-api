@@ -185,13 +185,6 @@ const start = async () => {
               console.log(logKey + " already called: " + calls + " times.");
           }
 
-          if(key.endsWith("opulencex") && !key.endsWith("b6ddc-opulencex")) {
-            console.log("opulencex key: " + key);
-            console.log("callerIp: " + callerIp);
-            console.log("logKey: " + logKey);
-            console.log("calls: " + calls);
-          }
-
           //TIER 1 LIMIT
           for(let i = 0; i < tier1LimitIps.length; i++) {
             if(tier1LimitIps[i] != null && tier1LimitIps[i].length > 0 && key.startsWith(tier1LimitIps[i])) {
