@@ -4,9 +4,10 @@ import { LedgerData } from "../ledgerData";
 import { NftStore } from "../nftokenStore";
 import { SupplyInfo } from "../supplyInfo";
 import { TokenCreation } from "../tokenCreation";
-import { SupplyInfoType } from "../util/types";
+import { AMMPool, SupplyInfoType } from "../util/types";
 import { WHITELIST_IP } from '../util/config';
-import { TokenEscrowAccountsData } from "../tokenEscrowAccountsData";
+import { AmmAccountData } from "../ammAccountData";
+import { TokenEscrowAccountsData } from "../tokenEscrowAccountsData copy";
 
 const pm2Lib = require('pm2')
 
@@ -16,6 +17,7 @@ let accountNames:AccountNames = AccountNames.Instance;
 let tokenCreation:TokenCreation = TokenCreation.Instance;
 let nftStore: NftStore = NftStore.Instance;
 let tokenEscrowData:TokenEscrowAccountsData = TokenEscrowAccountsData.Instance;
+let ammAccountData:AmmAccountData = AmmAccountData.Instance;
 let supplyInfo: SupplyInfo = SupplyInfo.Instance;
 
 export async function registerRoutes(fastify, opts, done) {
@@ -186,7 +188,7 @@ export async function registerRoutes(fastify, opts, done) {
   fastify.get('/api/v1/escrows', async (request, reply) => {
     try {
       //console.time("ledgerdata");
-      let escrows:any[] = await ledgerData.getEscrows();
+      let escrows:any[] = ledgerData.getEscrows();
       //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
 
       let returnValue = {
@@ -219,6 +221,30 @@ export async function registerRoutes(fastify, opts, done) {
         ledger_close: tokenEscrowData.getCurrentLedgerCloseTime(),
         ledger_close_ms: tokenEscrowData.getCurrentLedgerCloseTimeMs(),
         token_escrow_enabled_accounts: tokenEscrowEnabledAccounts
+      }
+
+      //console.timeEnd("ledgerdata");
+
+      return returnValue;
+    } catch(err) {
+      console.log("error resolving escrows");
+      console.log(err);
+      reply.code(500).send('Error occured. Please check your request.');
+    }
+  });
+
+  fastify.get('/api/v1/amm_pools', async (request, reply) => {
+    try {
+      //console.time("ledgerdata");
+      let ammPools:AMMPool[] = await ammAccountData.getAmmAccounts();
+      //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
+
+      let returnValue = {
+        ledger_index: ammAccountData.getCurrentLedgerIndex(),
+        ledger_hash: ammAccountData.getCurrentLedgerHash(),
+        ledger_close: ammAccountData.getCurrentLedgerCloseTime(),
+        ledger_close_ms: ammAccountData.getCurrentLedgerCloseTimeMs(),
+        amm_pools: ammPools
       }
 
       //console.timeEnd("ledgerdata");
@@ -284,7 +310,7 @@ export async function registerRoutes(fastify, opts, done) {
 
       console.log("supply info call IP: " + callIP);
 
-      if(WHITELIST_IP.split(',').includes(callIP)) {
+      if(WHITELIST_IP && WHITELIST_IP.split(',').includes(callIP)) {
 
         let supplyInfoResponse:SupplyInfoType = supplyInfo.getSupplyInfo();
 

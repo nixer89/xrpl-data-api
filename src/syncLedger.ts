@@ -3,7 +3,8 @@ import { AccountInfoRequest, AccountObjectsRequest, AccountSet, AccountSetAsfFla
 import * as rippleAddressCodec from 'ripple-address-codec';
 import { NftStore } from './nftokenStore';
 import { FeeSettings, RippleState } from 'xrpl/dist/npm/models/ledger';
-import { TokenEscrowAccountsData } from './tokenEscrowAccountsData';
+import { AmmAccountData } from './ammAccountData';
+import { TokenEscrowAccountsData } from './tokenEscrowAccountsData copy';
 
 const pm2Lib = require('pm2')
 
@@ -27,6 +28,7 @@ export class LedgerSync {
 
     private nftStore:NftStore;
     private tokenEscrowAccounts:TokenEscrowAccountsData;
+    private ammAccountData:AmmAccountData;
     private currentKnownLedger: number = 0;
 
     private accountReserve:number = 1000000;
@@ -69,7 +71,7 @@ export class LedgerSync {
       try {
         this.finishedIteration = false;
 
-        if(retryCount > 5) {
+        if(retryCount > 5 && retryCount <= 10) {
           console.log("COULD NOT CONNECT TO NODE! SWITCHING!")
           if(this.mainConnections > 0 && this.pm2Instance >= this.mainConnections) {
             this.client = new Client(this.mainNode)
@@ -114,6 +116,9 @@ export class LedgerSync {
 
         this.tokenEscrowAccounts = TokenEscrowAccountsData.Instance;
         await this.tokenEscrowAccounts.loadTokenEscrowAccountsFromFS();
+
+        this.ammAccountData = AmmAccountData.Instance;
+        await this.ammAccountData.loadAmmAccountsFromFS();
 
         //reinitialize client
         this.client.on('disconnected', async ()=> {
@@ -239,7 +244,7 @@ export class LedgerSync {
       } catch(err) {
         console.log("err 1")
         console.log(err);
-        if(err.data.error === 'lgrNotFound') {
+        if(err?.data?.error === 'lgrNotFound') {
           //restart by iterating with xrplcluster.com!
           await this.iterateThroughMissingLedgers(this.mainNode);
         } else {
@@ -663,7 +668,7 @@ export class LedgerSync {
           }
           
           if(affectedNode.ModifiedNode && node.FinalFields) {
-            if(node.PreviousFields.NFTokens && node.FinalFields.NFTokens) {
+            if(node.PreviousFields && node.PreviousFields.NFTokens && node.FinalFields.NFTokens) {
               for (let nftokenIndex = 0, l_len = node.FinalFields.NFTokens.length; nftokenIndex < l_len; ++nftokenIndex) {
                 if(node.FinalFields.NFTokens[nftokenIndex].NFToken) {
                   finalTokens[node.FinalFields.NFTokens[nftokenIndex].NFToken.NFTokenID] = node.FinalFields.NFTokens[nftokenIndex].NFToken;
@@ -715,13 +720,13 @@ export class LedgerSync {
 
         checkedOffers = await Promise.all(offerPromises);
       } catch(err) {
-        throw "err";
+        throw err;
       }
 
       return checkedOffers;
     }
 
-    async isOfferFunded(client: Client, offerid: string, retry?: boolean): Promise<NFTokenOfferFundedStatus> {
+    async isOfferFunded(client: Client | null, offerid: string, retry?: boolean): Promise<NFTokenOfferFundedStatus> {
       let isFunded = false;
       let offerExists = false;
       try {
@@ -757,7 +762,7 @@ export class LedgerSync {
           }
         }
       } catch(err) {
-        throw "err";
+        throw err;
       }
 
       return {
@@ -877,7 +882,7 @@ export class LedgerSync {
         balance = 0;
       }
     } catch(err) {
-      throw "err";
+      throw err;
     }
 
     return balance;
@@ -905,7 +910,7 @@ export class LedgerSync {
             }
           } catch(err) {
             console.log("giving up, could not connect to node.")
-            throw "err";
+            throw err;
           }
       }
     }

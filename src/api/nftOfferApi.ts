@@ -8,7 +8,7 @@ export async function registerRoutes(fastify, opts, done) {
     fastify.get('/api/v1/xls20-nfts/offers/nft/:nftokenid', async (request, reply) => {
         try {
           if(!request.params.nftokenid) {
-            reply.code(400).send('Please provide a nftokenid. Calls without nftokenid are not allowed');
+            return reply.code(400).send('Please provide a nftokenid. Calls without nftokenid are not allowed');
           }
 
           //let start = Date.now();
@@ -42,7 +42,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/offer/id/:offerid', async (request, reply) => {
         try {
           if(!request.params.offerid) {
-            reply.code(400).send('Please provide an offerid. Calls without offerid are not allowed');
+            return reply.code(400).send('Please provide an offerid. Calls without offerid are not allowed');
           }
 
           //let start = Date.now();
@@ -75,7 +75,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/offers/issuer/:issuer', async (request, reply) => {
         try {
           if(!request.params.issuer) {
-            reply.code(400).send('Please provide an issuer. Calls without issuer are not allowed');
+            return reply.code(400).send('Please provide an issuer. Calls without issuer are not allowed');
           }
 
           //let start = Date.now();
@@ -134,13 +134,13 @@ export async function registerRoutes(fastify, opts, done) {
 
       fastify.get('/api/v1/xls20-nfts/offers/issuer/:issuer/taxon/:taxon', async (request, reply) => {
         try {
-          if(!request.params.issuer || !request.params.taxon) {
-            reply.code(400).send('Please provide an issuer and taxon. Calls without issuer and taxon are not allowed');
+          if(!request.params.issuer || request.params.taxon == null) {
+            return reply.code(400).send('Please provide an issuer and taxon. Calls without issuer and taxon are not allowed');
           }
 
           //let start = Date.now();
           //console.log("request params: " + JSON.stringify(request.params));
-          let offers = nftStore.findOffersByIssuerAndTaxon(request.params.issuer, request.params.taxon);
+          let offers = nftStore.findOffersByIssuerAndTaxon(request.params.issuer, Number(request.params.taxon));
 
           //check limit and skip
           try {
@@ -204,7 +204,7 @@ export async function registerRoutes(fastify, opts, done) {
 
           console.log("OLD OFFERS BY NFT OWNER METHOD FROM: " + ip);
           if(!request.params.owner) {
-            reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
+            return reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
           }
 
           // let start = Date.now();
@@ -256,7 +256,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/offers/nftowner/:nftowner', async (request, reply) => {
         try {
           if(!request.params.nftowner) {
-            reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
+            return reply.code(400).send('Please provide an NFT owner address. Calls without the NFT Owner Address are not allowed');
           }
 
           // let start = Date.now();
@@ -307,7 +307,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/offers/offerowner/:offerowner', async (request, reply) => {
         try {
           if(!request.params.offerowner) {
-            reply.code(400).send('Please provide an offer owner account. Calls without offer owner account are not allowed');
+            return reply.code(400).send('Please provide an offer owner account. Calls without offer owner account are not allowed');
           }
 
           //let start = Date.now();
@@ -358,7 +358,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/offers/offerdestination/:offerdestination', async (request, reply) => {
         try {
           if(!request.params.offerdestination) {
-            reply.code(400).send('Please provide an offerdestination. Calls without destination are not allowed');
+            return reply.code(400).send('Please provide an offerdestination. Calls without destination are not allowed');
           }
 
           //onsole.log("request params: " + JSON.stringify(request.params));
@@ -408,7 +408,7 @@ export async function registerRoutes(fastify, opts, done) {
       fastify.get('/api/v1/xls20-nfts/offers/all/account/:xrplaccount', async (request, reply) => {
         try {
           if(!request.params.xrplaccount) {
-            reply.code(400).send('Please provide an xrplaccount. Calls without destination are not allowed');
+            return reply.code(400).send('Please provide an xrplaccount. Calls without destination are not allowed');
           }
 
           //console.log("request params: " + JSON.stringify(request.params));

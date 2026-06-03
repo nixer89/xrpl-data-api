@@ -2,7 +2,6 @@ import { IssuerAccounts } from './issuerAccounts';
 import { LedgerData } from './ledgerData';
 import { TokenCreation } from './tokenCreation';
 import { AccountNames } from "./accountNames";
-import { SelfAssessments } from "./selfAssessments";
 import { LedgerSync } from "./syncLedger";
 import * as fs from 'fs';
 import { Redis } from 'ioredis';
@@ -32,7 +31,6 @@ let issuerAccount:IssuerAccounts;
 let ledgerData:LedgerData;
 let tokenCreation:TokenCreation;
 let accountNames:AccountNames;
-let selfAssessments:SelfAssessments;
 let ledgerSync: LedgerSync;
 let supplyInfo: SupplyInfo;
 
@@ -69,13 +67,12 @@ const start = async () => {
   const data:any = fs.readFileSync('./open-api-spec/xrpl-data-api.json', 'utf8').toString();
 
   if(!fs.existsSync(DATA_PATH))
-    fs.mkdirSync(DATA_PATH);
+    fs.mkdirSync(DATA_PATH, { recursive: true });
 
   issuerAccount = IssuerAccounts.Instance;
   ledgerData = LedgerData.Instance;
   tokenCreation = TokenCreation.Instance;
   accountNames = AccountNames.Instance;
-  selfAssessments = SelfAssessments.Instance;
   ledgerSync = LedgerSync.Instance;
   supplyInfo = SupplyInfo.Instance;
 
@@ -87,9 +84,9 @@ const start = async () => {
       scheduler.scheduleJob("loadApiKeys2", {minute: 5, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys3", {minute: 10, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys4", {minute: 15, second: 0}, () => loadApiKeys());
-      scheduler.scheduleJob("loadApiKeys5", {minute: 50, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys5", {minute: 20, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys6", {minute: 25, second: 0}, () => loadApiKeys());
-      scheduler.scheduleJob("loadApiKeys7", {minute: 60, second: 0}, () => loadApiKeys());
+      scheduler.scheduleJob("loadApiKeys7", {minute: 30, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys8", {minute: 35, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys9", {minute: 40, second: 0}, () => loadApiKeys());
       scheduler.scheduleJob("loadApiKeys10", {minute: 45, second: 0}, () => loadApiKeys());
@@ -101,7 +98,6 @@ const start = async () => {
       await issuerAccount.init();
       await ledgerData.init();
       await supplyInfo.init();
-      await selfAssessments.init();
 
       //sync back to current ledger
       await ledgerSync.start(0);
@@ -366,7 +362,7 @@ const start = async () => {
     })
 
     try {
-      await fastify.listen({ port: 4002, host: '0.0.0.0' });
+      await fastify.listen({ port: 4002, host: '127.0.0.1' });
 
       console.log("http://0.0.0.0:4002/");
 

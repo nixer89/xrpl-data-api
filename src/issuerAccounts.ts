@@ -3,7 +3,6 @@ import { AccountNames } from './accountNames';
 import { IssuerData, IssuerVerification } from "./util/types"
 import { TokenCreation } from './tokenCreation';
 import * as scheduler from 'node-schedule';
-import { SelfAssessments } from './selfAssessments';
 import { DATA_PATH } from './util/config';
 
 require("log-timestamp");
@@ -14,7 +13,6 @@ export class IssuerAccounts {
     
     private accountInfo:AccountNames;
     private tokenCreation:TokenCreation;
-    private selfAssessments:SelfAssessments;
 
     private tokenIssuers: Map<string, IssuerData> = new Map();
     private nftIssuers: Map<string, IssuerData> = new Map();
@@ -35,7 +33,6 @@ export class IssuerAccounts {
     public async init(): Promise<void> {
         this.accountInfo = AccountNames.Instance;
         this.tokenCreation = TokenCreation.Instance;
-        this.selfAssessments = SelfAssessments.Instance;
 
         await this.loadIssuerDataFromFS();
 
@@ -47,11 +44,12 @@ export class IssuerAccounts {
     
       issuers.forEach((data: IssuerData, key: string, map) => {
 
-        let acc:string = key.substring(0, key.indexOf("_"));
-        let currency:string = key.substring(key.indexOf("_")+1, key.length);
+        const underscoreIdx = key.indexOf("_");
+        if (underscoreIdx === -1) return;
+        let acc:string = key.substring(0, underscoreIdx);
+        let currency:string = key.substring(underscoreIdx + 1);
         let issuerData:IssuerVerification = this.accountInfo.getAccountData(acc);
         let creationDate:string = this.tokenCreation.getTokenCreationDateFromCacheOnly(key);
-        let selfAssessment:any = this.selfAssessments.getSelfAssessment(key);
 
         if(acc === 'rhrFfvzZAytd8UHPH87UHMgHQ18nnLbpgN' || acc == 'rG9Fo4mgx5DEZp7zKUEchs3R3jSMbx3NhR') //remove gatehub issuer for SGB on their request and LCC fake issuer
           return;
@@ -74,10 +72,10 @@ export class IssuerAccounts {
         } else if(!transformedIssuers[acc]) {
           transformedIssuers[acc] = {
             data: issuerData,
-            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate, self_assessment: selfAssessment}]
+            tokens: [{currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate, self_assessment: null}]
           }
         } else {
-          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate, self_assessment: selfAssessment});
+          transformedIssuers[acc].tokens.push({currency: currency, amount: data.amount, trustlines: data.trustlines, holders: data.holders, offers: data.offers, created: creationDate, self_assessment: null});
         }
       });
     

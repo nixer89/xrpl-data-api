@@ -204,7 +204,7 @@ export class AccountNames {
             return this.kycMap.get(xrplAccount)
         //now check distributor account KYC status
         else if(this.kycDistributorMap && this.kycDistributorMap.has(xrplAccount) && this.kycDistributorMap.get(xrplAccount) != null)
-            return this.kycMap.get(this.kycDistributorMap.get(xrplAccount))
+            return this.kycMap.get(this.kycDistributorMap.get(xrplAccount)) ?? false
         
         //nothing found, no KYC!
         else
