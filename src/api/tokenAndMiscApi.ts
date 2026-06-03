@@ -20,7 +20,7 @@ let tokenEscrowData:TokenEscrowAccountsData = TokenEscrowAccountsData.Instance;
 let ammAccountData:AmmAccountData = AmmAccountData.Instance;
 let supplyInfo: SupplyInfo = SupplyInfo.Instance;
 
-export async function registerRoutes(fastify, opts, done) {
+export function registerRoutes(fastify, opts, done) {
 
   console.log("declaring 200er reponse")
     fastify.get('/api', { config: {

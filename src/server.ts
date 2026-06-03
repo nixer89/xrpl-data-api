@@ -5,6 +5,7 @@ import { AccountNames } from "./accountNames";
 import { LedgerSync } from "./syncLedger";
 import * as fs from 'fs';
 import { Redis } from 'ioredis';
+import Fastify from 'fastify';
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import Helmet from '@fastify/helmet';
@@ -56,7 +57,8 @@ let blockedMap:Map<string,number> = new Map();
 
 let showHeaders = 0;
 
-const fastify = require('fastify')({ trustProxy: true })
+
+const fastify = Fastify({});
 
 console.log("adding response compression");
 fastify.register(require('@fastify/compress'), { encodings: ['gzip', 'deflate', 'br', '*', 'identity'] });
@@ -273,13 +275,14 @@ const start = async () => {
                 || req.headers['x-forwarded-for'] // use this only if you trust the header
                 || req.ip // fallback to default
 
+          key = key?.toString() ?? '';
 
           let blocks = 1;
 
           let logKey = key;
 
           if(logKey && logKey.length > 24) {
-            logKey = logKey.substring(24);
+            logKey = logKey.toString().substring(24);
           }
 
           if(blockedMap.has(key)) {
@@ -303,8 +306,8 @@ const start = async () => {
           }
 
           if(!isBlocked) {
-            console.log("RATE LIMIT | " + logKey + " | " + req.headers['cf-connecting-ip'] + " | " + req.routerPath + " | " + JSON.stringify(req.params));
-            error.message = 'You are sending too many requests in a short period of time. Please calm down and try again later. Check https://api.xrpldata.com/docs for API limits and contact us throught the listed channels in the docs if you need elevated limits.'
+            console.log("RATE LIMIT | " + logKey + " | " + req.headers['cf-connecting-ip'] + " | " + (req.routeOptions.url ?? '') + " | " + JSON.stringify(req.params));
+            error['message'] = 'You are sending too many requests in a short period of time. Please calm down and try again later. Check https://api.xrpldata.com/docs for API limits and contact us throught the listed channels in the docs if you need elevated limits.'
           } else {
             showHeaders++;
 
@@ -312,7 +315,7 @@ const start = async () => {
               console.log(JSON.stringify(req.headers));
             }
 
-            error.message = 'Please contact us to request elevated limits: @XrplServices (on twitter)'
+            error['message'] = 'Please contact us to request elevated limits: @XrplServices (on twitter)'
           }
         }
         reply.send(error)

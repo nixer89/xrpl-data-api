@@ -16,7 +16,7 @@ let tier5KeyLimitMap:Map<string, number> = new Map();
 
 let keyMap:Map<string,number> = new Map();
 
-export async function registerRoutes(fastify, opts, done) {
+export function registerRoutes(fastify, opts, done) {
 
   loadApiKeys();
 

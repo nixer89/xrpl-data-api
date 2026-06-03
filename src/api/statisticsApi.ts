@@ -3,7 +3,7 @@ import { NftApiReturnObject } from "../util/types";
 
 let nftStore: NftStore = NftStore.Instance;
 
-export async function registerRoutes(fastify, opts, done) {
+export function registerRoutes(fastify, opts, done) {
 
     fastify.get('/api/v1/xls20-nfts/stats/issuer/:issuer', async (request, reply) => {
         try {
