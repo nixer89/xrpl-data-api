@@ -4,15 +4,17 @@
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "esModuleInterop": true,
-      "lib": ["es6", "dom"],
+      "lib": ["es2022", "dom"],
       "mapRoot": "dist",
       "module": "commonjs",
       "moduleResolution": "node",
       "outDir": "dist",
+      "rootDir": "src",
       "sourceMap": true,
-      "target": "es6",
+      "target": "es2022",
       "typeRoots": [
         "node_modules/@types"
       ]
-    }
+    },
+    "include": ["src/**/*"]
 }

@@ -1,5 +1,4 @@
 import * as config from './util/config'
-import * as fetch from 'node-fetch';
 import * as scheduler from 'node-schedule';
 import * as fs from 'fs';
 import { IssuerVerification } from './util/types';
@@ -113,7 +112,7 @@ export class AccountNames {
     public async loadBithompServiceNames() :Promise<void> {
         try {
             console.log("load service names from bithomp");
-            let bithompResponse:any = await fetch.default("https://bithomp.com/api/v2/services/addresses", {headers: { "x-bithomp-token": config.BITHOMP_TOKEN }})
+            let bithompResponse = await fetch("https://bithomp.com/api/v2/services/addresses", {headers: { "x-bithomp-token": config.BITHOMP_TOKEN ?? "" }})
             
             if(bithompResponse && bithompResponse.ok) {
                 let knownServices:any = await bithompResponse.json();
@@ -148,7 +147,7 @@ export class AccountNames {
     private async loadXRPScanNames() :Promise<void> {
         try {
             console.log("load xrpscan names");
-            let xrpscanResponse:any = await fetch.default("https://api.xrpscan.com/api/v1/names/well-known")
+            let xrpscanResponse = await fetch("https://api.xrpscan.com/api/v1/names/well-known")
             
             if(xrpscanResponse && xrpscanResponse.ok) {
                 let knownServices:any[] = await xrpscanResponse.json();
