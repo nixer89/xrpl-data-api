@@ -32,6 +32,7 @@ export class LedgerSync {
     private currentKnownLedger: number = 0;
     private readonly maxRecentLedgers = 20;
     private recentLedgers: { ledgerIndex: number, receivedAt: number, receivedAtHuman: string }[] = [];
+    private ledgerCloseChain: Promise<void> = Promise.resolve();
 
     private accountReserve:number = 1000000;
     private ownerReserve:number = 200000;
@@ -277,103 +278,105 @@ export class LedgerSync {
     private async startListeningOnLedgerClose() {
 
       let waitingForNextClose = false;
+      this.ledgerCloseChain = Promise.resolve();
 
-      this.client.on('ledgerClosed', async ledgerClose => {
+      this.client.on('ledgerClosed', ledgerClose => {
+        this.trackRecentLedger(ledgerClose);
 
-        try {
-          this.trackRecentLedger(ledgerClose);
+        this.ledgerCloseChain = this.ledgerCloseChain.then(async () => {
+          try {
+            //we have a closed ledger. Request the transactions and try to analyze them!
+            if(this.finishedIteration) {
+              //console.log("ledger closed! " + ledgerClose.ledger_index);
 
-          //we have a closed ledger. Request the transactions and try to analyze them!
-          if(this.finishedIteration) {
-            //console.log("ledger closed! " + ledgerClose.ledger_index);
+              if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
 
-            if((this.currentKnownLedger+1) == ledgerClose.ledger_index) {
+                if(waitingForNextClose) {
+                  console.log("BACK IN SYNC. GOT CORRECT LEDGER: " + ledgerClose.ledger_index);
+                  waitingForNextClose = false;
+                }
 
-              if(waitingForNextClose) {
-                console.log("BACK IN SYNC. GOT CORRECT LEDGER: " + ledgerClose.ledger_index);
-                waitingForNextClose = false;
-              }
+                let start = Date.now();
+                let ledgerRequest:LedgerRequest = {
+                  command: 'ledger',
+                  ledger_index: ledgerClose.ledger_index,
+                  transactions: true,
+                  accounts: false,
+                  binary: false,
+                  owner_funds: false,
+                  queue: false,
+                  full: false,
+                  expand: true
+                }
 
-              let start = Date.now();
-              let ledgerRequest:LedgerRequest = {
-                command: 'ledger',
-                ledger_index: ledgerClose.ledger_index,
-                transactions: true,
-                accounts: false,
-                binary: false,
-                owner_funds: false,
-                queue: false,
-                full: false,
-                expand: true
-              }
+                let ledgerResponse:LedgerResponse = await this.client.request(ledgerRequest);
 
-              let ledgerResponse:LedgerResponse = await this.client.request(ledgerRequest);
+                if(ledgerResponse?.result?.ledger?.transactions) {
+                  let transactions:any[] = ledgerResponse.result.ledger.transactions;
+                  transactions = transactions.sort((a,b) => a.metaData.TransactionIndex - b.metaData.TransactionIndex)
 
-              if(ledgerResponse?.result?.ledger?.transactions) {
-                let transactions:any[] = ledgerResponse.result.ledger.transactions;
-                transactions = transactions.sort((a,b) => a.metaData.TransactionIndex - b.metaData.TransactionIndex)
+                  //console.log("having transactions: " + transactions.length);
 
-                //console.log("having transactions: " + transactions.length);
+                  for(let i = 0; i < transactions.length; i++) {
+                    if(transactions[i] && i == transactions[i].metaData.TransactionIndex) {
 
-                for(let i = 0; i < transactions.length; i++) {
-                  if(transactions[i] && i == transactions[i].metaData.TransactionIndex) {
-
-                    this.analyzeTransaction(transactions[i]);
-                    
-                  } else if(i != transactions[i].metaData.TransactionIndex) {
-                    console.log("NOT EQUAL TRANSACTION INDEX:")
-                    console.log("i: " + i);
-                    console.log(JSON.stringify(transactions));
+                      this.analyzeTransaction(transactions[i]);
+                      
+                    } else if(i != transactions[i].metaData.TransactionIndex) {
+                      console.log("NOT EQUAL TRANSACTION INDEX:")
+                      console.log("i: " + i);
+                      console.log(JSON.stringify(transactions));
+                    }
                   }
                 }
-              }
 
-              this.nftStore.setCurrentLedgerIndex(ledgerResponse.result.ledger_index);
-              this.nftStore.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
-              this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
-              this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
+                this.nftStore.setCurrentLedgerIndex(ledgerResponse.result.ledger_index);
+                this.nftStore.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
+                this.nftStore.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
+                this.nftStore.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
-              this.tokenEscrowAccounts.setCurrentLedgerIndex(ledgerResponse.result.ledger_index);
-              this.tokenEscrowAccounts.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
-              this.tokenEscrowAccounts.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
-              this.tokenEscrowAccounts.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
+                this.tokenEscrowAccounts.setCurrentLedgerIndex(ledgerResponse.result.ledger_index);
+                this.tokenEscrowAccounts.setCurrentLedgerHash(ledgerResponse.result.ledger.ledger_hash);
+                this.tokenEscrowAccounts.setCurrentLedgerCloseTime(ledgerResponse.result.ledger.close_time_human);
+                this.tokenEscrowAccounts.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
-              this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
+                this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
 
-              let elapsed = Date.now() - start;
+                let elapsed = Date.now() - start;
 
-              if(elapsed > 2500) {
-                console.log("long runner: " + elapsed + " ms.")
-              }
+                if(elapsed > 2500) {
+                  console.log("long runner: " + elapsed + " ms.")
+                }
 
-              if(elapsed > 3500) {
-                console.log("MORE THAN 3.5 SECONDS ELAPSED TO FETCH LEDGER")
-                this.reset();
-              }
+                if(elapsed > 3500) {
+                  console.log("MORE THAN 3.5 SECONDS ELAPSED TO FETCH LEDGER")
+                  this.reset();
+                }
 
-            } else {
-              console.log("WRONG EXPECTED LEDGER NUMBER. EXPECTED: " + (this.currentKnownLedger+1) + " | GOT: " + ledgerClose.ledger_index);
-
-              console.log("recent ledgers: " + JSON.stringify(this.recentLedgers));
-
-              //sometimes my local node is a bit faster than remote nodes. so they report a closed ledger I already have process. just wait for the next one and don't reset.
-              if(this.currentKnownLedger != ledgerClose.ledger_index) {
-                //only reset if we are not 1 before the expected ledger!
-                this.reset();
               } else {
-                waitingForNextClose = true;
-                console.log("WAITING FOR THE NEXT CLOSE");
-              }
-            }
-          } else {
-            console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index);
-          }
-        } catch(err) {
-          console.log("err 2")
-          console.log(err);
+                console.log("WRONG EXPECTED LEDGER NUMBER. EXPECTED: " + (this.currentKnownLedger+1) + " | GOT: " + ledgerClose.ledger_index);
 
-          this.reset();
-        }
+                console.log("recent ledgers: " + JSON.stringify(this.recentLedgers));
+
+                //sometimes my local node is a bit faster than remote nodes. so they report a closed ledger I already have process. just wait for the next one and don't reset.
+                if(this.currentKnownLedger != ledgerClose.ledger_index) {
+                  //only reset if we are not 1 before the expected ledger!
+                  this.reset();
+                } else {
+                  waitingForNextClose = true;
+                  console.log("WAITING FOR THE NEXT CLOSE");
+                }
+              }
+            } else {
+              console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index);
+            }
+          } catch(err) {
+            console.log("err 2")
+            console.log(err);
+
+            this.reset();
+          }
+        });
       });     
     }
 
