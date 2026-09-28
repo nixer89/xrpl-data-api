@@ -31,7 +31,7 @@ export class LedgerSync {
     private ammAccountData:AmmAccountData;
     private currentKnownLedger: number = 0;
     private readonly maxRecentLedgers = 20;
-    private recentLedgers: number[] = [];
+    private recentLedgers: { ledgerIndex: number, receivedAt: number, receivedAtHuman: string }[] = [];
 
     private accountReserve:number = 1000000;
     private ownerReserve:number = 200000;
@@ -263,7 +263,11 @@ export class LedgerSync {
     }
 
     private trackRecentLedger(ledgerClose: any): void {
-      this.recentLedgers.push(ledgerClose.ledger_index);
+      this.recentLedgers.push({
+        ledgerIndex: ledgerClose.ledger_index,
+        receivedAt: Date.now(),
+        receivedAtHuman: new Date(Date.now()).toISOString()
+      });
 
       if(this.recentLedgers.length > this.maxRecentLedgers) {
         this.recentLedgers.shift();
@@ -350,7 +354,7 @@ export class LedgerSync {
             } else {
               console.log("WRONG EXPECTED LEDGER NUMBER. EXPECTED: " + (this.currentKnownLedger+1) + " | GOT: " + ledgerClose.ledger_index);
 
-              console.log("recent ledgers: " + this.recentLedgers.toString());
+              console.log("recent ledgers: " + JSON.stringify(this.recentLedgers));
 
               //sometimes my local node is a bit faster than remote nodes. so they report a closed ledger I already have process. just wait for the next one and don't reset.
               if(this.currentKnownLedger != ledgerClose.ledger_index) {
