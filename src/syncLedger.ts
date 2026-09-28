@@ -30,6 +30,8 @@ export class LedgerSync {
     private tokenEscrowAccounts:TokenEscrowAccountsData;
     private ammAccountData:AmmAccountData;
     private currentKnownLedger: number = 0;
+    private readonly maxRecentLedgers = 20;
+    private recentLedgers: number[] = [];
 
     private accountReserve:number = 1000000;
     private ownerReserve:number = 200000;
@@ -260,6 +262,14 @@ export class LedgerSync {
       }
     }
 
+    private trackRecentLedger(ledgerClose: any): void {
+      this.recentLedgers.push(ledgerClose.ledger_index);
+
+      if(this.recentLedgers.length > this.maxRecentLedgers) {
+        this.recentLedgers.shift();
+      }
+    }
+
     private async startListeningOnLedgerClose() {
 
       let waitingForNextClose = false;
@@ -267,6 +277,8 @@ export class LedgerSync {
       this.client.on('ledgerClosed', async ledgerClose => {
 
         try {
+          this.trackRecentLedger(ledgerClose);
+
           //we have a closed ledger. Request the transactions and try to analyze them!
           if(this.finishedIteration) {
             //console.log("ledger closed! " + ledgerClose.ledger_index);
@@ -337,6 +349,8 @@ export class LedgerSync {
 
             } else {
               console.log("WRONG EXPECTED LEDGER NUMBER. EXPECTED: " + (this.currentKnownLedger+1) + " | GOT: " + ledgerClose.ledger_index);
+
+              console.log("recent ledgers: " + this.recentLedgers.toString());
 
               //sometimes my local node is a bit faster than remote nodes. so they report a closed ledger I already have process. just wait for the next one and don't reset.
               if(this.currentKnownLedger != ledgerClose.ledger_index) {
