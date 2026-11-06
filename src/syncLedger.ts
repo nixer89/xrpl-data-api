@@ -30,6 +30,7 @@ export class LedgerSync {
     private tokenEscrowAccounts:TokenEscrowAccountsData;
     private ammAccountData:AmmAccountData;
     private currentKnownLedger: number = 0;
+    private latestClosedLedger: number = 0;
     private readonly maxRecentLedgers = 20;
     private recentLedgers: { ledgerIndex: number, receivedAt: number, receivedAtHuman: string }[] = [];
     private ledgerCloseChain: Promise<void> = Promise.resolve();
@@ -73,6 +74,7 @@ export class LedgerSync {
 
       try {
         this.finishedIteration = false;
+        this.latestClosedLedger = 0;
 
         if(retryCount > 5 && retryCount <= 10) {
           console.log("COULD NOT CONNECT TO NODE! SWITCHING!")
@@ -150,6 +152,12 @@ export class LedgerSync {
         const serverInfo = await this.client.request({ command: "server_info" });
         console.log({ serverInfo });
 
+        const validatedSeq = serverInfo?.result?.info?.validated_ledger?.seq;
+        if(validatedSeq) {
+          this.latestClosedLedger = validatedSeq;
+          console.log("Seeded latestClosedLedger from server_info: " + this.latestClosedLedger);
+        }
+
         console.log("start listening for ledgers ...")
         await this.client.request({command: 'subscribe', streams: ['ledger']});
 
@@ -167,7 +175,7 @@ export class LedgerSync {
 
       this.currentKnownLedger = this.nftStore.getCurrentLedgerIndex();
 
-      console.log("STARTING ITERATION AT LEDGER: " + this.currentKnownLedger + " WITH CLIENT: " + clientToUse);
+      console.log("STARTING ITERATION AT LEDGER: " + this.currentKnownLedger + " WITH CLIENT: " + clientToUse + " | latestClosedLedger: " + this.latestClosedLedger);
 
       let iterationClient:Client;
 
@@ -179,6 +187,13 @@ export class LedgerSync {
         await iterationClient.connect();
 
         while(true) {
+          // Already at/above stream tip — hand off to live ledgerClosed handler
+          if(this.hasCaughtUpToTip()) {
+            console.log("CATCH UP COMPLETE (reached tip before request). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+            this.finishedIteration = true;
+            break;
+          }
+
           let ledgerRequest:LedgerRequest = {
             command: 'ledger',
             ledger_index: this.currentKnownLedger+1,
@@ -193,6 +208,7 @@ export class LedgerSync {
             //console.log("analyzing ledger: " + ledgerResponse.result.ledger_index)
 
             if(!ledgerResponse.result.ledger.closed) { //if we are not closed yet, break and listen for ledger close!
+              console.log("CATCH UP COMPLETE (open ledger). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
               this.finishedIteration = true;
               break;
             }
@@ -236,7 +252,15 @@ export class LedgerSync {
             this.tokenEscrowAccounts.setCurrentLedgerCloseTimeMs(ledgerResponse.result.ledger.close_time);
 
             this.currentKnownLedger = ledgerResponse.result.ledger_index;
+
+            // Stop chasing the tip once we've processed up to the latest closed ledger from the stream
+            if(this.hasCaughtUpToTip()) {
+              console.log("CATCH UP COMPLETE (reached tip). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+              this.finishedIteration = true;
+              break;
+            }
           } else {
+            console.log("CATCH UP COMPLETE (empty ledger response). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
             this.finishedIteration = true;
             break;
           }
@@ -245,14 +269,32 @@ export class LedgerSync {
         console.log("FINISHED SYNCING BACK!")
 
       } catch(err) {
+        if(err?.data?.error === 'lgrNotFound') {
+          // At tip: next ledger does not exist yet — catch-up is done
+          if(this.hasCaughtUpToTip()) {
+            console.log("CATCH UP COMPLETE (lgrNotFound at tip). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+            this.finishedIteration = true;
+            console.log("FINISHED SYNCING BACK!")
+            return;
+          }
+
+          // Behind tip on local node: ledger aged out of local history — fall back once to mainNode
+          if(clientToUse === this.localNode) {
+            console.log("LEDGER NOT FOUND ON LOCAL (behind tip). Falling back to mainNode. current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+            await this.iterateThroughMissingLedgers(this.mainNode);
+            return;
+          }
+
+          // Already on mainNode and still behind — real failure
+          console.log("LEDGER NOT FOUND ON MAIN NODE WHILE BEHIND TIP. current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+          console.log(err);
+          this.reset();
+          return;
+        }
+
         console.log("err 1")
         console.log(err);
-        if(err?.data?.error === 'lgrNotFound') {
-          //restart by iterating with xrplcluster.com!
-          await this.iterateThroughMissingLedgers(this.mainNode);
-        } else {
-          this.reset();
-        }
+        this.reset();
       } finally {
         try {
           if(iterationClient && iterationClient.isConnected())
@@ -263,7 +305,15 @@ export class LedgerSync {
       }
     }
 
+    private hasCaughtUpToTip(): boolean {
+      return this.latestClosedLedger > 0 && this.currentKnownLedger >= this.latestClosedLedger;
+    }
+
     private trackRecentLedger(ledgerClose: any): void {
+      if(ledgerClose?.ledger_index > this.latestClosedLedger) {
+        this.latestClosedLedger = ledgerClose.ledger_index;
+      }
+
       this.recentLedgers.push({
         ledgerIndex: ledgerClose.ledger_index,
         receivedAt: Date.now(),
@@ -368,7 +418,7 @@ export class LedgerSync {
                 }
               }
             } else {
-              console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index);
+              console.log("Ledger closed but waiting for catch up! current ledger: " + this.currentKnownLedger + " | last closed ledger: " + ledgerClose.ledger_index + " | latestClosedLedger: " + this.latestClosedLedger);
             }
           } catch(err) {
             console.log("err 2")
