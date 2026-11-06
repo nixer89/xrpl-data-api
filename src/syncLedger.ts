@@ -166,7 +166,7 @@ export class LedgerSync {
         // Already at/above stream tip — hand off to live ledgerClosed handler
         if(this.hasCaughtUpToTip()) {
           console.log("CATCH UP COMPLETE (reached tip before request). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
-          this.finishedIteration = true;
+          this.markCatchUpComplete();
           break;
         }
 
@@ -185,7 +185,7 @@ export class LedgerSync {
 
           if(!ledgerResponse.result.ledger.closed) { //if we are not closed yet, break and listen for ledger close!
             console.log("CATCH UP COMPLETE (open ledger). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
-            this.finishedIteration = true;
+            this.markCatchUpComplete();
             break;
           }
 
@@ -225,29 +225,29 @@ export class LedgerSync {
           this.currentKnownLedger = ledgerResponse.result.ledger_index;
 
           // Stop chasing the tip once we've processed up to the latest closed ledger from the stream
-          if(this.hasCaughtUpToTip()) {
-            console.log("CATCH UP COMPLETE (reached tip). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
-            this.finishedIteration = true;
+            if(this.hasCaughtUpToTip()) {
+              console.log("CATCH UP COMPLETE (reached tip). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+              this.markCatchUpComplete();
+              break;
+            }
+          } else {
+            console.log("CATCH UP COMPLETE (empty ledger response). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+            this.markCatchUpComplete();
             break;
           }
-        } else {
-          console.log("CATCH UP COMPLETE (empty ledger response). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
-          this.finishedIteration = true;
-          break;
         }
-      }
 
-      console.log("FINISHED SYNCING BACK!")
+        console.log("FINISHED SYNCING BACK!")
 
     } catch(err) {
       if(err?.data?.error === 'lgrNotFound') {
         // At tip: next ledger does not exist yet — catch-up is done
-        if(this.hasCaughtUpToTip()) {
-          console.log("CATCH UP COMPLETE (lgrNotFound at tip). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
-          this.finishedIteration = true;
-          console.log("FINISHED SYNCING BACK!")
-          return;
-        }
+          if(this.hasCaughtUpToTip()) {
+            console.log("CATCH UP COMPLETE (lgrNotFound at tip). current: " + this.currentKnownLedger + " | latestClosed: " + this.latestClosedLedger);
+            this.markCatchUpComplete();
+            console.log("FINISHED SYNCING BACK!")
+            return;
+          }
 
         // Behind tip on local node: ledger aged out of local history — fall back once to mainNode
         if(clientToUse === this.localNode) {
@@ -278,6 +278,13 @@ export class LedgerSync {
 
   private hasCaughtUpToTip(): boolean {
     return this.latestClosedLedger > 0 && this.currentKnownLedger >= this.latestClosedLedger;
+  }
+
+  private markCatchUpComplete(): void {
+    this.finishedIteration = true;
+    // Drop any ledgerClosed handlers queued during catch-up so they can't
+    // fire afterward with finishedIteration=true and trigger a false "wrong ledger" reset.
+    this.ledgerCloseChain = Promise.resolve();
   }
 
   private trackRecentLedger(ledgerClose: any): void {
@@ -374,13 +381,13 @@ export class LedgerSync {
 
               console.log("recent ledgers: " + JSON.stringify(this.recentLedgers));
 
-              //sometimes my local node is a bit faster than remote nodes. so they report a closed ledger I already have process. just wait for the next one and don't reset.
-              if(this.currentKnownLedger != ledgerClose.ledger_index) {
-                //only reset if we are not 1 before the expected ledger!
-                this.reset();
-              } else {
+              // Stale/already-processed close (e.g. queued during catch-up) — ignore
+              if(ledgerClose.ledger_index <= this.currentKnownLedger) {
                 waitingForNextClose = true;
                 console.log("WAITING FOR THE NEXT CLOSE");
+              } else {
+                // Gap ahead of us — hard reset
+                this.reset();
               }
             }
           } else {

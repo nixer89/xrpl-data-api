@@ -16,7 +16,7 @@ let tokenCreation:TokenCreation = TokenCreation.Instance;
 let uriTokenStore: UriTokenStore = UriTokenStore.Instance;
 let supplyInfo: SupplyInfo = SupplyInfo.Instance;
 
-export async function registerRoutes(fastify, opts, done) {
+export function registerRoutes(fastify, opts, done) {
 
   console.log("declaring 200er reponse")
     fastify.get('/api', { config: {

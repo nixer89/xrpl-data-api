@@ -2,7 +2,7 @@ import { HookData } from "../hookData";
 
 let hooksData: HookData = HookData.Instance;
 
-export async function registerRoutes(fastify, opts, done) {
+export function registerRoutes(fastify, opts, done) {
 
   fastify.get('/api/v1/hook/hooks', async (request, reply) => {
     try {

@@ -3,7 +3,7 @@ import { UriTokenApiReturnObject } from "../util/types";
 
 let uirTokenStore: UriTokenStore = UriTokenStore.Instance;
 
-export async function registerRoutes(fastify, opts, done) {
+export function registerRoutes(fastify, opts, done) {
 
     fastify.get('/api/v1/uritoken/all/issuers', async (request, reply) => {
         try {
