@@ -162,10 +162,10 @@ export async function registerRoutes(fastify, opts, done) {
       //console.log("ledgerDataObjects: " + JSON.stringify(ledgerDataObjects));
 
       let returnValue = {
-        ledger_index: issuerAccount.getLedgerIndex(),
-        ledger_hash: issuerAccount.getLedgerHash(),
-        ledger_close: issuerAccount.getLedgerCloseTime(),
-        ledger_close_ms: issuerAccount.getLedgerCloseTimeMs(),
+        ledger_index: ledgerData.getLedgerIndex(),
+        ledger_hash: ledgerData.getLedgerHash(),
+        ledger_close: ledgerData.getLedgerCloseTime(),
+        ledger_close_ms: ledgerData.getLedgerCloseTimeMs(),
         ledger_size: ledgerDataObjects[0],
         sizeType: "B",
         ledger_data: ledgerDataObjects[1]

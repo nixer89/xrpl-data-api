@@ -20,8 +20,8 @@ export class IssuerAccounts {
     private nftIssuers: Map<string, IssuerData> = new Map();
 
     private ledger_index: number;
-    private ledger_date: string;
-    private ledger_time_ms: number;
+    private ledger_close_time: string;
+    private ledger_close_time_ms: number;
     private ledger_hash: string;
 
     private constructor() { }
@@ -128,8 +128,8 @@ export class IssuerAccounts {
                 //console.log("loaded " + loadedMap.size + " issuer data from file system");
 
                 this.setLedgerIndex(issuerData['ledger_index']);
-                this.setLedgerCloseTime(issuerData['ledger_date']);
-                this.setLedgerCloseTimeMs(issuerData['ledger_time_ms']);
+                this.setLedgerCloseTime(issuerData['ledger_close'] ?? issuerData['ledger_date']);
+                this.setLedgerCloseTimeMs(issuerData['ledger_close_ms'] ?? issuerData['ledger_time_ms']);
                 this.setLedgerHash(issuerData['ledger_hash']);
 
                 let tokens:Map<string, IssuerData> = new Map();
@@ -162,10 +162,6 @@ export class IssuerAccounts {
       return this.ledger_index;
   }
 
-  public getLedgerIndexNew(): number {
-    return this.ledger_index;
-  }
-
   public setLedgerIndex(index:number): void {
     this.ledger_index = index;
   }
@@ -174,35 +170,23 @@ export class IssuerAccounts {
     return this.ledger_hash;
   }
 
-  public getLedgerHashNew(): string {
-    return this.ledger_hash;
-  }
-
   public setLedgerHash(hash:string): void {
     this.ledger_hash = hash;
   }
 
   public getLedgerCloseTime(): string {
-    return this.ledger_date;
-  }
-
-  public getLedgerCloseTimeNew(): string {
-    return this.ledger_date;
+    return this.ledger_close_time;
   }
 
   public setLedgerCloseTime(closeTime: string): void {
-    this.ledger_date = closeTime;
+    this.ledger_close_time = closeTime;
   }
 
   public getLedgerCloseTimeMs(): number {
-    return this.ledger_time_ms;
+    return this.ledger_close_time_ms;
   }
 
-  public getLedgerCloseTimeMsNew(): number {
-    return this.ledger_time_ms;
-}
-
   public setLedgerCloseTimeMs(closeTimeInMs: number): void {
-    this.ledger_time_ms = closeTimeInMs;
+    this.ledger_close_time_ms = closeTimeInMs;
   }
 }

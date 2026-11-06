@@ -16,12 +16,21 @@ export async function registerRoutes(fastify, opts, done) {
         let limit:number = Number(request.query.limit);
         let skip:number = Number(request.query.skip);
 
-        if(limit) {
+        if(allHooks.length > 100_000 && (!limit || limit > 100_000)) {
+          limit = 100_000;
+        }
 
-          if(!skip)
+        if(limit) {
+          let origLength = allHooks.length;
+
+          if(!skip || skip <= 0)
             skip = 0;
 
-            allHooks = allHooks.slice(skip, skip+limit);
+          allHooks = allHooks.slice(skip, skip+limit);
+
+          reply.header('x-total-count', origLength);
+          reply.header('x-total-skipped', skip);
+          reply.header('x-max-limit', 100_000);
         }
 
       } catch(err) {
@@ -63,12 +72,21 @@ export async function registerRoutes(fastify, opts, done) {
         let limit:number = Number(request.query.limit);
         let skip:number = Number(request.query.skip);
 
-        if(limit) {
+        if(allHookDefinitions.length > 100_000 && (!limit || limit > 100_000)) {
+          limit = 100_000;
+        }
 
-          if(!skip)
+        if(limit) {
+          let origLength = allHookDefinitions.length;
+
+          if(!skip || skip <= 0)
             skip = 0;
 
-            allHookDefinitions = allHookDefinitions.slice(skip, skip+limit);
+          allHookDefinitions = allHookDefinitions.slice(skip, skip+limit);
+
+          reply.header('x-total-count', origLength);
+          reply.header('x-total-skipped', skip);
+          reply.header('x-max-limit', 100_000);
         }
 
       } catch(err) {
@@ -110,12 +128,21 @@ export async function registerRoutes(fastify, opts, done) {
         let limit:number = Number(request.query.limit);
         let skip:number = Number(request.query.skip);
 
-        if(limit) {
+        if(allHookStates.length > 100_000 && (!limit || limit > 100_000)) {
+          limit = 100_000;
+        }
 
-          if(!skip)
+        if(limit) {
+          let origLength = allHookStates.length;
+
+          if(!skip || skip <= 0)
             skip = 0;
 
-            allHookStates = allHookStates.slice(skip, skip+limit);
+          allHookStates = allHookStates.slice(skip, skip+limit);
+
+          reply.header('x-total-count', origLength);
+          reply.header('x-total-skipped', skip);
+          reply.header('x-max-limit', 100_000);
         }
 
       } catch(err) {

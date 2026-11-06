@@ -17,12 +17,21 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
-            if(limit) {
+            if(allIssuers.length > 100_000 && (!limit || limit > 100_000)) {
+              limit = 100_000;
+            }
 
-              if(!skip)
+            if(limit) {
+              let origLength = allIssuers.length;
+
+              if(!skip || skip <= 0)
                 skip = 0;
 
               allIssuers = allIssuers.slice(skip, skip+limit);
+
+              reply.header('x-total-count', origLength);
+              reply.header('x-total-skipped', skip);
+              reply.header('x-max-limit', 100_000);
             }
 
           } catch(err) {
@@ -67,12 +76,21 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
-            if(limit) {
+            if(uriTokensByIssuer.length > 100_000 && (!limit || limit > 100_000)) {
+              limit = 100_000;
+            }
 
-              if(!skip)
+            if(limit) {
+              let origLength = uriTokensByIssuer.length;
+
+              if(!skip || skip <= 0)
                 skip = 0;
   
-                uriTokensByIssuer = uriTokensByIssuer.slice(skip, skip+limit);
+              uriTokensByIssuer = uriTokensByIssuer.slice(skip, skip+limit);
+
+              reply.header('x-total-count', origLength);
+              reply.header('x-total-skipped', skip);
+              reply.header('x-max-limit', 100_000);
             }
 
           } catch(err) {
@@ -151,12 +169,21 @@ export async function registerRoutes(fastify, opts, done) {
             let limit:number = Number(request.query.limit);
             let skip:number = Number(request.query.skip);
 
-            if(limit) {
+            if(uriTokenByOwner.length > 100_000 && (!limit || limit > 100_000)) {
+              limit = 100_000;
+            }
 
-              if(!skip)
+            if(limit) {
+              let origLength = uriTokenByOwner.length;
+
+              if(!skip || skip <= 0)
                 skip = 0;
   
-                uriTokenByOwner = uriTokenByOwner.slice(skip, skip+limit);
+              uriTokenByOwner = uriTokenByOwner.slice(skip, skip+limit);
+
+              reply.header('x-total-count', origLength);
+              reply.header('x-total-skipped', skip);
+              reply.header('x-max-limit', 100_000);
             }
 
           } catch(err) {
@@ -206,12 +233,21 @@ export async function registerRoutes(fastify, opts, done) {
           let limit:number = Number(request.query.limit);
           let skip:number = Number(request.query.skip);
 
-          if(limit) {
+          if(uriTokensByUri.length > 100_000 && (!limit || limit > 100_000)) {
+            limit = 100_000;
+          }
 
-            if(!skip)
+          if(limit) {
+            let origLength = uriTokensByUri.length;
+
+            if(!skip || skip <= 0)
               skip = 0;
 
-              uriTokensByUri = uriTokensByUri.slice(skip, skip+limit);
+            uriTokensByUri = uriTokensByUri.slice(skip, skip+limit);
+
+            reply.header('x-total-count', origLength);
+            reply.header('x-total-skipped', skip);
+            reply.header('x-max-limit', 100_000);
           }
 
         } catch(err) {
